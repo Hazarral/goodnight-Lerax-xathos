@@ -24,6 +24,8 @@ enum DoT {
 	VOID = 8
 }
 
+const ELEMENT_COUNT := 8
+
 # Damage types
 const FIRE := &"Fire"
 const WATER := &"Water"
