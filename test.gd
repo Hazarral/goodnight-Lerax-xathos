@@ -30,6 +30,8 @@ var is_dead := false
 @onready var water_attack_button := $VBoxContainer/AttackButtons/WaterAttack
 @export var water_damage := 40
 
+@export var void_damage := 100
+
 ## Text
 const FIRE_SHIELD_TEXT := "%d/%d Fire Shield"
 const WATER_SHIELD_TEXT := "%d/%d Water Shield"
@@ -75,23 +77,48 @@ func update_shield_bar(damage_type : DamageAndDot.DamageType) -> void:
 			print("Other damage not implemented!")
 			return
 
-func damage(damage_type : DamageAndDot.DamageType, damage : int) -> void:
+func is_breached() -> bool:
+	print("This is a mockup Breached detection")
+	if current_fire_shield <= 0:
+		print("Fire shield breached")
+	if current_water_shield <= 0:
+		print("Water shield breached")
+		
+	return current_fire_shield <= 0 or current_water_shield <= 0
+
+func has_no_shield() -> bool:
+	return max_fire_shield <= 0 and max_water_shield <= 0
+
+func damage_hp(damage_to_hp : int) -> void:
+	current_hp = maxi(0, current_hp - damage_to_hp)
+	if current_hp <= 0:
+		print("Target killed!")
+		is_dead = true
+	
+	update_hp_bar()
+
+func damage(damage_type : DamageAndDot.DamageType, incoming_damage : int) -> void:
 	if is_dead:
 		print("Target already dead! You can absorb them instead.")
 		return
-	
+	## 0. Void special case
+	if damage_type == DamageAndDot.DamageType.VOID and (is_breached() or has_no_shield()):
+		print("A Shield breached for the Void!")
+		damage_hp(incoming_damage)
+		return
+		
 	## 1. Hit the shield first
 	var damage_to_shield : int = 0
 	match damage_type:
 		DamageAndDot.DamageType.FIRE:
-			damage_to_shield = mini(current_fire_shield, damage)
+			damage_to_shield = mini(current_fire_shield, incoming_damage)
 			if damage_to_shield > 0 and current_fire_shield <= 0:
 				print("Fire shield broken!")
 			
 			current_fire_shield -= damage_to_shield
 			update_shield_bar(DamageAndDot.DamageType.FIRE)
 		DamageAndDot.DamageType.WATER:
-			damage_to_shield = mini(current_water_shield, damage)
+			damage_to_shield = mini(current_water_shield, incoming_damage)
 			if damage_to_shield > 0 and current_water_shield <= 0:
 				print("Water shield broken!")
 			
@@ -103,14 +130,8 @@ func damage(damage_type : DamageAndDot.DamageType, damage : int) -> void:
 	
 	## 2. The surplus will go into HP
 	# This is guaranteed to be non-negative
-	var damage_to_hp := damage - damage_to_shield 
-	
-	current_hp = maxi(0, current_hp - damage_to_hp)
-	if current_hp <= 0:
-		print("Target killed!")
-		is_dead = true
-	
-	update_hp_bar()
+	var damage_to_hp := incoming_damage - damage_to_shield 
+	damage_hp(damage_to_hp)
 	
 func _on_fire_attack_pressed() -> void:
 	damage(DamageAndDot.DamageType.FIRE, fire_damage)
@@ -118,3 +139,7 @@ func _on_fire_attack_pressed() -> void:
 
 func _on_water_attack_pressed() -> void:
 	damage(DamageAndDot.DamageType.WATER, water_damage)
+
+
+func _on_void_attack_pressed() -> void:
+	damage(DamageAndDot.DamageType.VOID, void_damage)

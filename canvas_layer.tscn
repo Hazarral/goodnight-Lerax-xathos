@@ -132,12 +132,18 @@ layout_mode = 2
 [node name="FireAttack" type="Button" parent="VBoxContainer/AttackButtons" unique_id=1703517866]
 custom_minimum_size = Vector2(100, 25)
 layout_mode = 2
-text = "Attack: 50 damage"
+text = "Attack: 0 Fire damage"
 
 [node name="WaterAttack" type="Button" parent="VBoxContainer/AttackButtons" unique_id=2107501839]
 custom_minimum_size = Vector2(100, 25)
 layout_mode = 2
-text = "Attack: 50 damage"
+text = "Attack: 0 Water damage"
+
+[node name="VoidAttack" type="Button" parent="VBoxContainer/AttackButtons" unique_id=863194107]
+custom_minimum_size = Vector2(100, 25)
+layout_mode = 2
+text = "Attack: 0 Void damage"
 
 [connection signal="pressed" from="VBoxContainer/AttackButtons/FireAttack" to="." method="_on_fire_attack_pressed"]
 [connection signal="pressed" from="VBoxContainer/AttackButtons/WaterAttack" to="." method="_on_water_attack_pressed"]
+[connection signal="pressed" from="VBoxContainer/AttackButtons/VoidAttack" to="." method="_on_void_attack_pressed"]
