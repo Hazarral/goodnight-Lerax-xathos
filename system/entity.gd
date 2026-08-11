@@ -8,8 +8,12 @@ var current_shields : PackedInt64Array
 
 var is_dead := false
 
-## Template will be duplicated
+var active_dots: Dictionary[DamageAndDoT.DoT, Dictionary] = {}
+const STACKS_KEY := &"Stacks"
+const BASE_DAMAGE_KEY := &"Base damage"
+const TURNS_ELAPSED_KEY := &"Turns elapsed"
 
+## Template will be duplicated
 func _init(base_template : EntityTemplate, magnification : float = 1.0) -> void:
 	template = base_template.duplicate(true)
 	
@@ -18,6 +22,40 @@ func _init(base_template : EntityTemplate, magnification : float = 1.0) -> void:
 	current_shields.resize(DamageAndDoT.ELEMENT_COUNT)
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		current_shields[i] = floori(template.max_shields[i] * magnification)
+	
+	setup_dot_dictionary()
+
+func setup_dot_dictionary() -> void:
+	for dot_type in DamageAndDoT.DoT.values():
+		var dot_data : Dictionary = {}
+		
+		match dot_type:
+			DamageAndDoT.DoT.BURN:
+				# 50-sized arrays (10 durations * 5 ramping stages)
+				var stacks := PackedInt64Array()
+				stacks.resize(DamageAndDoT.MAX_DURATION * DamageAndDoT.MAX_BURN_TIERS)
+				var base_dmg := PackedFloat64Array()
+				base_dmg.resize(DamageAndDoT.MAX_DURATION * DamageAndDoT.MAX_BURN_TIERS)
+				
+				dot_data[STACKS_KEY] = stacks
+				dot_data[BASE_DAMAGE_KEY] = base_dmg
+				
+			DamageAndDoT.DoT.VOID:
+				# Void doesn't use duration arrays. It just needs two values.
+				dot_data[STACKS_KEY] = 0
+				dot_data[TURNS_ELAPSED_KEY] = 0
+				
+			_:
+				# All other elements use 10-sized arrays (max duration = 10)
+				var stacks := PackedInt64Array()
+				stacks.resize(DamageAndDoT.MAX_DURATION)
+				var base_dmg := PackedFloat64Array()
+				base_dmg.resize(DamageAndDoT.MAX_DURATION)
+				
+				dot_data[STACKS_KEY] = stacks
+				dot_data[BASE_DAMAGE_KEY] = base_dmg
+		
+		active_dots[dot_type] = dot_data
 
 func is_any_shield_breached() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):

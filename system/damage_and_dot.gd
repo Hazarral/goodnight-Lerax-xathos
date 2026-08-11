@@ -24,7 +24,30 @@ enum DoT {
 	VOID = 8
 }
 
+enum Coefficient {
+	DAMAGE_POTENCY = 0,
+	DAMAGE_MASTERY = 1,
+	ATTRITION_POTENCY = 2,
+	ATTRITION_MASTERY = 3
+}
+
+# The Master Balance Table
+# Format: [Damage Potency, Damage Mastery, Attrition Potency, Attrition Mastery]
+const DOT_COEFFICIENTS : Dictionary[DoT, Array] = {
+	DoT.BURN:       [2.0, 0.1, 0.1, 1.5],
+	DoT.WIND_SHEAR: [1.0, 0.1, 0.1, 2.0],
+	DoT.CURRENT:    [0.0, 0.0, 0.0, 0.0], # Fill these with your actual balance numbers
+	DoT.POISON:     [0.2, 0.5, 0.8, 2.5], 
+	DoT.SHOCK:      [1.0, 0.5, 0.5, 1.0],
+	DoT.BLEED:      [0.5, 0.2, 0.5, 0.2],
+	DoT.CRUMBLE:    [1.5, 0.5, 1.0, 1.0],
+	DoT.FROSTBITE:  [1.0, 0.5, 1.0, 0.5],
+	DoT.VOID:       [1.0, 1.0, 0.0, 0.0]  # Void has no Attrition
+}
+
 const ELEMENT_COUNT := 8
+const MAX_DURATION := 10
+const MAX_BURN_TIERS := 5
 
 # Damage types
 const FIRE := &"Fire"
@@ -85,3 +108,28 @@ func get_damage_color_hex(damage_type : DamageType) -> String:
 		DamageType.ICE: return ICE_COLOR_HEX
 		DamageType.VOID: return VOID_COLOR_HEX
 	return ""
+
+## CALCULATE DAMAGE
+func calculate_dot_damage(dot_type: DoT, base: float, potency: float, mastery: float, stacks: int, burn_multiplier : float = 1.0) -> int:
+	var coefs : Array[float] = DOT_COEFFICIENTS[dot_type]
+	var potency_coef : float = coefs[Coefficient.DAMAGE_POTENCY]
+	var mastery_coef : float = coefs[Coefficient.DAMAGE_MASTERY]
+	
+	var raw_damage : float = (base + (potency_coef * potency) + (mastery_coef * mastery)) * stacks
+	
+	## NOTE: Burn deals more final damage after each turns, up to a limit
+	## This is super strong
+	if dot_type == DoT.BURN:
+		raw_damage *= burn_multiplier
+		
+	return floori(raw_damage)
+
+## CALCULATE ATTRITION
+func calculate_dot_attrition(dot_type: DoT, base: float, potency: float, mastery: float, stacks: int, duration: int) -> int:
+	var coefs : Array[float] = DOT_COEFFICIENTS[dot_type]
+	var potency_coef : float = coefs[Coefficient.ATTRITION_POTENCY]
+	var mastery_coef : float = coefs[Coefficient.ATTRITION_MASTERY]
+	
+	var raw_attrition : float = (base + stacks + (potency_coef * potency) + (mastery_coef * mastery)) * duration
+	
+	return floori(raw_attrition)
