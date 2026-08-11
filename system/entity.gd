@@ -13,6 +13,6 @@ func _init(base_template : EntityTemplate, magnification : float = 1.0) -> void:
 	
 	current_hp = floori(template.max_hp * magnification)
 	
-	current_shields.resize(DamageAndDot.ELEMENT_COUNT)
-	for i in range(DamageAndDot.ELEMENT_COUNT):
+	current_shields.resize(DamageAndDoT.ELEMENT_COUNT)
+	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		current_shields[i] = floori(template.max_shields[i] * magnification)

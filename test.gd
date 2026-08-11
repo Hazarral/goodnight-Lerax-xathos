@@ -30,6 +30,7 @@ var is_dead := false
 @onready var water_attack_button := $VBoxContainer/AttackButtons/WaterAttack
 @export var water_damage := 40
 
+@onready var void_attack_button := $VBoxContainer/AttackButtons/VoidAttack
 @export var void_damage := 100
 
 ## Text
@@ -40,12 +41,13 @@ const HP_LABEL_TEXT := "%d/%d HP"
 func _ready() -> void:
 	setup_shield_and_hp()
 	
-	update_shield_bar(DamageAndDot.DamageType.FIRE)
-	update_shield_bar(DamageAndDot.DamageType.WATER)
+	update_shield_bar(DamageAndDoT.DamageType.FIRE)
+	update_shield_bar(DamageAndDoT.DamageType.WATER)
 	update_hp_bar()
 	
 	fire_attack_button.text = "Attack: %d Fire damage" % fire_damage
 	water_attack_button.text = "Attack: %d Water damage" % water_damage
+	void_attack_button.text = "Attack: %d Void damage" % void_damage
 
 func setup_shield_and_hp() -> void:
 	fire_shield_bar.max_value = max_fire_shield
@@ -61,16 +63,16 @@ func update_hp_bar() -> void:
 	hp_label.text = HP_LABEL_TEXT % [current_hp, max_hp]
 	hp_bar.value = current_hp
 
-func update_shield_bar(damage_type : DamageAndDot.DamageType) -> void:
+func update_shield_bar(damage_type : DamageAndDoT.DamageType) -> void:
 	if is_dead:
 		print("Target already dead! Shield is of no use.")
 		return
 	
 	match damage_type:
-		DamageAndDot.DamageType.FIRE:
+		DamageAndDoT.DamageType.FIRE:
 			fire_shield_label.text = FIRE_SHIELD_TEXT % [current_fire_shield, max_fire_shield]
 			fire_shield_bar.value = current_fire_shield
-		DamageAndDot.DamageType.WATER:
+		DamageAndDoT.DamageType.WATER:
 			water_shield_label.text = WATER_SHIELD_TEXT % [current_water_shield, max_water_shield]
 			water_shield_bar.value = current_water_shield
 		_:
@@ -97,12 +99,12 @@ func damage_hp(damage_to_hp : int) -> void:
 	
 	update_hp_bar()
 
-func damage(damage_type : DamageAndDot.DamageType, incoming_damage : int) -> void:
+func damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -> void:
 	if is_dead:
 		print("Target already dead! You can absorb them instead.")
 		return
 	## 0. Void special case
-	if damage_type == DamageAndDot.DamageType.VOID and (is_breached() or has_no_shield()):
+	if damage_type == DamageAndDoT.DamageType.VOID and (is_breached() or has_no_shield()):
 		print("A Shield breached for the Void!")
 		damage_hp(incoming_damage)
 		return
@@ -110,20 +112,20 @@ func damage(damage_type : DamageAndDot.DamageType, incoming_damage : int) -> voi
 	## 1. Hit the shield first
 	var damage_to_shield : int = 0
 	match damage_type:
-		DamageAndDot.DamageType.FIRE:
+		DamageAndDoT.DamageType.FIRE:
 			damage_to_shield = mini(current_fire_shield, incoming_damage)
 			if damage_to_shield > 0 and current_fire_shield <= 0:
 				print("Fire shield broken!")
 			
 			current_fire_shield -= damage_to_shield
-			update_shield_bar(DamageAndDot.DamageType.FIRE)
-		DamageAndDot.DamageType.WATER:
+			update_shield_bar(DamageAndDoT.DamageType.FIRE)
+		DamageAndDoT.DamageType.WATER:
 			damage_to_shield = mini(current_water_shield, incoming_damage)
 			if damage_to_shield > 0 and current_water_shield <= 0:
 				print("Water shield broken!")
 			
 			current_water_shield -= damage_to_shield
-			update_shield_bar(DamageAndDot.DamageType.WATER)
+			update_shield_bar(DamageAndDoT.DamageType.WATER)
 		_:
 			print("Other damage not implemented!")
 			return
@@ -134,12 +136,12 @@ func damage(damage_type : DamageAndDot.DamageType, incoming_damage : int) -> voi
 	damage_hp(damage_to_hp)
 	
 func _on_fire_attack_pressed() -> void:
-	damage(DamageAndDot.DamageType.FIRE, fire_damage)
+	damage(DamageAndDoT.DamageType.FIRE, fire_damage)
 	print("Called damage function for fire")
 
 func _on_water_attack_pressed() -> void:
-	damage(DamageAndDot.DamageType.WATER, water_damage)
+	damage(DamageAndDoT.DamageType.WATER, water_damage)
 
 
 func _on_void_attack_pressed() -> void:
-	damage(DamageAndDot.DamageType.VOID, void_damage)
+	damage(DamageAndDoT.DamageType.VOID, void_damage)

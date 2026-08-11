@@ -3,15 +3,7 @@
 [ext_resource type="Script" uid="uid://dgtkqb8jw1gbj" path="res://test.gd" id="1_tg4cr"]
 [ext_resource type="LabelSettings" uid="uid://cyb00v76gm434" path="res://HP_and_shield_label.tres" id="2_0qrqu"]
 [ext_resource type="FontFile" uid="uid://d3semxt85025l" path="res://From the Stars Sb.otf" id="2_37rai"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jpyye"]
-bg_color = Color(0.7529412, 0.2784314, 0.101960786, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_37rai"]
-bg_color = Color(0.2683109, 0.6326049, 0.8877833, 1)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0qrqu"]
-bg_color = Color(0.42611355, 0.6580658, 0.5594767, 1)
+[ext_resource type="PackedScene" uid="uid://bocl36msa1k3k" path="res://system/ui/shield_ui.tscn" id="2_mx0kw"]
 
 [sub_resource type="Theme" id="Theme_jpyye"]
 default_font = ExtResource("2_37rai")
@@ -40,68 +32,16 @@ alignment = 1
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="FireGroup" type="VBoxContainer" parent="VBoxContainer/Shields" unique_id=1848268517]
+[node name="FireShield" parent="VBoxContainer/Shields" unique_id=1984936909 instance=ExtResource("2_mx0kw")]
 layout_mode = 2
 
-[node name="FireShieldLabel" type="Label" parent="VBoxContainer/Shields/FireGroup" unique_id=1492384183]
+[node name="WaterShield" parent="VBoxContainer/Shields" unique_id=63942217 instance=ExtResource("2_mx0kw")]
 layout_mode = 2
-text = "Fire shield"
-label_settings = ExtResource("2_0qrqu")
+damage_type = 1
 
-[node name="FireShield" type="ProgressBar" parent="VBoxContainer/Shields/FireGroup" unique_id=813284581]
-custom_minimum_size = Vector2(20, 100)
+[node name="WindShield" parent="VBoxContainer/Shields" unique_id=214922995 instance=ExtResource("2_mx0kw")]
 layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 1
-mouse_filter = 2
-theme_override_styles/fill = SubResource("StyleBoxFlat_jpyye")
-max_value = 500.0
-step = 1.0
-value = 50.0
-fill_mode = 3
-show_percentage = false
-
-[node name="WaterGroup" type="VBoxContainer" parent="VBoxContainer/Shields" unique_id=2016987406]
-layout_mode = 2
-
-[node name="WaterShieldLabel" type="Label" parent="VBoxContainer/Shields/WaterGroup" unique_id=1619108021]
-layout_mode = 2
-text = "Water shield"
-label_settings = ExtResource("2_0qrqu")
-
-[node name="WaterShield" type="ProgressBar" parent="VBoxContainer/Shields/WaterGroup" unique_id=590252637]
-custom_minimum_size = Vector2(20, 100)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 1
-mouse_filter = 2
-theme_override_styles/fill = SubResource("StyleBoxFlat_37rai")
-max_value = 500.0
-step = 1.0
-value = 50.0
-fill_mode = 3
-show_percentage = false
-
-[node name="WindGroup" type="VBoxContainer" parent="VBoxContainer/Shields" unique_id=1895000625]
-layout_mode = 2
-
-[node name="WindShieldLabel" type="Label" parent="VBoxContainer/Shields/WindGroup" unique_id=2101749093]
-layout_mode = 2
-text = "Wind shield"
-label_settings = ExtResource("2_0qrqu")
-
-[node name="WindShield" type="ProgressBar" parent="VBoxContainer/Shields/WindGroup" unique_id=1439468867]
-custom_minimum_size = Vector2(20, 100)
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 1
-mouse_filter = 2
-theme_override_styles/fill = SubResource("StyleBoxFlat_0qrqu")
-max_value = 500.0
-step = 1.0
-value = 50.0
-fill_mode = 3
-show_percentage = false
+damage_type = 2
 
 [node name="HPBar" type="ProgressBar" parent="VBoxContainer" unique_id=598835160]
 custom_minimum_size = Vector2(100, 20)
