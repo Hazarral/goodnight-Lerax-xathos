@@ -1,67 +1,88 @@
 extends CanvasLayer
 
-## Shields
+# 1. The Model Reference
+var target_entity : Entity
 
-## HP
+# 2. UI References
 @onready var hp_bar := $VBoxContainer/HPBar
 @onready var hp_label := $VBoxContainer/HPBar/Label
-@export var max_hp := 1000
-@export var current_hp := max_hp
-var is_dead := false
 
-## Attacks
 @onready var fire_attack_button := $VBoxContainer/AttackButtons/FireAttack
-@export var fire_damage := 75
-
 @onready var water_attack_button := $VBoxContainer/AttackButtons/WaterAttack
-@export var water_damage := 40
-
 @onready var void_attack_button := $VBoxContainer/AttackButtons/VoidAttack
+
+# Map Enum strictly to the ShieldUI scripts
+var shield_nodes : Dictionary[DamageAndDoT.DamageType, ShieldUI] = {} 
+
+@export var fire_damage := 75
+@export var water_damage := 40
 @export var void_damage := 100
 
-## Text
-const FIRE_SHIELD_TEXT := "%d/%d Fire Shield"
-const WATER_SHIELD_TEXT := "%d/%d Water Shield"
-const HP_LABEL_TEXT := "%d/%d HP"
-
 func _ready() -> void:
-	update_hp_bar()
-	
 	fire_attack_button.text = "Attack: %d Fire damage" % fire_damage
 	water_attack_button.text = "Attack: %d Water damage" % water_damage
 	void_attack_button.text = "Attack: %d Void damage" % void_damage
+	
+	# Register the UI components using Enum keys
+	shield_nodes[DamageAndDoT.DamageType.FIRE] = $VBoxContainer/Shields/FireShield
+	shield_nodes[DamageAndDoT.DamageType.WATER] = $VBoxContainer/Shields/WaterShield
+	shield_nodes[DamageAndDoT.DamageType.WIND] = $VBoxContainer/Shields/WindShield
+	
+	# NOTE: To test this, you must instantiate target_entity here.
+	target_entity = Entity.new(preload("res://system/dummy.tres"))
+	init_ui()
 
-func update_hp_bar() -> void:
-	if is_dead:
+func init_ui() -> void:
+	if target_entity == null:
+		push_error("target_entity is null. Cannot initialize UI.")
+		return
+
+	hp_bar.max_value = target_entity.template.max_hp
+	
+	for damage_type : DamageAndDoT.DamageType in shield_nodes:
+		var max_shield : int = target_entity.template.max_shields[damage_type]
+		
+		# Setup UI only (logic remains in Entity)
+		shield_nodes[damage_type].setup_visuals(damage_type, max_shield)
+		
+	refresh_all_ui()
+
+func refresh_all_ui() -> void:
+	if not target_entity: 
+		return
+	
+	# Update HP
+	if target_entity.is_dead:
 		hp_label.text = "DEAD!"
 		hp_bar.value = 0.0
-		return
-	
-	hp_label.text = HP_LABEL_TEXT % [current_hp, max_hp]
-	hp_bar.value = current_hp
+	else:
+		hp_label.text = "%d/%d HP" % [target_entity.current_hp, target_entity.template.max_hp]
+		hp_bar.value = target_entity.current_hp
 
-func damage_hp(damage_to_hp : int) -> void:
-	current_hp = maxi(0, current_hp - damage_to_hp)
-	if current_hp <= 0:
-		print("Target killed!")
-		is_dead = true
-	
-	update_hp_bar()
+	# Update Shields
+	for damage_type : DamageAndDoT.DamageType in shield_nodes:
+		var current_shield: int = target_entity.current_shields[damage_type]
+		var max_shield: int = target_entity.template.max_shields[damage_type]
+		
+		shield_nodes[damage_type].update_visuals(damage_type, current_shield, max_shield)
 
-func damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -> void:
-	if is_dead:
-		print("Target already dead! You can absorb them instead.")
+# --- Input Handling ---
+
+func apply_attack(damage_type: DamageAndDoT.DamageType, amount: int) -> void:
+	if not target_entity or target_entity.is_dead:
 		return
+		
+	# 1. Funnel attack into the Entity
+	target_entity.take_damage(damage_type, amount)
 	
-	print("Damage function not implemented")
-	
+	# 2. Re-sync the View
+	refresh_all_ui()
+
 func _on_fire_attack_pressed() -> void:
-	damage(DamageAndDoT.DamageType.FIRE, fire_damage)
-	print("Called damage function for fire")
+	apply_attack(DamageAndDoT.DamageType.FIRE, fire_damage)
 
 func _on_water_attack_pressed() -> void:
-	damage(DamageAndDoT.DamageType.WATER, water_damage)
-
+	apply_attack(DamageAndDoT.DamageType.WATER, water_damage)
 
 func _on_void_attack_pressed() -> void:
-	damage(DamageAndDoT.DamageType.VOID, void_damage)
+	apply_attack(DamageAndDoT.DamageType.VOID, void_damage)
