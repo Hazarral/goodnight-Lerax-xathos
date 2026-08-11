@@ -34,14 +34,17 @@ size_flags_horizontal = 4
 
 [node name="FireShield" parent="VBoxContainer/Shields" unique_id=1984936909 instance=ExtResource("2_mx0kw")]
 layout_mode = 2
+shield_max_value = 500
 
 [node name="WaterShield" parent="VBoxContainer/Shields" unique_id=63942217 instance=ExtResource("2_mx0kw")]
 layout_mode = 2
 damage_type = 1
+shield_max_value = 600
 
 [node name="WindShield" parent="VBoxContainer/Shields" unique_id=214922995 instance=ExtResource("2_mx0kw")]
 layout_mode = 2
 damage_type = 2
+shield_max_value = 450
 
 [node name="HPBar" type="ProgressBar" parent="VBoxContainer" unique_id=598835160]
 custom_minimum_size = Vector2(100, 20)
