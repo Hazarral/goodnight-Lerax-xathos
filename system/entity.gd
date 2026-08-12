@@ -5,6 +5,8 @@ var template : EntityTemplate
 
 var current_hp : int
 var current_shields : PackedInt64Array
+var current_potency : int
+var current_mastery : int
 
 var is_dead := false
 

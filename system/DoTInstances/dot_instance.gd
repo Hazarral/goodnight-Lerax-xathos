@@ -10,6 +10,10 @@ var duration : int
 signal expired(dot_instance : DoTInstance)
 
 func _init(p_target : Entity, p_damage_type : DamageAndDoT.DamageType, p_stacks : int, p_base_damage : float, p_duration : int) -> void:
+	if p_damage_type == DamageAndDoT.DamageType.VOID:
+		push_error("Void is not a valid DoTInstance, use VoidInstance instead")
+		return
+	
 	target = p_target
 	damage_type = p_damage_type
 	stacks = p_stacks
@@ -25,13 +29,21 @@ func tick_down() -> void:
 func expire() -> void:
 	emit_signal("expired", self)
 
-func calculate_damage(potency : int, mastery : int) -> int:
-	return ceili(
-		DamageAndDoT.calculate_dot_damage(
-			DamageAndDoT.get_dot(damage_type),
-			base_damage,
-			potency,
-			mastery,
-			stacks
-		)
+func calculate_damage(potency : int, mastery : int) -> float:
+	return DamageAndDoT.calculate_dot_damage(
+		DamageAndDoT.get_dot(damage_type),
+		base_damage,
+		potency,
+		mastery,
+		stacks
+	)
+
+func calculate_attition(potency : int, mastery : int) -> float:
+	return DamageAndDoT.calculate_dot_attrition(
+		DamageAndDoT.get_dot(damage_type),
+		base_damage,
+		potency,
+		mastery,
+		stacks,
+		duration
 	)

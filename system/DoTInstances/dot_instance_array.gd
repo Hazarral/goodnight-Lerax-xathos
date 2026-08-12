@@ -15,12 +15,11 @@ func add_dot_instance(dot_instance : DoTInstance) -> void:
 		push_error("Cannot add null DoTInstance to DoTInstanceArray")
 		return
 	
-	if data.is_empty():
-		data = [dot_instance]
-		dot_instance.expired.connect(remove_dot_instance)
+	if dot_instance.damage_type == DamageAndDoT.DamageType.VOID:
+		push_error("Void is not a valid DoTInstance, use VoidInstance instead")
 		return
 	
-	if data.front().damage_type != dot_instance.damage_type:
+	if not data.is_empty() and data.front().damage_type != dot_instance.damage_type:
 		push_error("Cannot add DoTInstance of a different type to this DoTInstanceArray")
 		return
 		
