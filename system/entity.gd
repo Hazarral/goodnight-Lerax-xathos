@@ -8,7 +8,7 @@ var current_shields : PackedInt64Array
 
 var is_dead := false
 
-var active_dots: Dictionary[DamageAndDoT.DoT, Dictionary] = {}
+var active_dots : Dictionary[DamageAndDoT.DamageType, DoTInstanceArray] = {}
 const STACKS_KEY := &"Stacks"
 const BASE_DAMAGE_KEY := &"Base damage"
 const TURNS_ELAPSED_KEY := &"Turns elapsed"
@@ -16,46 +16,19 @@ const TURNS_ELAPSED_KEY := &"Turns elapsed"
 ## Template will be duplicated
 func _init(base_template : EntityTemplate, magnification : float = 1.0) -> void:
 	template = base_template.duplicate(true)
-	
 	current_hp = floori(template.max_hp * magnification)
 	
+	setup_shields(magnification)
+	setup_dot_dictionary()
+
+func setup_shields(magnification : float) -> void:
 	current_shields.resize(DamageAndDoT.ELEMENT_COUNT)
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		current_shields[i] = floori(template.max_shields[i] * magnification)
-	
-	setup_dot_dictionary()
 
 func setup_dot_dictionary() -> void:
-	for dot_type in DamageAndDoT.DoT.values():
-		var dot_data : Dictionary = {}
-		
-		match dot_type:
-			DamageAndDoT.DoT.BURN:
-				# 50-sized arrays (10 durations * 5 ramping stages)
-				var stacks := PackedInt64Array()
-				stacks.resize(DamageAndDoT.MAX_DURATION * DamageAndDoT.MAX_BURN_TIERS)
-				var base_dmg := PackedFloat64Array()
-				base_dmg.resize(DamageAndDoT.MAX_DURATION * DamageAndDoT.MAX_BURN_TIERS)
-				
-				dot_data[STACKS_KEY] = stacks
-				dot_data[BASE_DAMAGE_KEY] = base_dmg
-				
-			DamageAndDoT.DoT.VOID:
-				# Void doesn't use duration arrays. It just needs two values.
-				dot_data[STACKS_KEY] = 0
-				dot_data[TURNS_ELAPSED_KEY] = 0
-				
-			_:
-				# All other elements use 10-sized arrays (max duration = 10)
-				var stacks := PackedInt64Array()
-				stacks.resize(DamageAndDoT.MAX_DURATION)
-				var base_dmg := PackedFloat64Array()
-				base_dmg.resize(DamageAndDoT.MAX_DURATION)
-				
-				dot_data[STACKS_KEY] = stacks
-				dot_data[BASE_DAMAGE_KEY] = base_dmg
-		
-		active_dots[dot_type] = dot_data
+	for type in DamageAndDoT.DamageType.values():
+		active_dots[type] = DoTInstanceArray.new()
 
 func is_any_shield_breached() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
@@ -68,6 +41,12 @@ func has_no_shields() -> bool:
 		if template.max_shields[i] > 0:
 			return false
 	return true
+
+func has_dot(damage_type : DamageAndDoT.DamageType) -> bool:
+	return active_dots[damage_type].has_dot()
+
+func apply_dot(dot_instance : DoTInstance) -> void:
+	active_dots[dot_instance.damage_type].add_dot_instance(dot_instance)
 
 func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> void:
 	if is_dead:
@@ -107,4 +86,9 @@ func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> 
 func reduce_hp(amount: int) -> void:
 	current_hp = maxi(0, current_hp - amount)
 	if current_hp <= 0:
-		is_dead = true
+		die()
+
+func die() -> void:
+	is_dead = true
+	current_hp = 0
+	print("Entity %s died" % template.entity_name)

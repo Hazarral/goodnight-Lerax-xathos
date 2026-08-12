@@ -2,7 +2,7 @@ class_name EntityTemplate
 extends Resource
 
 #An entity has several attributes
-@export var entity_name : StringName
+@export var entity_name : String
 
 ## Potency increases how strong damage is
 @export var potency : int

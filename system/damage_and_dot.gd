@@ -110,26 +110,29 @@ func get_damage_color_hex(damage_type : DamageType) -> String:
 	return ""
 
 ## CALCULATE DAMAGE
-func calculate_dot_damage(dot_type: DoT, base: float, potency: float, mastery: float, stacks: int, burn_multiplier : float = 1.0) -> int:
+func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, mastery : int, stacks: int) -> float:
+	if dot_type == DoT.VOID:
+		push_error("Void has special damage! Please use VoidInstance.get_void_damage(...)")
+		return 0.0
+	
 	var coefs : Array[float] = DOT_COEFFICIENTS[dot_type]
 	var potency_coef : float = coefs[Coefficient.DAMAGE_POTENCY]
 	var mastery_coef : float = coefs[Coefficient.DAMAGE_MASTERY]
 	
-	var raw_damage : float = (base + (potency_coef * potency) + (mastery_coef * mastery)) * stacks
-	
-	## NOTE: Burn deals more final damage after each turns, up to a limit
-	## This is super strong
-	if dot_type == DoT.BURN:
-		raw_damage *= burn_multiplier
+	var raw_damage : float = (base_damage + (potency_coef * potency) + (mastery_coef * mastery)) * stacks
 		
-	return floori(raw_damage)
+	return raw_damage
 
 ## CALCULATE ATTRITION
-func calculate_dot_attrition(dot_type: DoT, base: float, potency: float, mastery: float, stacks: int, duration: int) -> int:
+func calculate_dot_attrition(dot_type : DoT, base_damage : float, potency : int, mastery : int, stacks : int, duration : int) -> float:
+	if dot_type == DoT.VOID:
+		push_error("Void has no Attrition!")
+		return 0.0
+	
 	var coefs : Array[float] = DOT_COEFFICIENTS[dot_type]
 	var potency_coef : float = coefs[Coefficient.ATTRITION_POTENCY]
 	var mastery_coef : float = coefs[Coefficient.ATTRITION_MASTERY]
 	
-	var raw_attrition : float = (base + stacks + (potency_coef * potency) + (mastery_coef * mastery)) * duration
+	var raw_attrition : float = (base_damage + stacks + (potency_coef * potency) + (mastery_coef * mastery)) * duration
 	
-	return floori(raw_attrition)
+	return raw_attrition
