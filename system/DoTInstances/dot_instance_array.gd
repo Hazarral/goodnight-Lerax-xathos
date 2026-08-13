@@ -29,16 +29,34 @@ func add_dot_instance(dot_instance : DoTInstance) -> void:
 func remove_dot_instance(dot_instance : DoTInstance) -> void:
 	data.erase(dot_instance)
 
-func calculate_total_damage(potency : int, mastery : int) -> int:
-	var total_damage : float = 0.0
+func get_highest_potency() -> int:
+	var max_potency : int = 0
 	for dot_instance in data:
-		total_damage += dot_instance.calculate_damage(potency, mastery)
+		max_potency = maxi(max_potency, dot_instance.get_current_potency())
+	return max_potency
+
+func get_highest_mastery() -> int:
+	var max_mastery : int = 0
+	for dot_instance in data:
+		max_mastery = maxi(max_mastery, dot_instance.get_current_mastery())
+	return max_mastery
+
+func calculate_total_damage() -> int:
+	var total_damage : float = 0.0
+	var highest_potency : int = get_highest_potency()
+	var highest_mastery : int = get_highest_mastery()
+	
+	for dot_instance in data:
+		total_damage += dot_instance.calculate_damage(highest_potency, highest_mastery)
 	
 	return ceili(total_damage)
 
-func calculate_total_attrition(potency : int, mastery : int) -> int:
+func calculate_total_attrition() -> int:
 	var total_attrition : float = 0.0
+	var highest_potency : int = get_highest_potency()
+	var highest_mastery : int = get_highest_mastery()
+	
 	for dot_instance in data:
-		total_attrition += dot_instance.calculate_attrition(potency, mastery)
+		total_attrition += dot_instance.calculate_attrition(highest_potency, highest_mastery)
 	
 	return ceili(total_attrition)
