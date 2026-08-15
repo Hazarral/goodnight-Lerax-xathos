@@ -1,0 +1,120 @@
+extends Node
+
+var player_on_field : Array[Entity]
+var enemy_on_field: Array[Entity]
+var enemy_reinforcement : Array[Entity]
+var damage_event_queue : Array[DamageEvent]
+
+var turn_order : Array[Entity]
+var current_turn_index := 0
+
+const MAX_ALIVE_ENEMY_ON_FIELD := 5
+
+func reset() -> void:
+	player_on_field.clear()
+	enemy_on_field.clear()
+	damage_event_queue.clear()
+	turn_order.clear()
+	current_turn_index = 0
+
+func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]) -> void:
+	if player_side.is_empty() or enemy_side.is_empty():
+		push_error("Cannot initialize faction without %s side!" % ("player" if player_side.is_empty() else "enemy"))
+		return
+	
+	for entity in player_side:
+		# NOTE: For now, player can have as many entities on the field as they want
+		add_player_faction(entity)
+	
+	for entity in enemy_side:
+		if get_alive_targets(enemy_on_field).size() < MAX_ALIVE_ENEMY_ON_FIELD:
+			add_enemy_faction(entity)
+		else:
+			add_enemy_reinforcement(entity)
+	
+	build_turn_order()
+
+func build_turn_order() -> void:
+	turn_order.append_array(player_on_field)
+	turn_order.append_array(enemy_on_field)
+
+func add_player_faction(entity : Entity) -> void:
+	if not entity.is_player_faction:
+		push_error("Entity %s is not player faction! Cannot add to player faction list." % entity.template.entity_name)
+		return	
+	
+	player_on_field.append(entity)
+
+func add_enemy_faction(entity : Entity) -> void:
+	if entity.is_player_faction:
+		push_error("Entity %s is not enemy faction! Cannot add to enemy faction list." % entity.template.entity_name)
+		return	
+	
+	enemy_on_field.append(entity)
+
+func add_enemy_reinforcement(entity : Entity) -> void:
+	if entity.is_player_faction:
+		push_error("Entity %s is not enemy faction! Cannot add to enemy reinforcement list." % entity.template.entity_name)
+		return	
+	
+	enemy_reinforcement.append(entity)
+
+func add_reinforcement_to_field() -> void:
+	if get_alive_targets(enemy_on_field).size() > MAX_ALIVE_ENEMY_ON_FIELD:
+		push_error("There are too many (%d) enemies on field for reinforcement" % MAX_ALIVE_ENEMY_ON_FIELD)
+		return
+	
+	if not enemy_reinforcement.is_empty():
+		var entity : Entity = enemy_reinforcement.pop_front()
+		enemy_on_field.append(entity)
+		turn_order.append(entity)
+
+func get_next_actor() -> Entity:
+	var attempts := 0
+	while attempts < turn_order.size():
+		var entity = turn_order[current_turn_index]
+		current_turn_index = (current_turn_index + 1) % turn_order.size()
+		
+		if entity.current_state == Entity.State.ALIVE:
+			return entity
+		
+		attempts += 1
+	
+	return null  # everyone in turn_order is dead — combat should have ended already
+
+func advance_turn() -> void:
+	var entity := get_next_actor()
+	if not entity:
+		end_combat()
+	else:
+		entity.take_turn()
+
+func end_combat() -> void:
+	print("COMBAT ENDED! Everyone is dead somehow...")
+	reset()
+
+func register_damage_event(damage_event : DamageEvent) -> void:
+	damage_event_queue.append(damage_event)
+
+func register_multi_damage_event(multi_damage_event : MultiDamageEvent) -> void:
+	damage_event_queue.append_array(multi_damage_event.data)
+
+func inject_damage_event(damage_event : DamageEvent) -> void:
+	damage_event_queue.push_front(damage_event)
+
+func process_damage_event_queue() -> void:
+	while not damage_event_queue.is_empty():
+		var current_event : DamageEvent = damage_event_queue.pop_front()
+		
+		# This may inject but that is none of this script's business\
+		# current_event also gets ref = 0 when going out of scope
+		current_event.resolve()
+
+func get_on_field(is_player_faction : bool) -> Array[Entity]:
+	return player_on_field if is_player_faction else enemy_on_field
+
+func get_alive_targets(faction : Array[Entity]) -> Array[Entity]:
+	return (faction.filter(func(entity): return entity.current_state == Entity.State.ALIVE))
+
+func get_dead_targets(faction : Array[Entity]) -> Array[Entity]:
+	return (faction.filter(func(entity): return entity.current_state == Entity.State.DEAD))

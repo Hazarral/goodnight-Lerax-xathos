@@ -124,3 +124,7 @@ func die() -> void:
 	current_state = State.DEAD
 	current_hp = 0
 	print("Entity %s died" % template.entity_name)
+
+func take_turn() -> void:
+	## TODO: Implement the pipeline here
+	push_error("Entity.take_turn() is not implemented!")

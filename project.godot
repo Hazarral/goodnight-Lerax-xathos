@@ -18,6 +18,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 DamageAndDoT="*uid://deqp7rc5oau0"
+CombatSystem="*uid://d0rwm4hwxrgxw"
 
 [display]
 
