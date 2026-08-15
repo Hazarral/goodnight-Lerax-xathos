@@ -10,11 +10,7 @@ func _init(dot_instance : DoTInstance = null) -> void:
 func has_dot() -> bool:
 	return not data.is_empty()
 
-func add_dot_instance(dot_instance : DoTInstance) -> void:
-	if not dot_instance:
-		push_error("Cannot add null DoTInstance to DoTInstanceArray")
-		return
-	
+func add_dot_instance(dot_instance : DoTInstance) -> void:	
 	if dot_instance.damage_type == DamageAndDoT.DamageType.VOID:
 		push_error("Void is not a valid DoTInstance, use VoidInstance instead")
 		return

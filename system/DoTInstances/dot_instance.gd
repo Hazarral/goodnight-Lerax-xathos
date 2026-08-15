@@ -7,18 +7,18 @@ var stacks : int
 var base_damage : float
 var duration : int
 
-var caster : Entity
+var source : Entity
 var cached_potency : int
 var cached_mastery : int
 
 signal expired(dot_instance : DoTInstance)
 
-func _init(p_caster : Entity, p_target : Entity, p_damage_type : DamageAndDoT.DamageType, p_stacks : int, p_base_damage : float, p_duration : int) -> void:
+func _init(p_source : Entity, p_target : Entity, p_damage_type : DamageAndDoT.DamageType, p_stacks : int, p_base_damage : float, p_duration : int) -> void:
 	if p_damage_type == DamageAndDoT.DamageType.VOID:
 		push_error("Void is not a valid DoTInstance, use VoidInstance instead")
 		return
 	
-	caster = p_caster
+	source = p_source
 	target = p_target
 	damage_type = p_damage_type
 	stacks = p_stacks
@@ -28,9 +28,9 @@ func _init(p_caster : Entity, p_target : Entity, p_damage_type : DamageAndDoT.Da
 	update_cache()
 
 func update_cache() -> void:
-	if is_instance_valid(caster) and not caster.is_dead:
-		cached_potency = caster.current_potency
-		cached_mastery = caster.current_mastery
+	if is_instance_valid(source) and not source.is_dead:
+		cached_potency = source.current_potency
+		cached_mastery = source.current_mastery
 
 func get_current_potency() -> int:
 	update_cache()

@@ -60,8 +60,11 @@ func has_no_shields() -> bool:
 			return false
 	return true
 
-func has_dot(damage_type : DamageAndDoT.DamageType) -> bool:
+func has_dot(damage_type : DamageAndDoT.DoT) -> bool:
 	return active_dots[damage_type].has_dot()
+
+func has_void() -> bool:
+	return void_instance != null
 
 func apply_dot(dot_instance : DoTInstance) -> void:
 	active_dots[dot_instance.damage_type].add_dot_instance(dot_instance)
@@ -72,7 +75,7 @@ func apply_void(stacks : int, p_is_player_faction : bool) -> void:
 		push_error("Cannot apply Void to the same faction as caster!")
 		return
 	
-	if not void_instance:
+	if not has_void():
 		void_instance = VoidInstance.new(self, stacks, is_player_faction)
 	else:
 		void_instance.apply_stacks(stacks)
