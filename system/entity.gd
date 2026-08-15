@@ -8,9 +8,22 @@ var current_shields : PackedInt64Array
 var current_potency : int
 var current_mastery : int
 
-var is_dead := false
+enum State {
+	ALIVE,
+	DEAD
+}
 
-var active_dots : Dictionary[DamageAndDoT.DamageType, DoTInstanceArray] = {}
+## Used for targeting
+var current_state := State.ALIVE
+
+## This is for looting the corpse via consumption
+var is_looted := false
+
+## Either on player's side or not
+var is_player_faction := false
+
+var active_dots : Array[DoTInstanceArray] = []
+var void_instance : VoidInstance = null
 const STACKS_KEY := &"Stacks"
 const BASE_DAMAGE_KEY := &"Base damage"
 const TURNS_ELAPSED_KEY := &"Turns elapsed"
@@ -21,16 +34,19 @@ func _init(base_template : EntityTemplate, magnification : float = 1.0) -> void:
 	current_hp = floori(template.max_hp * magnification)
 	
 	setup_shields(magnification)
-	setup_dot_dictionary()
+	setup_active_dot_arrays()
 
 func setup_shields(magnification : float) -> void:
 	current_shields.resize(DamageAndDoT.ELEMENT_COUNT)
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		current_shields[i] = floori(template.max_shields[i] * magnification)
 
-func setup_dot_dictionary() -> void:
+func setup_active_dot_arrays() -> void:
 	for type in DamageAndDoT.DamageType.values():
 		active_dots[type] = DoTInstanceArray.new()
+	
+	# NOTE: VoidInstance will handle it!
+	active_dots.remove_at(DamageAndDoT.DamageType.VOID)
 
 func is_any_shield_breached() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
@@ -50,8 +66,19 @@ func has_dot(damage_type : DamageAndDoT.DamageType) -> bool:
 func apply_dot(dot_instance : DoTInstance) -> void:
 	active_dots[dot_instance.damage_type].add_dot_instance(dot_instance)
 
+func apply_void(stacks : int, p_is_player_faction : bool) -> void:
+	## NOTE: Technically is_plahyer_faction can never change, and must be opposite to this entity
+	if is_player_faction == p_is_player_faction:
+		push_error("Cannot apply Void to the same faction as caster!")
+		return
+	
+	if not void_instance:
+		void_instance = VoidInstance.new(self, stacks, is_player_faction)
+	else:
+		void_instance.apply_stacks(stacks)
+
 func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> void:
-	if is_dead:
+	if current_state == State.DEAD:
 		return
 		
 	# 1. Void Special Case
@@ -91,6 +118,6 @@ func reduce_hp(amount: int) -> void:
 		die()
 
 func die() -> void:
-	is_dead = true
+	current_state = State.DEAD
 	current_hp = 0
 	print("Entity %s died" % template.entity_name)
