@@ -13,7 +13,9 @@ const MAX_ALIVE_ENEMY_ON_FIELD := 5
 func reset() -> void:
 	player_on_field.clear()
 	enemy_on_field.clear()
+	enemy_reinforcement.clear()
 	damage_event_queue.clear()
+	
 	turn_order.clear()
 	current_turn_index = 0
 
@@ -60,7 +62,7 @@ func add_enemy_reinforcement(entity : Entity) -> void:
 	enemy_reinforcement.append(entity)
 
 func add_reinforcement_to_field() -> void:
-	if get_alive_targets(enemy_on_field).size() > MAX_ALIVE_ENEMY_ON_FIELD:
+	if get_alive_targets(enemy_on_field).size() >= MAX_ALIVE_ENEMY_ON_FIELD:
 		push_error("There are too many (%d) enemies on field for reinforcement" % MAX_ALIVE_ENEMY_ON_FIELD)
 		return
 	
@@ -90,7 +92,22 @@ func advance_turn() -> void:
 		entity.take_turn()
 
 func end_combat() -> void:
-	print("COMBAT ENDED! Everyone is dead somehow...")
+	print("COMBAT ENDED!")
+	
+	var dead_player_count := get_dead_targets(player_on_field).size() 
+	var dead_enemy_count := get_dead_targets(enemy_on_field).size()
+	var player_on_field_count := player_on_field.size()
+	var enemy_total_count := enemy_on_field.size() + enemy_reinforcement.size()
+	
+	if dead_player_count == player_on_field_count:
+		print("Combat lost! All player characters are dead.")	
+	elif dead_enemy_count == enemy_total_count:
+		print("Combat won! All enemies including reinforcements are dead.")	
+	elif dead_player_count + dead_enemy_count == player_on_field_count + enemy_total_count:
+		print("Everyone is dead somehow...At least Evernight won.")
+	else:
+		print("Combat ended for an unknown reason! Neither side is wiped, and not everyone is dead!")
+	
 	reset()
 
 func register_damage_event(damage_event : DamageEvent) -> void:
@@ -106,7 +123,7 @@ func process_damage_event_queue() -> void:
 	while not damage_event_queue.is_empty():
 		var current_event : DamageEvent = damage_event_queue.pop_front()
 		
-		# This may inject but that is none of this script's business\
+		# NOTE: This may inject during resolve() but that is none of this script's business\
 		# current_event also gets ref = 0 when going out of scope
 		current_event.resolve()
 
