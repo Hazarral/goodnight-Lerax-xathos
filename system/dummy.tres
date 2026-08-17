@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="EntityTemplate" format=3 uid="uid://puaky2d14ytj"]
+
+[ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://system/entity_template.gd" id="1_sk481"]
+
+[resource]
+script = ExtResource("1_sk481")
+entity_name = &"Dummy"
+max_hp = 1000
+max_shields = PackedInt64Array(500, 1000, 750, 0, 0, 0, 0, 0)
+metadata/_custom_type_script = "uid://nf30jicvf3ri"

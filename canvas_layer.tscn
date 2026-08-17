@@ -1,10 +1,15 @@
 [gd_scene format=3 uid="uid://dlf3dxxgh2m2y"]
 
 [ext_resource type="Script" uid="uid://dgtkqb8jw1gbj" path="res://test.gd" id="1_tg4cr"]
+[ext_resource type="LabelSettings" uid="uid://cyb00v76gm434" path="res://HP_and_shield_label.tres" id="2_0qrqu"]
 [ext_resource type="FontFile" uid="uid://d3semxt85025l" path="res://From the Stars Sb.otf" id="2_37rai"]
+[ext_resource type="PackedScene" uid="uid://bocl36msa1k3k" path="res://system/ui/shield_ui.tscn" id="2_mx0kw"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_mr26c"]
-font = ExtResource("2_37rai")
+[sub_resource type="Theme" id="Theme_jpyye"]
+default_font = ExtResource("2_37rai")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_orua6"]
+bg_color = Color(0.6871186, 0.2394191, 0.25674, 1)
 
 [node name="CanvasLayer" type="CanvasLayer" unique_id=104207414]
 script = ExtResource("1_tg4cr")
@@ -23,15 +28,60 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="Label" type="Label" parent="VBoxContainer" unique_id=1443494871]
+[node name="Shields" type="HBoxContainer" parent="VBoxContainer" unique_id=1622341306]
 layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="FireShield" parent="VBoxContainer/Shields" unique_id=1984936909 instance=ExtResource("2_mx0kw")]
+layout_mode = 2
+
+[node name="WaterShield" parent="VBoxContainer/Shields" unique_id=63942217 instance=ExtResource("2_mx0kw")]
+layout_mode = 2
+
+[node name="WindShield" parent="VBoxContainer/Shields" unique_id=214922995 instance=ExtResource("2_mx0kw")]
+layout_mode = 2
+
+[node name="HPBar" type="ProgressBar" parent="VBoxContainer" unique_id=598835160]
+custom_minimum_size = Vector2(100, 20)
+layout_mode = 2
+mouse_filter = 2
+theme = SubResource("Theme_jpyye")
+theme_override_styles/fill = SubResource("StyleBoxFlat_orua6")
+max_value = 1000.0
+step = 1.0
+value = 50.0
+show_percentage = false
+
+[node name="Label" type="Label" parent="VBoxContainer/HPBar" unique_id=1443494871]
+custom_minimum_size = Vector2(100, 20)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 text = "HP: 1000/1000"
-label_settings = SubResource("LabelSettings_mr26c")
+label_settings = ExtResource("2_0qrqu")
 horizontal_alignment = 1
 
-[node name="Button" type="Button" parent="VBoxContainer" unique_id=1703517866]
+[node name="AttackButtons" type="HBoxContainer" parent="VBoxContainer" unique_id=99204780]
+layout_mode = 2
+
+[node name="FireAttack" type="Button" parent="VBoxContainer/AttackButtons" unique_id=1703517866]
 custom_minimum_size = Vector2(100, 25)
 layout_mode = 2
-text = "Attack: 50 damage"
+text = "Attack: 0 Fire damage"
 
-[connection signal="pressed" from="VBoxContainer/Button" to="." method="_on_button_pressed"]
+[node name="WaterAttack" type="Button" parent="VBoxContainer/AttackButtons" unique_id=2107501839]
+custom_minimum_size = Vector2(100, 25)
+layout_mode = 2
+text = "Attack: 0 Water damage"
+
+[node name="VoidAttack" type="Button" parent="VBoxContainer/AttackButtons" unique_id=863194107]
+custom_minimum_size = Vector2(100, 25)
+layout_mode = 2
+text = "Attack: 0 Void damage"
+
+[connection signal="pressed" from="VBoxContainer/AttackButtons/FireAttack" to="." method="_on_fire_attack_pressed"]
+[connection signal="pressed" from="VBoxContainer/AttackButtons/WaterAttack" to="." method="_on_water_attack_pressed"]
+[connection signal="pressed" from="VBoxContainer/AttackButtons/VoidAttack" to="." method="_on_void_attack_pressed"]

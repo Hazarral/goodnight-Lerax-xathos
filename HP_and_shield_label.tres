@@ -1,0 +1,6 @@
+[gd_resource type="LabelSettings" format=3 uid="uid://cyb00v76gm434"]
+
+[ext_resource type="FontFile" uid="uid://d3semxt85025l" path="res://From the Stars Sb.otf" id="1_0ilsj"]
+
+[resource]
+font = ExtResource("1_0ilsj")
