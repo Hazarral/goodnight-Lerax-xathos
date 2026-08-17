@@ -49,6 +49,9 @@ const ELEMENT_COUNT := 8
 const MAX_DURATION := 10
 const MAX_BURN_TIERS := 5
 
+const VOID_MULTIPLIER_AGAINST_SHIELD := 1.0
+const PENALIZED_MULTIPLIER_AGAINST_SHIELD := 2.0
+
 # Damage types
 const FIRE := &"Fire"
 const WATER := &"Water"

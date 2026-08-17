@@ -62,10 +62,6 @@ func add_enemy_reinforcement(entity : Entity) -> void:
 	enemy_reinforcement.append(entity)
 
 func add_reinforcement_to_field() -> void:
-	if get_alive_targets(enemy_on_field).size() >= MAX_ALIVE_ENEMY_ON_FIELD:
-		push_error("There are too many (%d) enemies on field for reinforcement" % MAX_ALIVE_ENEMY_ON_FIELD)
-		return
-	
 	if not enemy_reinforcement.is_empty():
 		var entity : Entity = enemy_reinforcement.pop_front()
 		enemy_on_field.append(entity)

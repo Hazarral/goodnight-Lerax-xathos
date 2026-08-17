@@ -2,6 +2,7 @@ class_name Entity
 extends RefCounted
 
 var template : EntityTemplate
+var magnification : float
 
 var current_hp : int
 var current_shields : PackedInt64Array
@@ -29,24 +30,29 @@ const BASE_DAMAGE_KEY := &"Base damage"
 const TURNS_ELAPSED_KEY := &"Turns elapsed"
 
 ## Template will be duplicated
-func _init(base_template : EntityTemplate, magnification : float = 1.0) -> void:
-	template = base_template.duplicate(true)
-	current_hp = floori(template.max_hp * magnification)
+func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> void:
+	template = base_template
+	magnification = p_magnification
 	
-	setup_shields(magnification)
+	current_hp = get_max_hp()
+	setup_shields()
 	setup_active_dot_arrays()
 
-func setup_shields(magnification : float) -> void:
+func get_max_hp() -> int:
+	return floori(template.max_hp * magnification)
+
+func get_max_shield(i : int) -> int:
+	return floori(template.max_shields[i] * magnification)
+
+func setup_shields() -> void:
 	current_shields.resize(DamageAndDoT.ELEMENT_COUNT)
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
-		current_shields[i] = floori(template.max_shields[i] * magnification)
+		current_shields[i] = get_max_shield(i)
 
 func setup_active_dot_arrays() -> void:
-	for type in DamageAndDoT.DamageType.values():
-		active_dots[type] = DoTInstanceArray.new()
-	
-	# NOTE: VoidInstance will handle it!
-	active_dots.remove_at(DamageAndDoT.DamageType.VOID)
+	active_dots.resize(DamageAndDoT.ELEMENT_COUNT)
+	for i in range(DamageAndDoT.ELEMENT_COUNT):
+		active_dots[i] = DoTInstanceArray.new()
 
 func is_any_shield_breached() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
@@ -59,6 +65,14 @@ func has_no_shields() -> bool:
 		if template.max_shields[i] > 0:
 			return false
 	return true
+
+func get_active_shield_indices() -> Array[int]:
+	var arr : Array[int] = []
+	for i in range(DamageAndDoT.ELEMENT_COUNT):
+		if template.max_shields[i] > 0 and current_shields[i] > 0:
+			arr.append(i)
+	
+	return arr
 
 func has_dot(damage_type : DamageAndDoT.DoT) -> bool:
 	return active_dots[damage_type].has_dot()
@@ -82,6 +96,7 @@ func apply_void(stacks : int, p_is_player_faction : bool) -> void:
 
 func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> void:
 	if current_state == State.DEAD:
+		# NOTE: DoT will still tick later on, but not compute the damage.
 		return
 		
 	# 1. Void Special Case
@@ -89,9 +104,7 @@ func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> 
 		if is_any_shield_breached() or has_no_shields():
 			reduce_hp(incoming_damage)
 		else:
-			# TODO: Implement your loop here to find the lowest active shield
-			print("Void no breach logic not yet implemented.")
-			
+			shield_cascade(damage_type, incoming_damage)
 		return
 		
 	# 2. Resonance (Direct Match) Case
@@ -111,11 +124,77 @@ func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> 
 		return
 			
 	# 3. Wrong Element Case (50% Penalty, hits weakest shield)
-	# TODO: Implement your loop here to find the lowest active shield
-	# and apply floori(incoming_damage * 0.5) to it.
-	print("Wrong element logic not yet implemented.")
+	shield_cascade(damage_type, incoming_damage)
+
+func shield_cascade(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> void:
+	var multiplier_against_shield := (
+		DamageAndDoT.VOID_MULTIPLIER_AGAINST_SHIELD 
+		if damage_type == DamageAndDoT.DamageType.VOID 
+		else DamageAndDoT.PENALIZED_MULTIPLIER_AGAINST_SHIELD
+	)
+	
+	var remaining_damage : int = incoming_damage
+	var active_shield_indices : Array[int] = get_active_shield_indices()
+	
+	while remaining_damage > 0 and not active_shield_indices.is_empty():
+		## 1. Update X (active shield count) and M (minimum shield value) per iteration, need to recompute
+		var active_shield_count := active_shield_indices.size()
+		var minimum_shield_value := current_shields[active_shield_indices[0]]
+		for i in range(1, active_shield_count):
+			minimum_shield_value = mini(minimum_shield_value, current_shields[active_shield_indices[i]])
+		
+		# 2.0 penalized multiplier is guaranteed to be integer anyway
+		var cost : int = int(active_shield_count * minimum_shield_value * multiplier_against_shield)
+		
+		## 2. Distribute damage equally before refunding
+		for idx in active_shield_indices:
+			current_shields[idx] -= minimum_shield_value
+		
+		## 3. Enough damage to pay, no refund
+		if remaining_damage >= cost:
+			remaining_damage -= cost
+			active_shield_indices = get_active_shield_indices()
+			continue
+		
+		## 4. Refund
+		# Again, guaranteed to be integer
+		var deficit_damage : int = cost - remaining_damage
+		
+		# Integer Ceil: If we are short even 1 damage point, we must refund the full shield point.
+		# This perfectly mimics flooring the forward damage. The odd damage is absorbed and lost.
+		var deficit_shield : int = int((deficit_damage + multiplier_against_shield - 1) / multiplier_against_shield)
+		
+		# Sort in descending order with elemental ordering as tiebreker for actual refunding
+		active_shield_indices.sort_custom(func(a : int, b : int) -> bool:
+			# Value first
+			if current_shields[a] != current_shields[b]:
+				return current_shields[a] > current_shields[b]
+				
+			# Then elemental enum index
+			return a < b 
+		)
+		
+		for idx in active_shield_indices:
+			if deficit_shield <= 0:
+				break
+				
+			var refund : int = mini(minimum_shield_value, deficit_shield)
+			current_shields[idx] += refund
+			deficit_shield -= refund
+			
+		# The damage was insufficient to wipe the layer. 
+		# All remaining damage is fully absorbed by the shield, even if odd/inefficient.
+		remaining_damage = 0
+		break
+	
+	# What is left will go to HP, even if it is 0
+	if remaining_damage > 0:
+		reduce_hp(remaining_damage)
 
 func reduce_hp(amount: int) -> void:
+	if current_state == State.DEAD:
+		return
+	
 	current_hp = maxi(0, current_hp - amount)
 	if current_hp <= 0:
 		die()
