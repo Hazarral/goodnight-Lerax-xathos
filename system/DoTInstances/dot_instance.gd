@@ -13,7 +13,7 @@ var cached_mastery : int
 
 signal expired(dot_instance : DoTInstance)
 
-func _init(p_source : Entity, p_target : Entity, p_damage_type : DamageAndDoT.DamageType, p_stacks : int, p_base_damage : float, p_duration : int) -> void:
+func _init(p_source : Entity, p_target : Entity, p_damage_type : DamageAndDoT.DamageType, p_base_damage : float, p_stacks : int, p_duration : int) -> void:
 	if p_damage_type == DamageAndDoT.DamageType.VOID:
 		push_error("Void is not a valid DoTInstance, use VoidInstance instead")
 		return

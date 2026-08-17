@@ -8,6 +8,7 @@ var current_hp : int
 var current_shields : PackedInt64Array
 var current_potency : int
 var current_mastery : int
+var current_action_point : int
 
 enum State {
 	ALIVE,
@@ -83,14 +84,14 @@ func has_void() -> bool:
 func apply_dot(dot_instance : DoTInstance) -> void:
 	active_dots[dot_instance.damage_type].add_dot_instance(dot_instance)
 
-func apply_void(stacks : int, p_is_player_faction : bool) -> void:
+func apply_void(stacks : int, is_void_on_player_faction : bool) -> void:
 	## NOTE: Technically is_plahyer_faction can never change, and must be opposite to this entity
-	if is_player_faction == p_is_player_faction:
+	if is_player_faction == is_void_on_player_faction:
 		push_error("Cannot apply Void to the same faction as caster!")
 		return
 	
 	if not has_void():
-		void_instance = VoidInstance.new(self, stacks, is_player_faction)
+		void_instance = VoidInstance.new(self, stacks, is_void_on_player_faction)
 	else:
 		void_instance.apply_stacks(stacks)
 
@@ -117,6 +118,7 @@ func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> 
 			var surplus = incoming_damage - damage_to_shield
 			if surplus > 0:
 				reduce_hp(surplus)
+			
 			return
 		
 		# Shield is broken, matching damage goes straight to HP

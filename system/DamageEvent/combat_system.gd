@@ -131,3 +131,25 @@ func get_alive_targets(faction : Array[Entity]) -> Array[Entity]:
 
 func get_dead_targets(faction : Array[Entity]) -> Array[Entity]:
 	return (faction.filter(func(entity): return entity.current_state == Entity.State.DEAD))
+
+func get_valid_targets(faction_filter : ActionEvent.TargetFaction, state_filter : ActionEvent.TargetState) -> Array[Entity]:
+	var targets : Array[Entity] = []
+	match faction_filter:
+		ActionEvent.TargetFaction.PLAYER:
+			targets.append_array(player_on_field)
+		ActionEvent.TargetFaction.ENEMY:
+			targets.append_array(enemy_on_field)
+		ActionEvent.TargetFaction.ALL:
+			targets.append_array(player_on_field)
+			targets.append_array(enemy_on_field)
+	
+	match state_filter:
+		ActionEvent.TargetState.ALIVE:
+			return get_alive_targets(targets)
+		ActionEvent.TargetState.DEAD:
+			return get_dead_targets(targets)
+		ActionEvent.TargetState.ALL:
+			return targets
+	
+	## Guard that is unreachable anyway
+	return targets

@@ -13,3 +13,5 @@ extends Resource
 @export var max_hp : int
 
 @export var max_shields : PackedInt64Array
+
+@export var max_action_point : int
