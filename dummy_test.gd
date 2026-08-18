@@ -80,7 +80,7 @@ func _entity_state_text(entity : Entity, label : String) -> String:
 	]
 
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
-		if entity.template.max_shields[i] > 0:
+		if entity.max_shields[i] > 0:
 			var t_name = DamageAndDoT.DamageType.keys()[i]
 			text += "[%s: %d/%d] " % [t_name, entity.current_shields[i], entity.get_max_shield(i)]
 

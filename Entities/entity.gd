@@ -5,6 +5,7 @@ var template : EntityTemplate
 var magnification : float
 
 var current_hp : int
+var max_shields : PackedInt64Array
 var current_shields : PackedInt64Array
 var current_potency : int
 var current_mastery : int
@@ -44,7 +45,7 @@ func get_max_hp() -> int:
 	return floori(template.max_hp * magnification)
 
 func get_max_shield(i : int) -> int:
-	return floori(template.max_shields[i] * magnification)
+	return floori(max_shields[i] * magnification)
 
 func get_potency() -> int:
 	return floori(template.potency * magnification)
@@ -53,6 +54,7 @@ func get_mastery() -> int:
 	return floori(template.mastery * magnification)
 
 func setup_shields() -> void:
+	max_shields = template.get_packed_shields()
 	current_shields.resize(DamageAndDoT.ELEMENT_COUNT)
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		current_shields[i] = get_max_shield(i)
@@ -64,20 +66,20 @@ func setup_active_dot_arrays() -> void:
 
 func is_any_shield_breached() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
-		if template.max_shields[i] > 0 and current_shields[i] <= 0:
+		if max_shields[i] > 0 and current_shields[i] <= 0:
 			return true
 	return false
 
 func has_no_shields() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
-		if template.max_shields[i] > 0:
+		if max_shields[i] > 0:
 			return false
 	return true
 
 func get_active_shield_indices() -> Array[int]:
 	var arr : Array[int] = []
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
-		if template.max_shields[i] > 0 and current_shields[i] > 0:
+		if max_shields[i] > 0 and current_shields[i] > 0:
 			arr.append(i)
 	
 	return arr
@@ -119,7 +121,7 @@ func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> 
 		return
 		
 	# 2. Resonance (Direct Match) Case
-	if template.max_shields[damage_type] > 0:
+	if max_shields[damage_type] > 0:
 		var shield_hp = current_shields[damage_type]
 		if shield_hp > 0:
 			var damage_to_shield = mini(shield_hp, incoming_damage)
