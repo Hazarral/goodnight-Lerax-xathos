@@ -11,4 +11,4 @@ func resolve() -> void:
 		return
 	
 	for entity in targets:
-		entity.apply_void(stacks, source.is_player_faction)
+		entity.apply_void(stacks, source.is_player_faction())

@@ -41,21 +41,21 @@ func build_turn_order() -> void:
 	turn_order.append_array(enemy_on_field)
 
 func add_player_faction(entity : Entity) -> void:
-	if not entity.is_player_faction:
+	if not entity.is_player_faction():
 		push_error("Entity %s is not player faction! Cannot add to player faction list." % entity.template.entity_name)
 		return	
 	
 	player_on_field.append(entity)
 
 func add_enemy_faction(entity : Entity) -> void:
-	if entity.is_player_faction:
+	if entity.is_player_faction():
 		push_error("Entity %s is not enemy faction! Cannot add to enemy faction list." % entity.template.entity_name)
 		return	
 	
 	enemy_on_field.append(entity)
 
 func add_enemy_reinforcement(entity : Entity) -> void:
-	if entity.is_player_faction:
+	if entity.is_player_faction():
 		push_error("Entity %s is not enemy faction! Cannot add to enemy reinforcement list." % entity.template.entity_name)
 		return	
 	

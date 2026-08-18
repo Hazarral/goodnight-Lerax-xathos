@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Goodnight Lerax-xathos"
-run/main_scene="res://canvas_layer.tscn"
+run/main_scene="uid://dqf2byo4bml4b"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 

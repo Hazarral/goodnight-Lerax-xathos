@@ -21,9 +21,6 @@ var current_state := State.ALIVE
 ## This is for looting the corpse via consumption
 var is_looted := false
 
-## Either on player's side or not
-var is_player_faction := false
-
 var active_dots : Array[DoTInstanceArray] = []
 var void_instance : VoidInstance = null
 const STACKS_KEY := &"Stacks"
@@ -36,14 +33,24 @@ func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> voi
 	magnification = p_magnification
 	
 	current_hp = get_max_hp()
+	current_potency = get_potency()
+	current_mastery = get_mastery()
 	setup_shields()
 	setup_active_dot_arrays()
+	
+	current_state = State.ALIVE
 
 func get_max_hp() -> int:
 	return floori(template.max_hp * magnification)
 
 func get_max_shield(i : int) -> int:
 	return floori(template.max_shields[i] * magnification)
+
+func get_potency() -> int:
+	return floori(template.potency * magnification)
+
+func get_mastery() -> int:
+	return floori(template.mastery * magnification)
 
 func setup_shields() -> void:
 	current_shields.resize(DamageAndDoT.ELEMENT_COUNT)
@@ -81,12 +88,15 @@ func has_dot(damage_type : DamageAndDoT.DoT) -> bool:
 func has_void() -> bool:
 	return void_instance != null
 
+func is_player_faction() -> bool:
+	return template.is_player_faction
+
 func apply_dot(dot_instance : DoTInstance) -> void:
 	active_dots[dot_instance.damage_type].add_dot_instance(dot_instance)
 
 func apply_void(stacks : int, is_void_on_player_faction : bool) -> void:
 	## NOTE: Technically is_plahyer_faction can never change, and must be opposite to this entity
-	if is_player_faction == is_void_on_player_faction:
+	if is_player_faction() == is_void_on_player_faction:
 		push_error("Cannot apply Void to the same faction as caster!")
 		return
 	

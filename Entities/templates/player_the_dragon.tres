@@ -1,0 +1,15 @@
+[gd_resource type="Resource" script_class="EntityTemplate" format=3 uid="uid://rnqvtjaoiwov"]
+
+[ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://Entities/entity_template.gd" id="1_yubh2"]
+
+[resource]
+script = ExtResource("1_yubh2")
+entity_name = "Draechen"
+is_player_faction = true
+potency = 5
+mastery = 5
+max_hp = 500
+max_shields = PackedInt64Array(100, 0, 0, 0, 0, 0, 0, 0)
+max_action_point = 16
+action_point_regen_per_turn = 10
+metadata/_custom_type_script = "uid://nf30jicvf3ri"

@@ -13,6 +13,7 @@ extends Resource
 ## List of modular action this will perform in order, all ActionEvent have the same targeting specification as this Action
 @export var action_events : Array[ActionEvent]
 
-func cast() -> void:	
+func cast(source : Entity) -> void:	
 	for action_event in action_events:
+		action_event.source = source
 		action_event.resolve()
