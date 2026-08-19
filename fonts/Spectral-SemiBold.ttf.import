@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://d3semxt85025l"
-path="res://.godot/imported/From the Stars Sb.otf-462809e2875d9b57eb36a069bacb18f3.fontdata"
+uid="uid://cjl1ns0puwwep"
+path="res://.godot/imported/Spectral-SemiBold.ttf-4f2cc5701491d5dd755f3b2be66fbc3a.fontdata"
 
 [deps]
 
-source_file="res://From the Stars Sb.otf"
-dest_files=["res://.godot/imported/From the Stars Sb.otf-462809e2875d9b57eb36a069bacb18f3.fontdata"]
+source_file="res://fonts/Spectral-SemiBold.ttf"
+dest_files=["res://.godot/imported/Spectral-SemiBold.ttf-4f2cc5701491d5dd755f3b2be66fbc3a.fontdata"]
 
 [params]
 

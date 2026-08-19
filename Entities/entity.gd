@@ -24,6 +24,9 @@ var is_looted := false
 
 var active_dots : Array[DoTInstanceArray] = []
 var void_instance : VoidInstance = null
+
+var known_actions : Array[KnownAction]
+
 const STACKS_KEY := &"Stacks"
 const BASE_DAMAGE_KEY := &"Base damage"
 const TURNS_ELAPSED_KEY := &"Turns elapsed"
@@ -221,3 +224,19 @@ func die() -> void:
 func take_turn() -> void:
 	## TODO: Implement the pipeline here
 	push_error("Entity.take_turn() is not implemented!")
+
+func learn_action(action : Action) -> void:
+	known_actions.append(KnownAction.new(action, self))
+
+func get_known_actions() -> Array[KnownAction]:
+	return known_actions
+
+func tick_cooldowns() -> void:
+	for known_action in known_actions:
+		known_action.tick_cooldown()
+
+func cast_action(index : int) -> void:
+	var is_cast_success := known_actions[index].cast()
+	
+	if not is_cast_success:
+		push_error("Cannot cast %s due to cooldown or AP cost!" % known_actions[index].action.action_name)
