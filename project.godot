@@ -22,6 +22,8 @@ CombatSystem="*uid://d0rwm4hwxrgxw"
 
 [display]
 
+window/size/viewport_width=1600
+window/size/viewport_height=900
 window/stretch/mode="canvas_items"
 
 [physics]
@@ -30,4 +32,5 @@ window/stretch/mode="canvas_items"
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"

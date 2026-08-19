@@ -6,5 +6,7 @@
 script = ExtResource("1_7tdru")
 entity_name = "Dummy"
 max_hp = 1000
-max_shields = PackedInt64Array(100, 50, 0, 0, 0, 0, 200, 0)
+fire_shield = 100
+water_shield = 50
+earth_shield = 200
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
