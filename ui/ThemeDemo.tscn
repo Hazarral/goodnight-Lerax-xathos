@@ -243,7 +243,7 @@ theme_override_constants/separation = 8
 layout_mode = 2
 theme_type_variation = &"NameLabel"
 theme_override_font_sizes/font_size = 25
-text = "EntityName"
+text = "EntityName [STATE]"
 
 [node name="HPLine" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=2085227888]
 layout_mode = 2
