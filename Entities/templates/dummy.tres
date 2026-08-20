@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="EntityTemplate" format=3 uid="uid://cljlubsx6s2m"]
+
+[ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://Entities/entity_template.gd" id="1_7tdru"]
+
+[resource]
+script = ExtResource("1_7tdru")
+entity_name = "Dummy"
+max_hp = 1000
+fire_shield = 100
+water_shield = 50
+earth_shield = 200
+metadata/_custom_type_script = "uid://nf30jicvf3ri"

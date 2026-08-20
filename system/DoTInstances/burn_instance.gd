@@ -6,8 +6,8 @@ const MULTIPLIER_STEP := 0.5
 
 var turns_elapsed : int
 
-func _init(p_caster : Entity, p_target : Entity, p_damage_type : DamageAndDoT.DamageType, p_stacks : int, p_base_damage : float, p_duration : int) -> void:
-	super(p_caster, p_target, p_damage_type, p_stacks, p_base_damage, p_duration)
+func _init(p_caster : Entity, p_target : Entity, p_damage_type : DamageAndDoT.DamageType, p_base_damage : float, p_stacks : int, p_duration : int) -> void:
+	super(p_caster, p_target, p_damage_type, p_base_damage, p_stacks, p_duration)
 	turns_elapsed = 0
 
 func tick_down() -> void:

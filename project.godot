@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Goodnight Lerax-xathos"
-run/main_scene="res://canvas_layer.tscn"
+run/main_scene="uid://00irjgp2o0tn"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -22,7 +22,10 @@ CombatSystem="*uid://d0rwm4hwxrgxw"
 
 [display]
 
+window/size/viewport_width=1600
+window/size/viewport_height=900
 window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [physics]
 
@@ -30,4 +33,5 @@ window/stretch/mode="canvas_items"
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"

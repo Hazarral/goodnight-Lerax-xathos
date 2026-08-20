@@ -1,6 +1,12 @@
 [gd_scene format=3 uid="uid://dqf2byo4bml4b"]
 
 [ext_resource type="Script" uid="uid://d1q0w6maqifd" path="res://dummy_test.gd" id="1_he07f"]
+[ext_resource type="Resource" uid="uid://rnqvtjaoiwov" path="res://Entities/templates/player_the_dragon.tres" id="2_3ulkd"]
+[ext_resource type="Resource" uid="uid://cljlubsx6s2m" path="res://Entities/templates/dummy.tres" id="3_qa7kh"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="4_83auu"]
+[ext_resource type="Resource" uid="uid://7q5a667sefg0" path="res://system/Actions/spells/bite.tres" id="5_16oyx"]
+[ext_resource type="Resource" uid="uid://dnjqnigrx558j" path="res://system/Actions/spells/claw.tres" id="6_sxmrw"]
+[ext_resource type="Resource" uid="uid://bryq065munqlv" path="res://system/Actions/spells/fire_breath.tres" id="7_s8v5v"]
 
 [node name="DummyTest" type="Control" unique_id=1598675360]
 layout_mode = 3
@@ -10,3 +16,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_he07f")
+player_template = ExtResource("2_3ulkd")
+enemy_template = ExtResource("3_qa7kh")
+starting_actions = Array[ExtResource("4_83auu")]([ExtResource("5_16oyx"), ExtResource("6_sxmrw"), ExtResource("7_s8v5v")])

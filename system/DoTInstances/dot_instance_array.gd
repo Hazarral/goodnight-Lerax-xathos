@@ -37,6 +37,10 @@ func get_highest_mastery() -> int:
 		max_mastery = maxi(max_mastery, dot_instance.get_current_mastery())
 	return max_mastery
 
+func tick_down() -> void:
+	for dot_instance in data:
+		dot_instance.tick_down()
+
 func calculate_total_damage() -> int:
 	var total_damage : float = 0.0
 	var highest_potency : int = get_highest_potency()

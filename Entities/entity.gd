@@ -5,9 +5,11 @@ var template : EntityTemplate
 var magnification : float
 
 var current_hp : int
+var max_shields : PackedInt64Array
 var current_shields : PackedInt64Array
 var current_potency : int
 var current_mastery : int
+var current_action_point : int
 
 enum State {
 	ALIVE,
@@ -20,11 +22,11 @@ var current_state := State.ALIVE
 ## This is for looting the corpse via consumption
 var is_looted := false
 
-## Either on player's side or not
-var is_player_faction := false
-
 var active_dots : Array[DoTInstanceArray] = []
 var void_instance : VoidInstance = null
+
+var known_actions : Array[KnownAction]
+
 const STACKS_KEY := &"Stacks"
 const BASE_DAMAGE_KEY := &"Base damage"
 const TURNS_ELAPSED_KEY := &"Turns elapsed"
@@ -35,16 +37,27 @@ func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> voi
 	magnification = p_magnification
 	
 	current_hp = get_max_hp()
+	current_potency = get_potency()
+	current_mastery = get_mastery()
 	setup_shields()
 	setup_active_dot_arrays()
+	
+	current_state = State.ALIVE
 
 func get_max_hp() -> int:
 	return floori(template.max_hp * magnification)
 
 func get_max_shield(i : int) -> int:
-	return floori(template.max_shields[i] * magnification)
+	return floori(max_shields[i] * magnification)
+
+func get_potency() -> int:
+	return floori(template.potency * magnification)
+
+func get_mastery() -> int:
+	return floori(template.mastery * magnification)
 
 func setup_shields() -> void:
+	max_shields = template.get_packed_shields()
 	current_shields.resize(DamageAndDoT.ELEMENT_COUNT)
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		current_shields[i] = get_max_shield(i)
@@ -56,20 +69,20 @@ func setup_active_dot_arrays() -> void:
 
 func is_any_shield_breached() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
-		if template.max_shields[i] > 0 and current_shields[i] <= 0:
+		if max_shields[i] > 0 and current_shields[i] <= 0:
 			return true
 	return false
 
 func has_no_shields() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
-		if template.max_shields[i] > 0:
+		if max_shields[i] > 0:
 			return false
 	return true
 
 func get_active_shield_indices() -> Array[int]:
 	var arr : Array[int] = []
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
-		if template.max_shields[i] > 0 and current_shields[i] > 0:
+		if max_shields[i] > 0 and current_shields[i] > 0:
 			arr.append(i)
 	
 	return arr
@@ -80,17 +93,20 @@ func has_dot(damage_type : DamageAndDoT.DoT) -> bool:
 func has_void() -> bool:
 	return void_instance != null
 
+func is_player_faction() -> bool:
+	return template.is_player_faction
+
 func apply_dot(dot_instance : DoTInstance) -> void:
 	active_dots[dot_instance.damage_type].add_dot_instance(dot_instance)
 
-func apply_void(stacks : int, p_is_player_faction : bool) -> void:
+func apply_void(stacks : int, is_void_on_player_faction : bool) -> void:
 	## NOTE: Technically is_plahyer_faction can never change, and must be opposite to this entity
-	if is_player_faction == p_is_player_faction:
+	if is_player_faction() == is_void_on_player_faction:
 		push_error("Cannot apply Void to the same faction as caster!")
 		return
 	
 	if not has_void():
-		void_instance = VoidInstance.new(self, stacks, is_player_faction)
+		void_instance = VoidInstance.new(self, stacks, is_void_on_player_faction)
 	else:
 		void_instance.apply_stacks(stacks)
 
@@ -108,7 +124,7 @@ func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> 
 		return
 		
 	# 2. Resonance (Direct Match) Case
-	if template.max_shields[damage_type] > 0:
+	if max_shields[damage_type] > 0:
 		var shield_hp = current_shields[damage_type]
 		if shield_hp > 0:
 			var damage_to_shield = mini(shield_hp, incoming_damage)
@@ -117,6 +133,7 @@ func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> 
 			var surplus = incoming_damage - damage_to_shield
 			if surplus > 0:
 				reduce_hp(surplus)
+			
 			return
 		
 		# Shield is broken, matching damage goes straight to HP
@@ -207,3 +224,19 @@ func die() -> void:
 func take_turn() -> void:
 	## TODO: Implement the pipeline here
 	push_error("Entity.take_turn() is not implemented!")
+
+func learn_action(action : Action) -> void:
+	known_actions.append(KnownAction.new(action, self))
+
+func get_known_actions() -> Array[KnownAction]:
+	return known_actions
+
+func tick_cooldowns() -> void:
+	for known_action in known_actions:
+		known_action.tick_cooldown()
+
+func cast_action(index : int) -> void:
+	var is_cast_success := known_actions[index].cast()
+	
+	if not is_cast_success:
+		push_error("Cannot cast %s due to cooldown or AP cost!" % known_actions[index].action.action_name)

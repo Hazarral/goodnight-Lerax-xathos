@@ -2,13 +2,13 @@
 
 importer="font_data_dynamic"
 type="FontFile"
-uid="uid://d3semxt85025l"
-path="res://.godot/imported/From the Stars Sb.otf-462809e2875d9b57eb36a069bacb18f3.fontdata"
+uid="uid://bhcacfnjacp18"
+path="res://.godot/imported/JetBrainsMono-Regular.ttf-e1c4e1d22b8ac683c9c2806d9bd3f76d.fontdata"
 
 [deps]
 
-source_file="res://From the Stars Sb.otf"
-dest_files=["res://.godot/imported/From the Stars Sb.otf-462809e2875d9b57eb36a069bacb18f3.fontdata"]
+source_file="res://fonts/JetBrainsMono-Regular.ttf"
+dest_files=["res://.godot/imported/JetBrainsMono-Regular.ttf-e1c4e1d22b8ac683c9c2806d9bd3f76d.fontdata"]
 
 [params]
 
@@ -18,7 +18,7 @@ generate_mipmaps=false
 disable_embedded_bitmaps=true
 multichannel_signed_distance_field=false
 msdf_pixel_range=8
-msdf_size=48
+msdf_size=18
 allow_system_fallback=true
 force_autohinter=false
 modulate_color_glyphs=false
@@ -30,7 +30,14 @@ Fallbacks=null
 fallbacks=[]
 Compress=null
 compress=true
-preload=[]
+preload=[{
+"chars": [],
+"glyphs": [],
+"name": "New Configuration",
+"size": Vector2i(16, 0),
+&"variation_embolden": 0.0,
+&"variation_opentype": {}
+}]
 language_support={}
 script_support={}
 opentype_features={}
