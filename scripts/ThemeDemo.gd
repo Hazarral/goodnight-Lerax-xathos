@@ -1,7 +1,8 @@
 class_name CombatUI
 extends Control
 
-@onready var inspector_title_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow/Title
+@onready var inspector_name_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow/Name
+@onready var inspector_state_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow/State
 @onready var inspector_hp_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/HPLine
 @onready var inspector_void_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidRow/VoidHBox/VoidDesc
 @onready var inspector_shield_grid := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid
@@ -11,7 +12,7 @@ extends Control
 
 const SHIELD_CHIP_SCENE : PackedScene = preload("res://ui/shield_chip.tscn")
 
-const INSPECTOR_TITLE_TEXT := "%s [%s]"
+const INSPECTOR_STATE_TEXT := "[%s]"
 const STATE_ALIVE_TEXT := "ALIVE"
 const STATE_DEAD_TEXT := "DEAD"
 
@@ -33,8 +34,8 @@ func _on_entity_info_card_pressed(entity : Entity) -> void:
 	for child in inspector_shield_grid.get_children():
 		child.queue_free()
 	
-	inspector_title_label.text = INSPECTOR_TITLE_TEXT % [
-		entity.template.entity_name,
+	inspector_name_label.text = entity.template.entity_name
+	inspector_state_label.text = INSPECTOR_STATE_TEXT % [
 		STATE_ALIVE_TEXT if entity.current_state == Entity.State.ALIVE else STATE_DEAD_TEXT
 	]
 	
