@@ -58,6 +58,20 @@ text = "YOUR RUNES"
 layout_mode = 2
 theme_override_constants/separation = 6
 
+[node name="Frame_Root_Topbar_TopbarRow_RuneRow#MinorFilled" type="Panel" parent="Frame/Root/Topbar/TopbarRow/RuneBlock/RuneRow" unique_id=993209229]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+theme_type_variation = &"VoidBadge"
+
+[node name="Frame_Root_Topbar_TopbarRow_RuneRow#Major" type="Panel" parent="Frame/Root/Topbar/TopbarRow/RuneBlock/RuneRow" unique_id=726353962]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+theme_type_variation = &"VoidBadge"
+
+[node name="Frame_Root_Topbar_TopbarRow_RuneRow#MinorEmpty" type="Panel" parent="Frame/Root/Topbar/TopbarRow/RuneBlock/RuneRow" unique_id=280559388]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+
 [node name="Lifespan" type="VBoxContainer" parent="Frame/Root/Topbar/TopbarRow" unique_id=490550482]
 layout_mode = 2
 alignment = 2
@@ -305,24 +319,24 @@ layout_mode = 2
 theme_type_variation = &"MonoLabel"
 text = "×2 stacks · escalates each turn · unremovable"
 
-[node name="LogPanel" type="PanelContainer" parent="Frame/Root" unique_id=1704950605]
-custom_minimum_size = Vector2(0, 140)
+[node name="LogPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=305808400]
+custom_minimum_size = Vector2(500, 0)
 layout_mode = 2
 
-[node name="LogCol" type="VBoxContainer" parent="Frame/Root/LogPanel" unique_id=1497202888]
+[node name="LogCol" type="VBoxContainer" parent="Frame/Root/MidRow/LogPanel" unique_id=503906168]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="Header" type="Label" parent="Frame/Root/LogPanel/LogCol" unique_id=486398600]
+[node name="Header" type="Label" parent="Frame/Root/MidRow/LogPanel/LogCol" unique_id=924506501]
 layout_mode = 2
 theme_type_variation = &"HeaderLabel"
 text = "COMBAT LOG"
 
-[node name="LogScroll" type="ScrollContainer" parent="Frame/Root/LogPanel/LogCol" unique_id=2026836907]
+[node name="LogScroll" type="ScrollContainer" parent="Frame/Root/MidRow/LogPanel/LogCol" unique_id=1670322581]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="LogText" type="RichTextLabel" parent="Frame/Root/LogPanel/LogCol/LogScroll" unique_id=1349011349]
+[node name="LogText" type="RichTextLabel" parent="Frame/Root/MidRow/LogPanel/LogCol/LogScroll" unique_id=1338062492]
 layout_mode = 2
 size_flags_horizontal = 3
 bbcode_enabled = true
@@ -333,7 +347,7 @@ Enemy 1's [b]Void[/b] escalates — [color=#ff006a]41 dmg[/color] direct to HP."
 fit_content = true
 
 [node name="ActionBar" type="PanelContainer" parent="Frame/Root" unique_id=962627189]
-custom_minimum_size = Vector2(0, 150)
+custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 theme_type_variation = &"RaisedPanel"
 
@@ -411,17 +425,3 @@ layout_mode = 2
 disabled = true
 text = "Fire Breath                    2 AP · CD 2"
 alignment = 0
-
-[node name="Frame_Root_Topbar_TopbarRow_RuneRow#MinorFilled" type="Panel" parent="." unique_id=993209229]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 0
-theme_type_variation = &"VoidBadge"
-
-[node name="Frame_Root_Topbar_TopbarRow_RuneRow#Major" type="Panel" parent="." unique_id=726353962]
-custom_minimum_size = Vector2(28, 28)
-layout_mode = 0
-theme_type_variation = &"VoidBadge"
-
-[node name="Frame_Root_Topbar_TopbarRow_RuneRow#MinorEmpty" type="Panel" parent="." unique_id=280559388]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 0
