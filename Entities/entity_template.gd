@@ -25,8 +25,9 @@ extends Resource
 @export var earth_shield : int = 0
 @export var ice_shield : int = 0
 
+@export_group("Action Points")
 @export var max_action_point : int
-
+@export var starting_action_point : int
 @export var action_point_regen_per_turn : int
 
 # The compiler creates the optimized array ONCE when spawning.

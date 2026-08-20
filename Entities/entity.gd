@@ -41,6 +41,7 @@ func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> voi
 	current_mastery = get_mastery()
 	setup_shields()
 	setup_active_dot_arrays()
+	setup_action_points()
 	
 	current_state = State.ALIVE
 
@@ -67,11 +68,30 @@ func setup_active_dot_arrays() -> void:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		active_dots[i] = DoTInstanceArray.new()
 
+func setup_action_points() -> void:
+	current_action_point = template.starting_action_point
+
+func recover_ap() -> void:
+	current_action_point = mini(current_action_point + template.action_point_regen_per_turn, template.max_action_point)
+
+func has_shield(damage_type : DamageAndDoT.DamageType) -> bool:
+	if damage_type == DamageAndDoT.DamageType.VOID:
+		return false
+	
+	return max_shields[damage_type] > 0
+
 func is_any_shield_breached() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		if max_shields[i] > 0 and current_shields[i] <= 0:
 			return true
 	return false
+
+func are_all_shields_breached() -> bool:
+	for i in range(DamageAndDoT.ELEMENT_COUNT):
+		if max_shields[i] > 0 and current_shields[i] > 0:
+			return false
+	
+	return true
 
 func has_no_shields() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
@@ -110,7 +130,19 @@ func apply_void(stacks : int, is_void_on_player_faction : bool) -> void:
 	else:
 		void_instance.apply_stacks(stacks)
 
-func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> void:
+func get_attrition(damage_type : DamageAndDoT.DamageType) -> int:
+	if not (has_shield(damage_type) and active_dots[damage_type].has_dot()):
+		return 0
+	
+	return active_dots[damage_type].calculate_total_attrition()
+
+func get_damage_per_turn(damage_over_time : DamageAndDoT.DoT) -> int:
+	return active_dots[damage_over_time].calculate_total_damage()
+
+func get_void_stacks() -> int:
+	return void_instance.stacks
+
+func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -> void:
 	if current_state == State.DEAD:
 		# NOTE: DoT will still tick later on, but not compute the damage.
 		return
@@ -143,7 +175,7 @@ func take_damage(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> 
 	# 3. Wrong Element Case (50% Penalty, hits weakest shield)
 	shield_cascade(damage_type, incoming_damage)
 
-func shield_cascade(damage_type: DamageAndDoT.DamageType, incoming_damage: int) -> void:
+func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -> void:
 	var multiplier_against_shield := (
 		DamageAndDoT.VOID_MULTIPLIER_AGAINST_SHIELD 
 		if damage_type == DamageAndDoT.DamageType.VOID 
@@ -208,7 +240,7 @@ func shield_cascade(damage_type: DamageAndDoT.DamageType, incoming_damage: int) 
 	if remaining_damage > 0:
 		reduce_hp(remaining_damage)
 
-func reduce_hp(amount: int) -> void:
+func reduce_hp(amount : int) -> void:
 	if current_state == State.DEAD:
 		return
 	

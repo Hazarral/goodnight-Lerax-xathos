@@ -1,5 +1,6 @@
 extends Node
 
+var draechen_player : Player
 var player_on_field : Array[Entity]
 var enemy_on_field: Array[Entity]
 var enemy_reinforcement : Array[Entity]

@@ -2,8 +2,21 @@
 
 [ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_theme"]
 [ext_resource type="Script" uid="uid://drekl6s4imnxo" path="res://scripts/ThemeDemo.gd" id="2_script"]
+[ext_resource type="PackedScene" uid="uid://b7ck28lb4j2kb" path="res://ui/entity_info_card.tscn" id="3_0kx1g"]
+[ext_resource type="Resource" uid="uid://rnqvtjaoiwov" path="res://Entities/templates/player_the_dragon.tres" id="4_0ncfs"]
+[ext_resource type="Resource" uid="uid://cljlubsx6s2m" path="res://Entities/templates/dummy.tres" id="5_rqx7n"]
+[ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://Entities/entity_template.gd" id="6_rqx7n"]
 
-[node name="ThemeDemo" type="Control" unique_id=1152202896]
+[sub_resource type="Resource" id="Resource_jpyye"]
+script = ExtResource("6_rqx7n")
+entity_name = "Enemy"
+max_hp = 450
+max_action_point = 4
+starting_action_point = 2
+action_point_regen_per_turn = 2
+metadata/_custom_type_script = "uid://nf30jicvf3ri"
+
+[node name="CombatUI" type="Control" unique_id=1152202896]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -44,49 +57,26 @@ theme_type_variation = &"RaisedPanel"
 
 [node name="TopbarRow" type="HBoxContainer" parent="Frame/Root/Topbar" unique_id=1682216773]
 layout_mode = 2
-
-[node name="RuneBlock" type="VBoxContainer" parent="Frame/Root/Topbar/TopbarRow" unique_id=103463900]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="RuneLabel" type="Label" parent="Frame/Root/Topbar/TopbarRow/RuneBlock" unique_id=338347400]
-layout_mode = 2
-theme_type_variation = &"HeaderLabel"
-text = "YOUR RUNES"
-
-[node name="RuneRow" type="HBoxContainer" parent="Frame/Root/Topbar/TopbarRow/RuneBlock" unique_id=1126556384]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="Frame_Root_Topbar_TopbarRow_RuneRow#MinorFilled" type="Panel" parent="Frame/Root/Topbar/TopbarRow/RuneBlock/RuneRow" unique_id=993209229]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
-theme_type_variation = &"VoidBadge"
-
-[node name="Frame_Root_Topbar_TopbarRow_RuneRow#Major" type="Panel" parent="Frame/Root/Topbar/TopbarRow/RuneBlock/RuneRow" unique_id=726353962]
-custom_minimum_size = Vector2(28, 28)
-layout_mode = 2
-theme_type_variation = &"VoidBadge"
-
-[node name="Frame_Root_Topbar_TopbarRow_RuneRow#MinorEmpty" type="Panel" parent="Frame/Root/Topbar/TopbarRow/RuneBlock/RuneRow" unique_id=280559388]
-custom_minimum_size = Vector2(24, 24)
-layout_mode = 2
+size_flags_horizontal = 4
 
 [node name="Lifespan" type="VBoxContainer" parent="Frame/Root/Topbar/TopbarRow" unique_id=490550482]
 layout_mode = 2
+size_flags_horizontal = 4
 alignment = 2
 
 [node name="LifespanLabel" type="Label" parent="Frame/Root/Topbar/TopbarRow/Lifespan" unique_id=948809278]
 layout_mode = 2
 theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 20
 text = "TIME TO LIVE"
 horizontal_alignment = 2
 
 [node name="LifespanValue" type="Label" parent="Frame/Root/Topbar/TopbarRow/Lifespan" unique_id=756974847]
 layout_mode = 2
 theme_type_variation = &"EmberLabel"
+theme_override_font_sizes/font_size = 15
 text = "4 days, 6 hrs"
-horizontal_alignment = 2
+horizontal_alignment = 1
 
 [node name="MidRow" type="HBoxContainer" parent="Frame/Root" unique_id=1641242799]
 custom_minimum_size = Vector2(0, 340)
@@ -95,7 +85,7 @@ size_flags_vertical = 3
 theme_override_constants/separation = 1
 
 [node name="PartyPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=751493100]
-custom_minimum_size = Vector2(190, 0)
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 
 [node name="PartyCol" type="VBoxContainer" parent="Frame/Root/MidRow/PartyPanel" unique_id=343256538]
@@ -116,65 +106,43 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="DraechenCard" type="PanelContainer" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=1100325536]
+[node name="DraechenCard" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=965488876 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-theme_type_variation = &"CardPanelSelected"
+entity_template = ExtResource("4_0ncfs")
+debug_mode = true
 
-[node name="CardVBox" type="VBoxContainer" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList/DraechenCard" unique_id=142329042]
+[node name="DraechenCard2" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=502443463 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-theme_override_constants/separation = 4
+entity_template = ExtResource("5_rqx7n")
+debug_mode = true
 
-[node name="NameRow" type="HBoxContainer" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList/DraechenCard/CardVBox" unique_id=867405814]
+[node name="DraechenCard3" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=1206723340 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
+entity_template = ExtResource("5_rqx7n")
+debug_mode = true
 
-[node name="Name" type="Label" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList/DraechenCard/CardVBox/NameRow" unique_id=1206504137]
+[node name="DraechenCard4" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=1384339139 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_type_variation = &"NameLabel"
-text = "Draechen"
+entity_template = ExtResource("5_rqx7n")
+debug_mode = true
 
-[node name="Tag" type="Label" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList/DraechenCard/CardVBox/NameRow" unique_id=2056676800]
+[node name="DraechenCard5" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=888012913 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-theme_type_variation = &"MonoLabel"
-text = "YOU"
+entity_template = ExtResource("5_rqx7n")
+debug_mode = true
 
-[node name="HPLabel" type="Label" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList/DraechenCard/CardVBox" unique_id=629201377]
+[node name="DraechenCard6" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=1763709758 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-theme_type_variation = &"MonoLabel"
-text = "1000 / 1000"
+entity_template = ExtResource("5_rqx7n")
+debug_mode = true
 
-[node name="HPBar" type="ProgressBar" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList/DraechenCard/CardVBox" unique_id=1828835357]
-custom_minimum_size = Vector2(0, 4)
+[node name="DraechenCard7" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=1240896212 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-value = 100.0
-show_percentage = false
-
-[node name="RenskCard" type="PanelContainer" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=1234047672]
-layout_mode = 2
-theme_type_variation = &"CardPanel"
-
-[node name="CardVBox" type="VBoxContainer" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList/RenskCard" unique_id=950303217]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="Name" type="Label" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList/RenskCard/CardVBox" unique_id=1735240940]
-layout_mode = 2
-theme_type_variation = &"NameLabel"
-text = "Ally — Rensk"
-
-[node name="HPLabel" type="Label" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList/RenskCard/CardVBox" unique_id=1502387060]
-layout_mode = 2
-theme_type_variation = &"MonoLabel"
-text = "200 / 200"
-
-[node name="HPBar" type="ProgressBar" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList/RenskCard/CardVBox" unique_id=570821241]
-custom_minimum_size = Vector2(0, 4)
-layout_mode = 2
-value = 100.0
-show_percentage = false
+entity_template = ExtResource("5_rqx7n")
+debug_mode = true
 
 [node name="EnemyPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=1248686686]
-custom_minimum_size = Vector2(190, 0)
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 
 [node name="EnemyCol" type="VBoxContainer" parent="Frame/Root/MidRow/EnemyPanel" unique_id=1304019750]
@@ -195,39 +163,55 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="Enemy1Card" type="PanelContainer" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=1267895249]
+[node name="EntityInfoCard" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=401955633 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-theme_type_variation = &"CardPanel"
+entity_template = SubResource("Resource_jpyye")
+debug_mode = true
 
-[node name="CardVBox" type="VBoxContainer" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList/Enemy1Card" unique_id=1716847402]
+[node name="EntityInfoCard2" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=152037170 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-theme_override_constants/separation = 4
+entity_template = SubResource("Resource_jpyye")
+debug_mode = true
 
-[node name="Name" type="Label" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList/Enemy1Card/CardVBox" unique_id=432225173]
+[node name="EntityInfoCard3" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=905936562 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-theme_type_variation = &"NameLabel"
-text = "Enemy 1"
+entity_template = SubResource("Resource_jpyye")
+debug_mode = true
 
-[node name="HPLabel" type="Label" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList/Enemy1Card/CardVBox" unique_id=740333449]
+[node name="EntityInfoCard4" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=642253361 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-theme_type_variation = &"MonoLabel"
-text = "560 / 560"
+entity_template = SubResource("Resource_jpyye")
+debug_mode = true
 
-[node name="HPBar" type="ProgressBar" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList/Enemy1Card/CardVBox" unique_id=1657679124]
-custom_minimum_size = Vector2(0, 4)
+[node name="EntityInfoCard5" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=1703581906 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-value = 100.0
-show_percentage = false
+entity_template = SubResource("Resource_jpyye")
+debug_mode = true
 
-[node name="VoidTag" type="Panel" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList/Enemy1Card/CardVBox" unique_id=831593568]
-custom_minimum_size = Vector2(0, 16)
+[node name="EntityInfoCard6" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=21975318 instance=ExtResource("3_0kx1g")]
 layout_mode = 2
-theme_type_variation = &"VoidBadge"
+entity_template = SubResource("Resource_jpyye")
+debug_mode = true
 
-[node name="VoidTagLabel" type="Label" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList/Enemy1Card/CardVBox/VoidTag" unique_id=313714019]
-layout_mode = 0
-theme_type_variation = &"VoidLabel"
-text = "Void ×5"
+[node name="EntityInfoCard7" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=275632093 instance=ExtResource("3_0kx1g")]
+layout_mode = 2
+entity_template = SubResource("Resource_jpyye")
+debug_mode = true
+
+[node name="EntityInfoCard8" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=2095662474 instance=ExtResource("3_0kx1g")]
+layout_mode = 2
+entity_template = SubResource("Resource_jpyye")
+debug_mode = true
+
+[node name="EntityInfoCard9" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=1666602993 instance=ExtResource("3_0kx1g")]
+layout_mode = 2
+entity_template = SubResource("Resource_jpyye")
+debug_mode = true
+
+[node name="EntityInfoCard10" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=868583127 instance=ExtResource("3_0kx1g")]
+layout_mode = 2
+entity_template = SubResource("Resource_jpyye")
+debug_mode = true
 
 [node name="InspectorPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=1009306168]
 layout_mode = 2
@@ -258,48 +242,20 @@ theme_override_constants/separation = 8
 [node name="Title" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow" unique_id=1370425191]
 layout_mode = 2
 theme_type_variation = &"NameLabel"
-text = "Draechen"
+theme_override_font_sizes/font_size = 25
+text = "EntityName"
 
 [node name="HPLine" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=2085227888]
 layout_mode = 2
 theme_type_variation = &"MonoLabelBright"
-text = "HP  1000 / 1000"
+theme_override_font_sizes/font_size = 15
+text = "HP: X / X"
 
 [node name="ShieldGrid" type="GridContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1719927465]
 layout_mode = 2
 theme_override_constants/h_separation = 6
 theme_override_constants/v_separation = 6
 columns = 4
-
-[node name="FireChip" type="PanelContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid" unique_id=1882213277]
-layout_mode = 2
-theme_type_variation = &"CardPanel"
-
-[node name="ChipVBox" type="VBoxContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid/FireChip" unique_id=2009735321]
-layout_mode = 2
-theme_override_constants/separation = 2
-
-[node name="ElLabel" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid/FireChip/ChipVBox" unique_id=1947388466]
-layout_mode = 2
-theme_type_variation = &"HeaderLabel"
-text = "FIRE"
-
-[node name="ValLabel" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid/FireChip/ChipVBox" unique_id=585640995]
-layout_mode = 2
-theme_type_variation = &"MonoLabelBright"
-text = "30 / 100"
-
-[node name="ShieldBar" type="ProgressBar" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid/FireChip/ChipVBox" unique_id=1611807177]
-custom_minimum_size = Vector2(0, 3)
-layout_mode = 2
-theme_type_variation = &"ShieldBar"
-value = 30.0
-show_percentage = false
-
-[node name="AttrLabel" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid/FireChip/ChipVBox" unique_id=148553768]
-layout_mode = 2
-theme_type_variation = &"EmberLabel"
-text = "−20 attrition"
 
 [node name="VoidRow" type="PanelContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=547875691]
 layout_mode = 2
@@ -320,7 +276,7 @@ theme_type_variation = &"MonoLabel"
 text = "×2 stacks · escalates each turn · unremovable"
 
 [node name="LogPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=305808400]
-custom_minimum_size = Vector2(500, 0)
+custom_minimum_size = Vector2(400, 0)
 layout_mode = 2
 
 [node name="LogCol" type="VBoxContainer" parent="Frame/Root/MidRow/LogPanel" unique_id=503906168]
