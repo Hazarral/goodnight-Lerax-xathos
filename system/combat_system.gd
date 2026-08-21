@@ -20,6 +20,27 @@ func reset() -> void:
 	turn_order.clear()
 	current_turn_index = 0
 
+func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side_templates : Array[EntityTemplate]) -> void:
+	## 1. Ensure clean data before anything
+	reset()
+	
+	## 2. Create the entities in memory. We will ignore magnification for now
+	## NOTE: Implement magnification later
+	var player_side : Array[Entity] = []
+	var enemy_side : Array[Entity] = []
+	
+	for template in player_side_templates:
+		player_side.append(Entity.new(template))
+	
+	for template in enemy_side_templates:
+		enemy_side.append(Entity.new(template))
+	
+	## 3. Now we initialize factions for proper storage
+	initialize_factions(player_side, enemy_side)
+	
+	## 4. Turn order is finalized
+	build_turn_order()
+
 func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]) -> void:
 	if player_side.is_empty() or enemy_side.is_empty():
 		push_error("Cannot initialize faction without %s side!" % ("player" if player_side.is_empty() else "enemy"))
@@ -34,8 +55,6 @@ func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]
 			add_enemy_faction(entity)
 		else:
 			add_enemy_reinforcement(entity)
-	
-	build_turn_order()
 
 func build_turn_order() -> void:
 	turn_order.append_array(player_on_field)
@@ -43,14 +62,14 @@ func build_turn_order() -> void:
 
 func add_player_faction(entity : Entity) -> void:
 	if not entity.is_player_faction():
-		push_error("Entity %s is not player faction! Cannot add to player faction list." % entity.template.entity_name)
+		push_error("Entity %s is not player faction! Check the template list passed into initialize_combat() — this entity's template has is_player_faction=false but was routed to player_side." % entity.template.entity_name)
 		return	
 	
 	player_on_field.append(entity)
 
 func add_enemy_faction(entity : Entity) -> void:
 	if entity.is_player_faction():
-		push_error("Entity %s is not enemy faction! Cannot add to enemy faction list." % entity.template.entity_name)
+		push_error("Entity %s is not enemy faction! Check the template list passed into initialize_combat() — this entity's template has is_player_faction=true but was routed to enemy_side." % entity.template.entity_name)
 		return	
 	
 	enemy_on_field.append(entity)
@@ -132,6 +151,9 @@ func get_alive_targets(faction : Array[Entity]) -> Array[Entity]:
 
 func get_dead_targets(faction : Array[Entity]) -> Array[Entity]:
 	return (faction.filter(func(entity): return entity.current_state == Entity.State.DEAD))
+
+func get_enemy_reinforcement_count() -> int:
+	return enemy_reinforcement.size()
 
 func get_valid_targets(faction_filter : ActionEvent.TargetFaction, state_filter : ActionEvent.TargetState) -> Array[Entity]:
 	var targets : Array[Entity] = []

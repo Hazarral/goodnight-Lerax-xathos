@@ -41,12 +41,7 @@ const SHIELD_STATE_TEXT := "%s"
 const AP_TEXT := "> %d / %d AP (+%d / turn)"
 const HP_TEXT := "> %d / %d HP"
 
-signal card_pressed(entity : Entity)
-
-func _init(p_entity : Entity = null) -> void:
-	if p_entity:
-		setup(p_entity)
-		render()
+signal card_pressed(card : EntityInfoCard)
 
 func _ready() -> void:
 	if debug_mode:
@@ -59,19 +54,28 @@ func _ready() -> void:
 		print("Debug mode rendered")
 		return
 	
-	print("Non-debug mode not implemented")
+	print("Using non-debug mode")
 
 func setup(p_entity : Entity, p_show_ap : bool = true) -> void:
 	entity = p_entity
 	hp_bar.max_value = entity.get_max_hp()
 	show_ap = p_show_ap
 
+func set_selected(value: bool) -> void:
+	is_selected = value
+	_refresh_visual_state()
+
 func set_active_turn(is_active : bool) -> void:
 	is_active_turn = is_active
-	_set_active_color()
+	_refresh_visual_state()
 
-func _set_active_color() -> void:
-	var color := Color("#d97757")
+func _refresh_visual_state() -> void:
+	var color := Color.WHITE
+	if is_selected:
+		color = Color("#d97757")
+	if is_active_turn:
+		color = Color("7ba17eff")  # or a distinct color if you want them visually different
+	
 	name_label.modulate = color
 	state_label.modulate = color
 	shield_status_label.modulate = color
@@ -127,9 +131,4 @@ func _on_mouse_exited() -> void:
 
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		emit_signal("card_pressed", entity)
-
-func _on_card_pressed(entity: Entity) -> void:
-	print("Pressed on entity info card of %s" % entity.template.entity_name)
-	is_selected = true
-	_set_active_color()
+		emit_signal("card_pressed", self)

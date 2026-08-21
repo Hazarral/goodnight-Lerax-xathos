@@ -2,15 +2,27 @@
 
 [ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_theme"]
 [ext_resource type="Script" uid="uid://drekl6s4imnxo" path="res://scripts/ThemeDemo.gd" id="2_script"]
-[ext_resource type="PackedScene" uid="uid://b7ck28lb4j2kb" path="res://ui/entity_info_card.tscn" id="3_0kx1g"]
 [ext_resource type="Resource" uid="uid://rnqvtjaoiwov" path="res://Entities/templates/player_the_dragon.tres" id="4_0ncfs"]
-[ext_resource type="Resource" uid="uid://cljlubsx6s2m" path="res://Entities/templates/dummy.tres" id="5_rqx7n"]
 [ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://Entities/entity_template.gd" id="6_rqx7n"]
 
-[sub_resource type="Resource" id="Resource_jpyye"]
+[sub_resource type="Resource" id="Resource_1482v"]
 script = ExtResource("6_rqx7n")
-entity_name = "Enemy"
-max_hp = 450
+entity_name = "Ally1"
+is_player_faction = true
+potency = 10
+mastery = 10
+max_hp = 200
+max_action_point = 5
+starting_action_point = 2
+action_point_regen_per_turn = 5
+metadata/_custom_type_script = "uid://nf30jicvf3ri"
+
+[sub_resource type="Resource" id="Resource_rqx7n"]
+script = ExtResource("6_rqx7n")
+entity_name = "Enemy1"
+max_hp = 200
+fire_shield = 100
+wind_shield = 50
 max_action_point = 4
 starting_action_point = 2
 action_point_regen_per_turn = 2
@@ -25,6 +37,8 @@ grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_theme")
 script = ExtResource("2_script")
+player_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("4_0ncfs"), SubResource("Resource_1482v")])
+enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([SubResource("Resource_rqx7n")])
 
 [node name="Background" type="ColorRect" parent="." unique_id=1394668291]
 layout_mode = 1
@@ -106,41 +120,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="DraechenCard" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=965488876 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = ExtResource("4_0ncfs")
-debug_mode = true
-
-[node name="DraechenCard2" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=502443463 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = ExtResource("5_rqx7n")
-debug_mode = true
-
-[node name="DraechenCard3" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=1206723340 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = ExtResource("5_rqx7n")
-debug_mode = true
-
-[node name="DraechenCard4" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=1384339139 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = ExtResource("5_rqx7n")
-debug_mode = true
-
-[node name="DraechenCard5" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=888012913 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = ExtResource("5_rqx7n")
-debug_mode = true
-
-[node name="DraechenCard6" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=1763709758 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = ExtResource("5_rqx7n")
-debug_mode = true
-
-[node name="DraechenCard7" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList" unique_id=1240896212 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = ExtResource("5_rqx7n")
-debug_mode = true
-
 [node name="EnemyPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=1248686686]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
@@ -162,56 +141,6 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
-
-[node name="EntityInfoCard" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=401955633 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = SubResource("Resource_jpyye")
-debug_mode = true
-
-[node name="EntityInfoCard2" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=152037170 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = SubResource("Resource_jpyye")
-debug_mode = true
-
-[node name="EntityInfoCard3" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=905936562 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = SubResource("Resource_jpyye")
-debug_mode = true
-
-[node name="EntityInfoCard4" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=642253361 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = SubResource("Resource_jpyye")
-debug_mode = true
-
-[node name="EntityInfoCard5" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=1703581906 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = SubResource("Resource_jpyye")
-debug_mode = true
-
-[node name="EntityInfoCard6" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=21975318 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = SubResource("Resource_jpyye")
-debug_mode = true
-
-[node name="EntityInfoCard7" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=275632093 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = SubResource("Resource_jpyye")
-debug_mode = true
-
-[node name="EntityInfoCard8" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=2095662474 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = SubResource("Resource_jpyye")
-debug_mode = true
-
-[node name="EntityInfoCard9" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=1666602993 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = SubResource("Resource_jpyye")
-debug_mode = true
-
-[node name="EntityInfoCard10" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList" unique_id=868583127 instance=ExtResource("3_0kx1g")]
-layout_mode = 2
-entity_template = SubResource("Resource_jpyye")
-debug_mode = true
 
 [node name="InspectorPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=1009306168]
 layout_mode = 2

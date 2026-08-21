@@ -18,5 +18,6 @@ physical_shield = 100
 earth_shield = 100
 ice_shield = 100
 max_action_point = 16
+starting_action_point = 10
 action_point_regen_per_turn = 10
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
