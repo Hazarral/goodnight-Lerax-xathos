@@ -41,6 +41,16 @@ func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side
 	## 4. Turn order is finalized
 	build_turn_order()
 
+func initialize_encounter(player_party : Array[Entity], enemy_side_templates : Array[EntityTemplate]) -> void:
+	## NOTE: Use this for the actual game, because player party is persistent
+	reset()
+	var enemy_side : Array[Entity] = []
+	for template in enemy_side_templates:
+		enemy_side.append(Entity.new(template))
+	
+	initialize_factions(player_party, enemy_side)
+	build_turn_order()
+
 func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]) -> void:
 	if player_side.is_empty() or enemy_side.is_empty():
 		push_error("Cannot initialize faction without %s side!" % ("player" if player_side.is_empty() else "enemy"))

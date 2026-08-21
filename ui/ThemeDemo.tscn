@@ -3,6 +3,7 @@
 [ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_theme"]
 [ext_resource type="Script" uid="uid://drekl6s4imnxo" path="res://scripts/ThemeDemo.gd" id="2_script"]
 [ext_resource type="Resource" uid="uid://rnqvtjaoiwov" path="res://Entities/templates/player_the_dragon.tres" id="4_0ncfs"]
+[ext_resource type="Resource" uid="uid://cljlubsx6s2m" path="res://Entities/templates/dummy.tres" id="5_rqx7n"]
 [ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://Entities/entity_template.gd" id="6_rqx7n"]
 
 [sub_resource type="Resource" id="Resource_1482v"]
@@ -17,17 +18,6 @@ starting_action_point = 2
 action_point_regen_per_turn = 5
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
-[sub_resource type="Resource" id="Resource_rqx7n"]
-script = ExtResource("6_rqx7n")
-entity_name = "Enemy1"
-max_hp = 200
-fire_shield = 100
-wind_shield = 50
-max_action_point = 4
-starting_action_point = 2
-action_point_regen_per_turn = 2
-metadata/_custom_type_script = "uid://nf30jicvf3ri"
-
 [node name="CombatUI" type="Control" unique_id=1152202896]
 layout_mode = 3
 anchors_preset = 15
@@ -38,7 +28,7 @@ grow_vertical = 2
 theme = ExtResource("1_theme")
 script = ExtResource("2_script")
 player_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("4_0ncfs"), SubResource("Resource_1482v")])
-enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([SubResource("Resource_rqx7n")])
+enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("5_rqx7n"), ExtResource("5_rqx7n"), ExtResource("5_rqx7n"), ExtResource("5_rqx7n"), ExtResource("5_rqx7n"), ExtResource("5_rqx7n"), ExtResource("5_rqx7n")])
 
 [node name="Background" type="ColorRect" parent="." unique_id=1394668291]
 layout_mode = 1
@@ -191,6 +181,18 @@ theme_type_variation = &"MonoLabelBright"
 theme_override_font_sizes/font_size = 20
 text = "HP: X / X"
 
+[node name="PotencyLine" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1413498432]
+layout_mode = 2
+theme_type_variation = &"MonoLabelBright"
+theme_override_font_sizes/font_size = 20
+text = "Potency: X (+y)"
+
+[node name="MasteryLine" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1555152114]
+layout_mode = 2
+theme_type_variation = &"MonoLabelBright"
+theme_override_font_sizes/font_size = 20
+text = "Mastery: X (+y)"
+
 [node name="ShieldGrid" type="GridContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1719927465]
 layout_mode = 2
 theme_override_constants/h_separation = 6
@@ -251,72 +253,99 @@ theme_type_variation = &"RaisedPanel"
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="PortraitCell" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow" unique_id=439180414]
-custom_minimum_size = Vector2(200, 0)
+[node name="MarginContainer" type="MarginContainer" parent="Frame/Root/ActionBar/ActionBarRow" unique_id=2008118611]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
-[node name="PortraitRow" type="HBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/PortraitCell" unique_id=1045276409]
+[node name="HBoxContainer" type="HBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer" unique_id=1911302802]
 layout_mode = 2
-theme_override_constants/separation = 8
 
-[node name="PortraitBox" type="PanelContainer" parent="Frame/Root/ActionBar/ActionBarRow/PortraitCell/PortraitRow" unique_id=1042154836]
-custom_minimum_size = Vector2(44, 44)
+[node name="PortraitBox" type="PanelContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/HBoxContainer" unique_id=1042154836]
+custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 theme_type_variation = &"CardPanel"
 
-[node name="PortraitName" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/PortraitCell/PortraitRow" unique_id=1805180956]
+[node name="PortraitCell" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/HBoxContainer" unique_id=439180414]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+
+[node name="PortraitName" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/HBoxContainer/PortraitCell" unique_id=1805180956]
+layout_mode = 2
+size_flags_horizontal = 0
 theme_type_variation = &"NameLabel"
 text = "Draechen"
 
-[node name="APBlock" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/PortraitCell" unique_id=2033460896]
+[node name="PotencyLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/HBoxContainer/PortraitCell" unique_id=1535197067]
 layout_mode = 2
-theme_override_constants/separation = 6
+size_flags_horizontal = 2
+theme_type_variation = &"NameLabel"
+text = "Potency: X"
 
-[node name="APLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/PortraitCell/APBlock" unique_id=235915660]
+[node name="MasteryLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/HBoxContainer/PortraitCell" unique_id=547243573]
 layout_mode = 2
-theme_type_variation = &"HeaderLabel"
-text = "ACTION POINTS  6 / 10"
-
-[node name="APPips" type="HBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/PortraitCell/APBlock" unique_id=1945833613]
-layout_mode = 2
-theme_override_constants/separation = 3
-
-[node name="Pip1" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/PortraitCell/APBlock/APPips" unique_id=1801259963]
-custom_minimum_size = Vector2(11, 11)
-layout_mode = 2
-theme_type_variation = &"VoidBadge"
-
-[node name="Pip2" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/PortraitCell/APBlock/APPips" unique_id=1977587349]
-custom_minimum_size = Vector2(11, 11)
-layout_mode = 2
-theme_type_variation = &"VoidBadge"
-
-[node name="Pip3" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/PortraitCell/APBlock/APPips" unique_id=1614814622]
-custom_minimum_size = Vector2(11, 11)
-layout_mode = 2
+size_flags_horizontal = 0
+theme_type_variation = &"NameLabel"
+text = "Mastery: X"
 
 [node name="ActionScroll" type="ScrollContainer" parent="Frame/Root/ActionBar/ActionBarRow" unique_id=717535405]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ActionList" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll" unique_id=1095021438]
+[node name="VBoxContainer" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll" unique_id=1496125928]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="APBlock" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer" unique_id=2033460896]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="APLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock" unique_id=235915660]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "ACTION POINTS  6 / 10"
+
+[node name="APPips" type="HBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock" unique_id=1945833613]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="Pip1" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1801259963]
+custom_minimum_size = Vector2(11, 11)
+layout_mode = 2
+theme_type_variation = &"VoidBadge"
+
+[node name="Pip2" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1977587349]
+custom_minimum_size = Vector2(11, 11)
+layout_mode = 2
+theme_type_variation = &"VoidBadge"
+
+[node name="Pip3" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1614814622]
+custom_minimum_size = Vector2(11, 11)
+layout_mode = 2
+
+[node name="ActionList" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer" unique_id=1095021438]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
-[node name="BiteBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/ActionList" unique_id=1150993094]
+[node name="BiteBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=1150993094]
 layout_mode = 2
 text = "Bite                                    2 AP"
 alignment = 0
 
-[node name="ClawBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/ActionList" unique_id=2020932971]
+[node name="ClawBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=2020932971]
 layout_mode = 2
 text = "Claw                                    2 AP"
 alignment = 0
 
-[node name="FireBreathBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/ActionList" unique_id=1984824394]
+[node name="FireBreathBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=1984824394]
 layout_mode = 2
 disabled = true
 text = "Fire Breath                    2 AP · CD 2"

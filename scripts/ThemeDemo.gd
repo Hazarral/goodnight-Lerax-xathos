@@ -14,6 +14,9 @@ const ENEMY_ROSTER_HAS_REINFORCEMENT_HEADER := "ENEMIES (REINFORCEMENT: %d)"
 @onready var inspector_name_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow/Name
 @onready var inspector_state_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow/State
 @onready var inspector_hp_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/HPLine
+@onready var inspector_potency_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/PotencyLine
+@onready var inspector_mastery_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/MasteryLine
+
 @onready var inspector_void_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidRow/VoidHBox/VoidDesc
 @onready var inspector_shield_grid := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid
 
@@ -28,8 +31,12 @@ const STATE_ALIVE_TEXT := "ALIVE"
 const STATE_DEAD_TEXT := "DEAD"
 
 const INSPECTOR_HP_TEXT := "HP: %d / %d"
+const INSPECTOR_POTENCY_TEXT := "Potency: %d"
+const INSPECTOR_MASTERY_TEXT := "Mastery: %d"
 
 var selected_card : EntityInfoCard = null
+
+@onready var action_list := $Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList
 
 ## This script is a THEME REFERENCE, not final combat UI wiring.
 ## It shows the pattern for turning a KnownAction (action + cooldown_remaining)
@@ -49,6 +56,8 @@ func _init_inspector() -> void:
 	inspector_name_label.text = ""
 	inspector_state_label.text = ""
 	inspector_hp_label.text = ""
+	inspector_potency_label.text = ""
+	inspector_mastery_label.text = ""
 
 func _combat_mockup() -> void:
 	CombatSystem.initialize_combat(player_faction_entity_templates, enemy_faction_entity_templates)
@@ -78,6 +87,9 @@ func _on_entity_info_card_pressed(card : EntityInfoCard) -> void:
 		entity.current_hp,
 		entity.get_max_hp()
 	]
+	
+	inspector_potency_label.text = INSPECTOR_POTENCY_TEXT % entity.get_potency()
+	inspector_mastery_label.text = INSPECTOR_MASTERY_TEXT % entity.get_mastery()
 	
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		var damage_type := i as DamageAndDoT.DamageType
@@ -112,10 +124,8 @@ func _update_enemy_roster_header() -> void:
 ## for k in draechen.known_actions:
 ##     _add_action_button(k.action, k.is_ready(), k.cooldown_remaining)
 func _demo_populate_action_list() -> void:
-	var list := $Frame/Root/ActionBar/ActionBarRow/ActionScroll/ActionList
-
 	# Clear any placeholder buttons left in the scene, rebuild from "data"
-	for child in list.get_children():
+	for child in action_list.get_children():
 		child.queue_free()
 
 	# Fake KnownAction-shaped data for the demo; replace with real known_actions
@@ -134,8 +144,6 @@ func _demo_populate_action_list() -> void:
 
 
 func _add_action_button(action_name: String, ap_cost: int, cooldown_remaining: int) -> void:
-	var list := $Frame/Root/ActionBar/ActionBarRow/ActionScroll/ActionList
-
 	var btn := Button.new()
 	btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	btn.custom_minimum_size = Vector2(0, 34)
@@ -148,8 +156,7 @@ func _add_action_button(action_name: String, ap_cost: int, cooldown_remaining: i
 
 	btn.text = label_text
 	btn.pressed.connect(func(): _on_action_pressed(action_name))
-	list.add_child(btn)
-
+	action_list.add_child(btn)
 
 func _on_action_pressed(action_name: String) -> void:
 	print("Cast pressed: ", action_name)
