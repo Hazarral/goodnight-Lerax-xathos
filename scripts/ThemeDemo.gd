@@ -36,6 +36,16 @@ const INSPECTOR_MASTERY_TEXT := "Mastery: %d"
 
 var selected_card : EntityInfoCard = null
 
+## 2. Action bar
+@onready var current_entity_name_label := $Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell/PortraitName
+@onready var current_entity_potency_label := $Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell/PotencyLabel
+@onready var current_entity_mastery_label := $Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell/MasteryLabel
+
+@onready var end_turn_button := $Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton
+
+const CURRENT_ENTITY_POTENCY_TEXT := "Potency: %d"
+const CURRENT_ENTITY_MASTERY_TEXT := "Mastery: %d"
+
 @onready var action_list := $Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList
 
 ## This script is a THEME REFERENCE, not final combat UI wiring.
@@ -46,6 +56,7 @@ var selected_card : EntityInfoCard = null
 func _ready() -> void:
 	_demo_populate_action_list()
 	_combat_mockup()
+	_refresh_turn_ui()
 	
 func _init_inspector() -> void:
 	for entity_card : EntityInfoCard in player_roster_list.get_children():
@@ -65,18 +76,33 @@ func _combat_mockup() -> void:
 	_add_roster_for_faction(false)
 	_update_enemy_roster_header()
 	_init_inspector()
+	
+	CombatSystem.advance_turn()
+
+func _update_action_bar() -> void:
+	var current_entity := CombatSystem.get_current_actor()
+	if not current_entity:
+		return
+	
+	current_entity_name_label.text = current_entity.template.entity_name
+	current_entity_potency_label.text = CURRENT_ENTITY_POTENCY_TEXT % current_entity.get_potency()
+	current_entity_mastery_label.text = CURRENT_ENTITY_MASTERY_TEXT % current_entity.get_mastery()
 
 func _on_entity_info_card_pressed(card : EntityInfoCard) -> void:
 	## Only 1 card is read at a time
-	if selected_card:
-		selected_card.set_selected(false)
+	_clear_selected_card()
 	card.set_selected(true)
 	selected_card = card
 	
+	_set_inspector(card.entity)
+
+func _clear_selected_card() -> void:
+	if selected_card:
+		selected_card.set_selected(false)
+
+func _set_inspector(entity : Entity) -> void:
 	for child in inspector_shield_grid.get_children():
 		child.queue_free()
-	
-	var entity := card.entity
 	
 	inspector_name_label.text = entity.template.entity_name
 	inspector_state_label.text = INSPECTOR_STATE_TEXT % [
@@ -161,3 +187,20 @@ func _add_action_button(action_name: String, ap_cost: int, cooldown_remaining: i
 func _on_action_pressed(action_name: String) -> void:
 	print("Cast pressed: ", action_name)
 	# Real implementation calls KnownAction.cast() here and re-renders on result.
+
+func _refresh_active_turn_cards() -> void:
+	var current_entity := CombatSystem.get_current_actor()
+	for card : EntityInfoCard in player_roster_list.get_children():
+		card.set_active_turn(card.entity == current_entity)
+	for card : EntityInfoCard in enemy_roster_list.get_children():
+		card.set_active_turn(card.entity == current_entity)
+
+func _refresh_turn_ui() -> void:
+	_clear_selected_card()
+	_update_action_bar()
+	_refresh_active_turn_cards()
+	_set_inspector(CombatSystem.get_current_actor())
+
+func _on_end_turn_button_pressed() -> void:
+	CombatSystem.end_current_actor_turn()
+	_refresh_turn_ui()

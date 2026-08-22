@@ -64,6 +64,18 @@ border_width_right = 1
 border_width_bottom = 1
 border_color = Color(0.196, 0.18, 0.216, 1)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card_active_turn"]
+content_margin_left = 9.0
+content_margin_top = 8.0
+content_margin_right = 9.0
+content_margin_bottom = 8.0
+bg_color = Color(0.118, 0.106, 0.129, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(1, 0, 0.4157, 1)
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card_selected"]
 content_margin_left = 9.0
 content_margin_top = 8.0
@@ -149,7 +161,11 @@ Button/styles/focus = SubResource("StyleBoxFlat_btn_hover")
 Button/styles/hover = SubResource("StyleBoxFlat_btn_hover")
 Button/styles/normal = SubResource("StyleBoxFlat_btn_normal")
 Button/styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+CardPanel/base_type = &"PanelContainer"
 CardPanel/styles/panel = SubResource("StyleBoxFlat_card")
+CardPanelActiveTurn/base_type = &"PanelContainer"
+CardPanelActiveTurn/styles/panel = SubResource("StyleBoxFlat_card_active_turn")
+CardPanelSelected/base_type = &"PanelContainer"
 CardPanelSelected/styles/panel = SubResource("StyleBoxFlat_card_selected")
 CooldownBadge/styles/panel = SubResource("StyleBoxFlat_badge_cooldown")
 EmberLabel/colors/font_color = Color(0.851, 0.467, 0.341, 1)

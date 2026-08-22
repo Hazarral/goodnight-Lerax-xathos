@@ -1,6 +1,6 @@
 extends Node
 
-var draechen_player : Player
+var draechen_player : Entity
 var player_on_field : Array[Entity]
 var enemy_on_field: Array[Entity]
 var enemy_reinforcement : Array[Entity]
@@ -8,6 +8,7 @@ var damage_event_queue : Array[DamageEvent]
 
 var turn_order : Array[Entity]
 var current_turn_index := 0
+var current_actor : Entity = null
 
 const MAX_ALIVE_ENEMY_ON_FIELD := 5
 
@@ -58,6 +59,7 @@ func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]
 	
 	for entity in player_side:
 		# NOTE: For now, player can have as many entities on the field as they want
+		draechen_player = player_side.front()
 		add_player_faction(entity)
 	
 	for entity in enemy_side:
@@ -116,29 +118,37 @@ func get_next_actor() -> Entity:
 
 func advance_turn() -> void:
 	## NOTE: This is the official way to advance turn and get next entity in the turn order
-	var entity := get_next_actor()
-	if not entity:
+	if is_combat_over():
 		end_combat()
-	else:
-		entity.take_turn()
+		return
+	
+	current_actor = get_next_actor()
+	if not current_actor:
+		end_combat()
+		return
+	
+	current_actor.begin_turn()
+
+func on_turn_finished() -> void:
+	## NOTE: This is meant to be called by entities to report having finished their turn
+	advance_turn()
+
+func get_current_actor() -> Entity:
+	return current_actor
+
+func end_current_actor_turn() -> void:
+	current_actor.end_turn()
+
+func is_combat_over() -> bool:
+	if draechen_player.current_state == Entity.State.DEAD:
+		return true
+	if get_dead_targets(enemy_on_field).size() == enemy_on_field.size():
+		return true
+	
+	return false
 
 func end_combat() -> void:
 	print("COMBAT ENDED!")
-	
-	var dead_player_count := get_dead_targets(player_on_field).size() 
-	var dead_enemy_count := get_dead_targets(enemy_on_field).size()
-	var player_on_field_count := player_on_field.size()
-	var enemy_total_count := enemy_on_field.size() + enemy_reinforcement.size()
-	
-	if dead_player_count == player_on_field_count:
-		print("Combat lost! All player characters are dead.")	
-	elif dead_enemy_count == enemy_total_count:
-		print("Combat won! All enemies including reinforcements are dead.")	
-	elif dead_player_count + dead_enemy_count == player_on_field_count + enemy_total_count:
-		print("Everyone is dead somehow...At least Evernight won.")
-	else:
-		print("Combat ended for an unknown reason! Neither side is wiped, and not everyone is dead!")
-	
 	reset()
 
 func register_damage_event(damage_event : DamageEvent) -> void:

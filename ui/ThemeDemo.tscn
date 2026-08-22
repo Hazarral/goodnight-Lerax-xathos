@@ -3,7 +3,6 @@
 [ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_theme"]
 [ext_resource type="Script" uid="uid://drekl6s4imnxo" path="res://scripts/ThemeDemo.gd" id="2_script"]
 [ext_resource type="Resource" uid="uid://rnqvtjaoiwov" path="res://Entities/templates/player_the_dragon.tres" id="4_0ncfs"]
-[ext_resource type="Resource" uid="uid://cljlubsx6s2m" path="res://Entities/templates/dummy.tres" id="5_rqx7n"]
 [ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://Entities/entity_template.gd" id="6_rqx7n"]
 
 [sub_resource type="Resource" id="Resource_1482v"]
@@ -18,6 +17,32 @@ starting_action_point = 2
 action_point_regen_per_turn = 5
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
+[sub_resource type="Resource" id="Resource_0ncfs"]
+script = ExtResource("6_rqx7n")
+entity_name = "Enemy1"
+potency = 5
+mastery = 5
+max_hp = 200
+fire_shield = 100
+poison_shield = 200
+max_action_point = 5
+starting_action_point = 2
+action_point_regen_per_turn = 2
+metadata/_custom_type_script = "uid://nf30jicvf3ri"
+
+[sub_resource type="Resource" id="Resource_rqx7n"]
+script = ExtResource("6_rqx7n")
+entity_name = "Enemy2"
+mastery = 5
+max_hp = 1000
+water_shield = 100
+wind_shield = 100
+physical_shield = 100
+max_action_point = 5
+starting_action_point = 5
+action_point_regen_per_turn = 1
+metadata/_custom_type_script = "uid://nf30jicvf3ri"
+
 [node name="CombatUI" type="Control" unique_id=1152202896]
 layout_mode = 3
 anchors_preset = 15
@@ -28,7 +53,7 @@ grow_vertical = 2
 theme = ExtResource("1_theme")
 script = ExtResource("2_script")
 player_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("4_0ncfs"), SubResource("Resource_1482v")])
-enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("5_rqx7n"), ExtResource("5_rqx7n"), ExtResource("5_rqx7n"), ExtResource("5_rqx7n"), ExtResource("5_rqx7n"), ExtResource("5_rqx7n"), ExtResource("5_rqx7n")])
+enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([SubResource("Resource_0ncfs"), SubResource("Resource_rqx7n")])
 
 [node name="Background" type="ColorRect" parent="." unique_id=1394668291]
 layout_mode = 1
@@ -298,7 +323,7 @@ size_flags_horizontal = 0
 theme_type_variation = &"NameLabel"
 text = "Mastery: X"
 
-[node name="Button" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer" unique_id=1837436638]
+[node name="EndTurnButton" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer" unique_id=1837436638]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 theme = ExtResource("1_theme")
@@ -359,3 +384,5 @@ layout_mode = 2
 disabled = true
 text = "Fire Breath                    2 AP · CD 2"
 alignment = 0
+
+[connection signal="pressed" from="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]

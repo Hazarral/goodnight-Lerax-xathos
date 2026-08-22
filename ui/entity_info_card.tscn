@@ -6,17 +6,25 @@
 [node name="EntityInfoCard" type="PanelContainer" unique_id=965488876]
 custom_minimum_size = Vector2(200, 0)
 theme = ExtResource("1_8c1fr")
+theme_type_variation = &"CardPanel"
 script = ExtResource("1_kxon6")
 
-[node name="CardVBox" type="VBoxContainer" parent="." unique_id=372258090]
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1261085350]
+layout_mode = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="CardVBox" type="VBoxContainer" parent="MarginContainer" unique_id=372258090]
 layout_mode = 2
 theme_override_constants/separation = 4
 alignment = 1
 
-[node name="NameRow" type="HBoxContainer" parent="CardVBox" unique_id=1110649666]
+[node name="NameRow" type="HBoxContainer" parent="MarginContainer/CardVBox" unique_id=1110649666]
 layout_mode = 2
 
-[node name="Name" type="Label" parent="CardVBox/NameRow" unique_id=471620759]
+[node name="Name" type="Label" parent="MarginContainer/CardVBox/NameRow" unique_id=471620759]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -25,7 +33,7 @@ theme_type_variation = &"NameLabel"
 theme_override_font_sizes/font_size = 20
 text = "EntityName"
 
-[node name="State" type="Label" parent="CardVBox/NameRow" unique_id=1878444106]
+[node name="State" type="Label" parent="MarginContainer/CardVBox/NameRow" unique_id=1878444106]
 layout_mode = 2
 theme = ExtResource("1_8c1fr")
 theme_type_variation = &"MonoLabel"
@@ -33,46 +41,46 @@ theme_override_font_sizes/font_size = 15
 text = "[STATE]"
 horizontal_alignment = 2
 
-[node name="ShieldStatusLabel" type="Label" parent="CardVBox" unique_id=907113334]
+[node name="ShieldStatusLabel" type="Label" parent="MarginContainer/CardVBox" unique_id=907113334]
 layout_mode = 2
 theme = ExtResource("1_8c1fr")
 theme_override_font_sizes/font_size = 15
 text = "[Shield Status]"
 
-[node name="APLabel" type="Label" parent="CardVBox" unique_id=687116256]
+[node name="APLabel" type="Label" parent="MarginContainer/CardVBox" unique_id=687116256]
 layout_mode = 2
 theme = ExtResource("1_8c1fr")
 theme_type_variation = &"MonoLabel"
 theme_override_font_sizes/font_size = 15
 text = "> X / X AP (+X/turn)"
 
-[node name="HPLabel" type="Label" parent="CardVBox" unique_id=1799555087]
+[node name="HPLabel" type="Label" parent="MarginContainer/CardVBox" unique_id=1799555087]
 layout_mode = 2
 theme = ExtResource("1_8c1fr")
 theme_type_variation = &"MonoLabel"
 theme_override_font_sizes/font_size = 15
 text = "> X / X HP"
 
-[node name="RuneRow" type="HBoxContainer" parent="CardVBox" unique_id=1174555454]
+[node name="RuneRow" type="HBoxContainer" parent="MarginContainer/CardVBox" unique_id=1174555454]
 layout_mode = 2
 size_flags_horizontal = 4
 theme_override_constants/separation = 6
 
-[node name="Frame_Root_Topbar_TopbarRow_RuneRow#MinorFilled" type="Panel" parent="CardVBox/RuneRow" unique_id=380161286]
+[node name="Frame_Root_Topbar_TopbarRow_RuneRow#MinorFilled" type="Panel" parent="MarginContainer/CardVBox/RuneRow" unique_id=380161286]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 theme_type_variation = &"VoidBadge"
 
-[node name="Frame_Root_Topbar_TopbarRow_RuneRow#Major" type="Panel" parent="CardVBox/RuneRow" unique_id=24118672]
+[node name="Frame_Root_Topbar_TopbarRow_RuneRow#Major" type="Panel" parent="MarginContainer/CardVBox/RuneRow" unique_id=24118672]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 theme_type_variation = &"VoidBadge"
 
-[node name="Frame_Root_Topbar_TopbarRow_RuneRow#MinorEmpty" type="Panel" parent="CardVBox/RuneRow" unique_id=1828353812]
+[node name="Frame_Root_Topbar_TopbarRow_RuneRow#MinorEmpty" type="Panel" parent="MarginContainer/CardVBox/RuneRow" unique_id=1828353812]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 
-[node name="HPBar" type="ProgressBar" parent="CardVBox" unique_id=1239396068]
+[node name="HPBar" type="ProgressBar" parent="MarginContainer/CardVBox" unique_id=1239396068]
 custom_minimum_size = Vector2(0, 4)
 layout_mode = 2
 theme = ExtResource("1_8c1fr")

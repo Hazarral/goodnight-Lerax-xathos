@@ -256,9 +256,17 @@ func die() -> void:
 	if not is_player_faction():
 		CombatSystem.backfill_reinforcements()
 
-func take_turn() -> void:
+func begin_turn() -> void:
 	## TODO: Implement the pipeline here
-	push_error("Entity.take_turn() is not implemented!")
+	print("%s is beginning their turn!" % template.entity_name)
+	start_action_phase()
+
+func start_action_phase() -> void:
+	print("%s is starting action phase..." % template.entity_name)
+
+func end_turn() -> void:
+	print("%s's turn ended!" % template.entity_name)
+	CombatSystem.on_turn_finished()
 
 func learn_action(action : Action) -> void:
 	known_actions.append(KnownAction.new(action, self))

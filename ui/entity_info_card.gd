@@ -12,12 +12,12 @@ var entity : Entity
 var is_active_turn : bool = false
 var is_selected : bool = false
 
-@onready var name_label := $CardVBox/NameRow/Name
-@onready var state_label := $CardVBox/NameRow/State
-@onready var shield_status_label := $CardVBox/ShieldStatusLabel
-@onready var ap_label:= $CardVBox/APLabel
-@onready var hp_label := $CardVBox/HPLabel
-@onready var hp_bar := $CardVBox/HPBar
+@onready var name_label := $MarginContainer/CardVBox/NameRow/Name
+@onready var state_label := $MarginContainer/CardVBox/NameRow/State
+@onready var shield_status_label := $MarginContainer/CardVBox/ShieldStatusLabel
+@onready var ap_label:= $MarginContainer/CardVBox/APLabel
+@onready var hp_label := $MarginContainer/CardVBox/HPLabel
+@onready var hp_bar := $MarginContainer/CardVBox/HPBar
 
 const STATE_NAME_ALIVE := "ALIVE"
 const STATE_NAME_DEAD := "DEAD"
@@ -53,8 +53,6 @@ func _ready() -> void:
 		render()
 		print("Debug mode rendered")
 		return
-	
-	print("Using non-debug mode")
 
 func setup(p_entity : Entity, p_show_ap : bool = true) -> void:
 	entity = p_entity
@@ -70,17 +68,14 @@ func set_active_turn(is_active : bool) -> void:
 	_refresh_visual_state()
 
 func _refresh_visual_state() -> void:
-	var color := Color.WHITE
-	if is_selected:
-		color = Color("#d97757")
 	if is_active_turn:
-		color = Color("7ba17eff")  # or a distinct color if you want them visually different
+		theme_type_variation = "CardPanelActiveTurn" 
+		return
+	if is_selected:
+		theme_type_variation = "CardPanelSelected"
+		return
 	
-	name_label.modulate = color
-	state_label.modulate = color
-	shield_status_label.modulate = color
-	ap_label.modulate = color
-	hp_label.modulate = color
+	theme_type_variation = "CardPanel"
 
 func _get_entity_state_name() -> String:
 	if entity.current_state == Entity.State.ALIVE:
@@ -103,9 +98,6 @@ func render() -> void:
 		entity.template.max_action_point, 
 		entity.template.action_point_regen_per_turn
 	]
-	
-	if show_ap:
-		print("Showing AP for %s" % entity.template.entity_name)
 	
 	hp_label.text = HP_TEXT % [
 		entity.current_hp,
