@@ -252,6 +252,9 @@ func die() -> void:
 	current_state = State.DEAD
 	current_hp = 0
 	print("Entity %s died" % template.entity_name)
+	
+	if not is_player_faction():
+		CombatSystem.backfill_reinforcements()
 
 func take_turn() -> void:
 	## TODO: Implement the pipeline here

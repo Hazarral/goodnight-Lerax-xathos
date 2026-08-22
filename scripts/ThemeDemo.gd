@@ -108,7 +108,7 @@ func _add_roster(faction : Array[Entity], is_player_faction : bool) -> void:
 	for entity in faction:
 		var entity_card := ENTITY_INFO_CARD_SCENE.instantiate()
 		roster_list.add_child(entity_card)
-		entity_card.setup(entity)
+		entity_card.setup(entity, is_player_faction)
 		entity_card.render()
 
 func _update_enemy_roster_header() -> void:

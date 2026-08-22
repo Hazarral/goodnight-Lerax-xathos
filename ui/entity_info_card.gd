@@ -104,6 +104,9 @@ func render() -> void:
 		entity.template.action_point_regen_per_turn
 	]
 	
+	if show_ap:
+		print("Showing AP for %s" % entity.template.entity_name)
+	
 	hp_label.text = HP_TEXT % [
 		entity.current_hp,
 		entity.get_max_hp()

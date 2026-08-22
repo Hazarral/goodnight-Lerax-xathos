@@ -260,40 +260,49 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer" unique_id=1911302802]
+[node name="VBoxContainer" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer" unique_id=1672440537]
 layout_mode = 2
 
-[node name="PortraitBox" type="PanelContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/HBoxContainer" unique_id=1042154836]
+[node name="HBoxContainer" type="HBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer" unique_id=1911302802]
+layout_mode = 2
+
+[node name="PortraitBox" type="PanelContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1042154836]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_type_variation = &"CardPanel"
 
-[node name="PortraitCell" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/HBoxContainer" unique_id=439180414]
+[node name="PortraitCell" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer" unique_id=439180414]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 theme_override_constants/separation = 4
 
-[node name="PortraitName" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/HBoxContainer/PortraitCell" unique_id=1805180956]
+[node name="PortraitName" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=1805180956]
 layout_mode = 2
 size_flags_horizontal = 0
 theme_type_variation = &"NameLabel"
 text = "Draechen"
 
-[node name="PotencyLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/HBoxContainer/PortraitCell" unique_id=1535197067]
+[node name="PotencyLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=1535197067]
 layout_mode = 2
 size_flags_horizontal = 2
 theme_type_variation = &"NameLabel"
 text = "Potency: X"
 
-[node name="MasteryLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/HBoxContainer/PortraitCell" unique_id=547243573]
+[node name="MasteryLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=547243573]
 layout_mode = 2
 size_flags_horizontal = 0
 theme_type_variation = &"NameLabel"
 text = "Mastery: X"
+
+[node name="Button" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer" unique_id=1837436638]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme = ExtResource("1_theme")
+text = "End Turn"
 
 [node name="ActionScroll" type="ScrollContainer" parent="Frame/Root/ActionBar/ActionBarRow" unique_id=717535405]
 layout_mode = 2

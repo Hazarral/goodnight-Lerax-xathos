@@ -97,6 +97,10 @@ func add_reinforcement_to_field() -> void:
 		enemy_on_field.append(entity)
 		turn_order.append(entity)
 
+func backfill_reinforcements() -> void:
+	while get_alive_targets(enemy_on_field).size() < MAX_ALIVE_ENEMY_ON_FIELD and not enemy_reinforcement.is_empty():
+		add_reinforcement_to_field()
+
 func get_next_actor() -> Entity:
 	var attempts := 0
 	while attempts < turn_order.size():
@@ -111,6 +115,7 @@ func get_next_actor() -> Entity:
 	return null  # everyone in turn_order is dead — combat should have ended already
 
 func advance_turn() -> void:
+	## NOTE: This is the official way to advance turn and get next entity in the turn order
 	var entity := get_next_actor()
 	if not entity:
 		end_combat()
