@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="Action" format=3 uid="uid://0fnsuaq1vtxn"]
+
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_cw3l7"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/Actions/damage_action_event.gd" id="2_owtf2"]
+[ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/Actions/apply_dot_action_event.gd" id="3_j1tro"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="4_gxv7t"]
+
+[sub_resource type="Resource" id="Resource_t76v7"]
+script = ExtResource("2_owtf2")
+damage_type = 3
+amount = 20
+potency_scaling = 0.2
+mastery_scaling = 0.8
+target_faction = 1
+target_count = 1
+metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
+
+[sub_resource type="Resource" id="Resource_he07f"]
+script = ExtResource("3_j1tro")
+damage_type = 3
+base_damage = 8.0
+stacks = 3
+duration = 7
+target_faction = 1
+target_count = 1
+metadata/_custom_type_script = "uid://dl0omykhmcmxj"
+
+[resource]
+script = ExtResource("4_gxv7t")
+action_name = "Necrotic Breath"
+action_point_cost = 2
+cooldown = 1
+description = "Deals %.2f Poison damage to all alive enemies, applies %d stacks of Poison at %.2f base damage for %d turns to all enemies hit."
+action_events = Array[ExtResource("1_cw3l7")]([SubResource("Resource_t76v7"), SubResource("Resource_he07f")])
+metadata/_custom_type_script = "uid://doysxg78oub0w"

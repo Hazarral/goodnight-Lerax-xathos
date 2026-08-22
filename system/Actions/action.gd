@@ -10,6 +10,9 @@ extends Resource
 ## Cooldown, in turns
 @export var cooldown : int
 
+## Description: what it does
+@export_multiline var description : String 
+
 ## List of modular action this will perform in order, all ActionEvent have the same targeting specification as this Action
 @export var action_events : Array[ActionEvent]
 

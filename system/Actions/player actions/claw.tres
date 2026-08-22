@@ -18,5 +18,6 @@ metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 script = ExtResource("2_gqg50")
 action_name = "Claw"
 action_point_cost = 3
+description = "Deals %.2f Void damage to all alive enemies."
 action_events = Array[ExtResource("1_t6eeg")]([SubResource("Resource_4mp8l")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"
