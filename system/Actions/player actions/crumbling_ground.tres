@@ -27,7 +27,7 @@ metadata/_custom_type_script = "uid://dl0omykhmcmxj"
 
 [resource]
 script = ExtResource("4_ca6uh")
-action_name = "Winter Breath"
+action_name = "Crumbling Ground"
 action_point_cost = 2
 cooldown = 1
 description = "Deals %.2f Earth damage to all alive enemies, applies %d stacks of Crumble at %.2f base damage for %d turns to all enemies hit."

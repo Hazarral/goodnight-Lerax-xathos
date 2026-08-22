@@ -27,7 +27,7 @@ metadata/_custom_type_script = "uid://dl0omykhmcmxj"
 
 [resource]
 script = ExtResource("4_ohlxy")
-action_name = "Ice Breath"
+action_name = "Blizzard"
 action_point_cost = 2
 cooldown = 1
 description = "Deals %.2f Ice damage to all alive enemies, applies %d stacks of Frostbite at %.2f base damage for %d turns to all enemies hit."
