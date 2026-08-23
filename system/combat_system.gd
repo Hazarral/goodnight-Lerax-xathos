@@ -8,6 +8,7 @@ var damage_event_queue : Array[DamageEvent]
 
 var turn_order : Array[Entity]
 var current_turn_index := 0
+var turn_counter := 0
 var current_actor : Entity = null
 
 const MAX_ALIVE_ENEMY_ON_FIELD := 5
@@ -20,6 +21,7 @@ func reset() -> void:
 	
 	turn_order.clear()
 	current_turn_index = 0
+	turn_counter = 0
 
 func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side_templates : Array[EntityTemplate]) -> void:
 	## 1. Ensure clean data before anything
@@ -110,11 +112,15 @@ func get_next_actor() -> Entity:
 		current_turn_index = (current_turn_index + 1) % turn_order.size()
 		
 		if entity.current_state == Entity.State.ALIVE:
+			turn_counter += 1
 			return entity
 		
 		attempts += 1
 	
 	return null  # everyone in turn_order is dead — combat should have ended already
+
+func get_turn_counter() -> int:
+	return turn_counter
 
 func advance_turn() -> void:
 	## NOTE: This is the official way to advance turn and get next entity in the turn order
