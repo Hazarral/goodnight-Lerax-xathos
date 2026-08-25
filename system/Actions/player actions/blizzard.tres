@@ -28,8 +28,8 @@ metadata/_custom_type_script = "uid://dl0omykhmcmxj"
 [resource]
 script = ExtResource("4_ohlxy")
 action_name = "Blizzard"
-action_point_cost = 2
-cooldown = 1
+action_point_cost = 3
+cooldown = 2
 description = "Deals %.2f Ice damage to all alive enemies, applies %d stacks of Frostbite at %.2f base damage for %d turns to all enemies hit."
 action_events = Array[ExtResource("1_e48gu")]([SubResource("Resource_t76v7"), SubResource("Resource_he07f")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"

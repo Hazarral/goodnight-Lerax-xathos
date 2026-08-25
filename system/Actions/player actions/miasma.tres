@@ -28,8 +28,8 @@ metadata/_custom_type_script = "uid://dl0omykhmcmxj"
 [resource]
 script = ExtResource("4_dn15n")
 action_name = "Miasma"
-action_point_cost = 2
-cooldown = 1
+action_point_cost = 3
+cooldown = 2
 description = "Deals %.2f Poison damage to all alive enemies, applies %d stacks of Poison at %.2f base damage for %d turns to all enemies hit."
 action_events = Array[ExtResource("1_if4ai")]([SubResource("Resource_t76v7"), SubResource("Resource_he07f")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"

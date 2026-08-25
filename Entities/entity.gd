@@ -145,7 +145,7 @@ func get_attrition(damage_type : DamageAndDoT.DamageType) -> int:
 	if not (has_shield(damage_type) and active_dots[damage_type].has_dot()):
 		return 0
 	
-	return mini(active_dots[damage_type].calculate_total_attrition(), max_shields[damage_type])
+	return active_dots[damage_type].calculate_total_attrition()
 
 func get_damage_per_turn(damage_over_time : DamageAndDoT.DoT) -> int:
 	return active_dots[damage_over_time].calculate_total_damage()
