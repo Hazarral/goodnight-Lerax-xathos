@@ -9,3 +9,6 @@ signal target_requested(
 
 ## And in response, the UI/AI will pick and emit this signal
 signal target_chosen(entity : Entity)
+
+## When a target die due to self-harm, typically
+signal force_refresh_turn_ui()

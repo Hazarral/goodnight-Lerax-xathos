@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://00irjgp2o0tn"]
 
 [ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_theme"]
-[ext_resource type="Script" uid="uid://drekl6s4imnxo" path="res://scripts/ThemeDemo.gd" id="2_script"]
+[ext_resource type="Script" uid="uid://drekl6s4imnxo" path="res://scripts/combat_ui.gd" id="2_script"]
 [ext_resource type="Resource" uid="uid://rnqvtjaoiwov" path="res://Entities/templates/player_the_dragon.tres" id="4_0ncfs"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="5_0ncfs"]
 [ext_resource type="Resource" uid="uid://g0gfyafsh524" path="res://system/Actions/enemy actions/fireball.tres" id="6_4d4xh"]

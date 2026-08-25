@@ -9,6 +9,7 @@ script = ExtResource("2_htfbt")
 amount = 50
 potency_scaling = 1.0
 mastery_scaling = 0.5
+target_faction = 2
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 
 [resource]
@@ -16,6 +17,6 @@ script = ExtResource("2_tja4d")
 action_name = "Fireball"
 action_point_cost = 2
 cooldown = 2
-description = "Throw a Fireball at a Player Faction entity, dealing Fire damage."
+description = "Throw a Fireball at any alive entity, dealing Fire damage."
 action_events = Array[ExtResource("1_31i3i")]([SubResource("Resource_htfbt")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"

@@ -63,6 +63,7 @@ func _ready() -> void:
 	_combat_mockup()
 	_refresh_turn_ui()
 	EventBus.target_requested.connect(_on_target_requested)
+	EventBus.force_refresh_turn_ui.connect(_refresh_turn_ui)
 	
 func _init_inspector() -> void:
 	for entity_card : EntityInfoCard in player_roster_list.get_children():
@@ -223,7 +224,6 @@ func _refresh_turn_ui() -> void:
 
 func _on_end_turn_button_pressed() -> void:
 	CombatSystem.end_current_actor_turn()
-	_refresh_turn_ui()
 
 func _highlight_targetable_cards(targets : Array[Entity]) -> void:
 	for card : EntityInfoCard in player_roster_list.get_children():

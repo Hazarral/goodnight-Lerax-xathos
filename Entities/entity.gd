@@ -266,6 +266,8 @@ func die() -> void:
 	
 	if not is_player_faction():
 		CombatSystem.backfill_reinforcements()
+	
+	end_turn()
 
 func begin_turn() -> void:
 	## TODO: Implement the pipeline here
@@ -284,6 +286,7 @@ func end_turn() -> void:
 	recover_ap()
 	tick_cooldowns()
 	CombatSystem.on_turn_finished()
+	EventBus.emit_signal("force_refresh_turn_ui")
 
 func learn_action(action : Action) -> void:
 	known_actions.append(KnownAction.new(action, self))
