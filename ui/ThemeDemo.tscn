@@ -3,6 +3,8 @@
 [ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_theme"]
 [ext_resource type="Script" uid="uid://drekl6s4imnxo" path="res://scripts/ThemeDemo.gd" id="2_script"]
 [ext_resource type="Resource" uid="uid://rnqvtjaoiwov" path="res://Entities/templates/player_the_dragon.tres" id="4_0ncfs"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="5_0ncfs"]
+[ext_resource type="Resource" uid="uid://g0gfyafsh524" path="res://system/Actions/enemy actions/fireball.tres" id="6_4d4xh"]
 [ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://Entities/entity_template.gd" id="6_rqx7n"]
 
 [sub_resource type="Resource" id="Resource_1482v"]
@@ -28,6 +30,7 @@ poison_shield = 200
 max_action_point = 5
 starting_action_point = 2
 action_point_regen_per_turn = 2
+innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_4d4xh")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
 [sub_resource type="Resource" id="Resource_rqx7n"]
@@ -41,6 +44,7 @@ physical_shield = 100
 max_action_point = 5
 starting_action_point = 5
 action_point_regen_per_turn = 1
+innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_4d4xh")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
 [node name="CombatUI" type="Control" unique_id=1152202896]

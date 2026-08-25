@@ -11,6 +11,7 @@ extends PanelContainer
 var entity : Entity
 var is_active_turn : bool = false
 var is_selected : bool = false
+var is_targetable : bool = false
 
 @onready var name_label := $MarginContainer/CardVBox/NameRow/Name
 @onready var state_label := $MarginContainer/CardVBox/NameRow/State
@@ -63,19 +64,33 @@ func set_selected(value: bool) -> void:
 	is_selected = value
 	_refresh_visual_state()
 
-func set_active_turn(is_active : bool) -> void:
-	is_active_turn = is_active
+func set_active_turn(value : bool) -> void:
+	is_active_turn = value
 	_refresh_visual_state()
 
+func set_targetable(value : bool) -> void:
+	is_targetable = value
+	_refresh_visual_state()
+
+func _set_font_opacity() -> void:
+	var opacity := 1.0 if entity.current_state == Entity.State.ALIVE else 0.5
+	name_label.modulate.a = opacity
+	state_label.modulate.a = opacity
+	shield_status_label.modulate.a = opacity
+	ap_label.modulate.a = opacity
+	hp_label.modulate.a = opacity
+
 func _refresh_visual_state() -> void:
-	if is_active_turn:
-		theme_type_variation = "CardPanelActiveTurn" 
-		return
-	if is_selected:
+	if is_targetable:
+		theme_type_variation = "CardPanelTargetable"
+	elif is_selected:
 		theme_type_variation = "CardPanelSelected"
-		return
+	elif is_active_turn:
+		theme_type_variation = "CardPanelActiveTurn" 
+	else:
+		theme_type_variation = "CardPanel"
 	
-	theme_type_variation = "CardPanel"
+	_set_font_opacity()
 
 func _get_entity_state_name() -> String:
 	if entity.current_state == Entity.State.ALIVE:

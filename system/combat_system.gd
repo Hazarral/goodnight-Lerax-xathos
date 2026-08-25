@@ -9,6 +9,7 @@ var damage_event_queue : Array[DamageEvent]
 var turn_order : Array[Entity]
 var current_turn_index := 0
 var turn_counter := 0
+var round_counter := 0
 var current_actor : Entity = null
 
 const MAX_ALIVE_ENEMY_ON_FIELD := 5
@@ -106,18 +107,15 @@ func backfill_reinforcements() -> void:
 		add_reinforcement_to_field()
 
 func get_next_actor() -> Entity:
-	var attempts := 0
-	while attempts < turn_order.size():
-		var entity = turn_order[current_turn_index]
-		current_turn_index = (current_turn_index + 1) % turn_order.size()
-		
-		if entity.current_state == Entity.State.ALIVE:
-			turn_counter += 1
-			return entity
-		
-		attempts += 1
+	var entity = turn_order[current_turn_index]
 	
-	return null  # everyone in turn_order is dead — combat should have ended already
+	turn_counter += 1
+	if current_turn_index == 0:
+		round_counter += 1
+	
+	current_turn_index = (current_turn_index + 1) % turn_order.size()
+	
+	return entity
 
 func get_turn_counter() -> int:
 	return turn_counter

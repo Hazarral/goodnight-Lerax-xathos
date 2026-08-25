@@ -33,16 +33,15 @@ enum Coefficient {
 
 # The Master Balance Table
 # Format: [Damage Potency, Damage Mastery, Attrition Potency, Attrition Mastery]
-const DOT_COEFFICIENTS : Dictionary[DoT, Array] = {
+const DOT_COEFFICIENTS : Dictionary[DoT, PackedFloat32Array] = {
 	DoT.BURN:       [2.0, 0.1, 0.1, 1.5],
+	DoT.CURRENT:    [0.2, 0.2, 0.2, 0.2],
 	DoT.WIND_SHEAR: [1.0, 0.1, 0.1, 2.0],
-	DoT.CURRENT:    [0.0, 0.0, 0.0, 0.0], # Fill these with your actual balance numbers
-	DoT.POISON:     [0.2, 0.5, 0.8, 2.5], 
-	DoT.SHOCK:      [1.0, 0.5, 0.5, 1.0],
-	DoT.BLEED:      [0.5, 0.2, 0.5, 0.2],
-	DoT.CRUMBLE:    [1.5, 0.5, 1.0, 1.0],
-	DoT.FROSTBITE:  [1.0, 0.5, 1.0, 0.5],
-	DoT.VOID:       [1.0, 1.0, 0.0, 0.0]  # Void has no Attrition
+	DoT.POISON:     [0.2, 0.1, 0.5, 3.0],
+	DoT.SHOCK:      [1.5, 0.5, 0.2, 0.5],
+	DoT.BLEED:      [0.1, 0.1, 1.0, 1.0],
+	DoT.CRUMBLE:    [2.5, 0.1, 0.5, 0.5],
+	DoT.FROSTBITE:  [0.5, 0.5, 1.0, 1.5]
 }
 
 const ELEMENT_COUNT := 8
@@ -118,7 +117,7 @@ func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, ma
 		push_error("Void has special damage! Please use VoidInstance.get_void_damage(...)")
 		return 0.0
 	
-	var coefs : Array[float] = DOT_COEFFICIENTS[dot_type]
+	var coefs := DOT_COEFFICIENTS[dot_type]
 	var potency_coef : float = coefs[Coefficient.DAMAGE_POTENCY]
 	var mastery_coef : float = coefs[Coefficient.DAMAGE_MASTERY]
 	
@@ -132,7 +131,7 @@ func calculate_dot_attrition(dot_type : DoT, base_damage : float, potency : int,
 		push_error("Void has no Attrition!")
 		return 0.0
 	
-	var coefs : Array[float] = DOT_COEFFICIENTS[dot_type]
+	var coefs := DOT_COEFFICIENTS[dot_type]
 	var potency_coef : float = coefs[Coefficient.ATTRITION_POTENCY]
 	var mastery_coef : float = coefs[Coefficient.ATTRITION_MASTERY]
 	

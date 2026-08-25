@@ -58,7 +58,7 @@ func calculate_damage(potency : int, mastery : int) -> float:
 		stacks
 	)
 
-func calculate_attition(potency : int, mastery : int) -> float:
+func calculate_attrition(potency : int, mastery : int) -> float:
 	return DamageAndDoT.calculate_dot_attrition(
 		DamageAndDoT.get_dot(damage_type),
 		base_damage,

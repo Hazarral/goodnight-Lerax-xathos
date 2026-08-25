@@ -42,6 +42,7 @@ func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> voi
 	setup_shields()
 	setup_active_dot_arrays()
 	setup_action_points()
+	setup_innate_actions()
 	
 	current_state = State.ALIVE
 
@@ -70,6 +71,16 @@ func setup_active_dot_arrays() -> void:
 
 func setup_action_points() -> void:
 	current_action_point = template.starting_action_point
+
+func setup_innate_actions() -> void:
+	for action in template.innate_actions:
+		learn_action(action)
+
+func get_max_action_point() -> int:
+	return template.max_action_point
+
+func get_action_point_regen_per_turn() -> int:
+	return template.action_point_regen_per_turn
 
 func recover_ap() -> void:
 	current_action_point = mini(current_action_point + template.action_point_regen_per_turn, template.max_action_point)
@@ -259,13 +270,19 @@ func die() -> void:
 func begin_turn() -> void:
 	## TODO: Implement the pipeline here
 	print("%s is beginning their turn!" % template.entity_name)
-	start_action_phase()
+	if current_state == State.DEAD:
+		print("This target is dead!")
+		end_turn()
+	else:
+		start_action_phase()
 
 func start_action_phase() -> void:
 	print("%s is starting action phase..." % template.entity_name)
 
 func end_turn() -> void:
 	print("%s's turn ended!" % template.entity_name)
+	recover_ap()
+	tick_cooldowns()
 	CombatSystem.on_turn_finished()
 
 func learn_action(action : Action) -> void:
@@ -279,7 +296,7 @@ func tick_cooldowns() -> void:
 		known_action.tick_cooldown()
 
 func cast_action(index : int) -> void:
-	var is_cast_success := known_actions[index].cast()
+	var is_cast_success := await known_actions[index].cast()
 	
 	if not is_cast_success:
 		push_error("Cannot cast %s due to cooldown or AP cost!" % known_actions[index].action.action_name)

@@ -18,5 +18,4 @@ extends Resource
 
 func cast(source : Entity) -> void:	
 	for action_event in action_events:
-		action_event.source = source
-		action_event.resolve()
+		await action_event.resolve(source)

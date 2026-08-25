@@ -6,16 +6,12 @@ extends ActionEvent
 @export var stacks : int
 @export var duration : int
 
-func resolve() -> void:
+func resolve(source : Entity) -> void:
 	if damage_type == DamageAndDoT.DamageType.VOID:
 		push_error("ApplyDoTActionEvent cannot apply Void. Please use ApplyVoidActionEvent")
 		return
 	
-	var targets : Array[Entity] = CombatSystem.get_valid_targets(target_faction, target_state)
-	
-	if target_count == TargetCount.SINGLE:
-		print("Single target apply DoT action not implemented!")
-		return
+	var targets : Array[Entity] = await get_targets()
 	
 	for entity in targets:
 		var dot_instance : DoTInstance = null

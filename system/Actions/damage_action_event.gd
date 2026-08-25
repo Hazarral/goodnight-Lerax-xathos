@@ -7,12 +7,8 @@ extends ActionEvent
 @export var potency_scaling : float
 @export var mastery_scaling : float
 
-func resolve() -> void:
-	var targets : Array[Entity] = CombatSystem.get_valid_targets(target_faction, target_state)
-	
-	if target_count == TargetCount.SINGLE:
-		print("Single target damage action not implemented!")
-		return
+func resolve(source : Entity) -> void:
+	var targets : Array[Entity] = await get_targets()
 	
 	var multi_damage_event := MultiDamageEvent.new(source)
 	var final_amount = amount + potency_scaling * source.get_potency() + mastery_scaling * source.get_mastery()

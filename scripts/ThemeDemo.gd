@@ -46,17 +46,23 @@ var selected_card : EntityInfoCard = null
 const CURRENT_ENTITY_POTENCY_TEXT := "Potency: %d"
 const CURRENT_ENTITY_MASTERY_TEXT := "Mastery: %d"
 
+@onready var ap_label := $Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APLabel
+
+const AP_TEXT := "ACTION POINTS: %d / %d (+%d / TURN)"
+
 @onready var action_list := $Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList
 
-## This script is a THEME REFERENCE, not final combat UI wiring.
-## It shows the pattern for turning a KnownAction (action + cooldown_remaining)
-## into a themed Button with correct disabled state and label text,
-## using only CombatTheme.tres — no textures anywhere.
+const ACTION_BASE_LABEL := "%s            %d AP"
+const ACTION_EXTRA_COOLDOWN_LABEL := "   ·    CD %d"
+
+## 3. Signal and input
+var is_awaiting_target : bool = false
+var valid_target_pool : Array[Entity] = []
 
 func _ready() -> void:
-	_demo_populate_action_list()
 	_combat_mockup()
 	_refresh_turn_ui()
+	EventBus.target_requested.connect(_on_target_requested)
 	
 func _init_inspector() -> void:
 	for entity_card : EntityInfoCard in player_roster_list.get_children():
@@ -87,8 +93,24 @@ func _update_action_bar() -> void:
 	current_entity_name_label.text = current_entity.template.entity_name
 	current_entity_potency_label.text = CURRENT_ENTITY_POTENCY_TEXT % current_entity.get_potency()
 	current_entity_mastery_label.text = CURRENT_ENTITY_MASTERY_TEXT % current_entity.get_mastery()
+	
+	ap_label.text = AP_TEXT % [
+		current_entity.current_action_point,
+		current_entity.get_max_action_point(),
+		current_entity.get_action_point_regen_per_turn()
+	]
+	
+	_populate_action_list(CombatSystem.get_current_actor())
 
 func _on_entity_info_card_pressed(card : EntityInfoCard) -> void:
+	if is_awaiting_target:
+		if card.entity in valid_target_pool:
+			is_awaiting_target = false
+			_clear_target_highlight()
+			EventBus.emit_signal("target_chosen", card.entity)
+		# else: invalid click while targeting — ignore, or flash a rejection cue
+		return
+	
 	## Only 1 card is read at a time
 	_clear_selected_card()
 	card.set_selected(true)
@@ -149,58 +171,68 @@ func _update_enemy_roster_header() -> void:
 ## Example of the exact pattern you'd use once KnownAction/Entity are wired in:
 ## for k in draechen.known_actions:
 ##     _add_action_button(k.action, k.is_ready(), k.cooldown_remaining)
-func _demo_populate_action_list() -> void:
+func _populate_action_list(entity : Entity) -> void:
 	# Clear any placeholder buttons left in the scene, rebuild from "data"
 	for child in action_list.get_children():
 		child.queue_free()
+	
+	for i in entity.known_actions.size():
+		_add_action_button(entity, i)
 
-	# Fake KnownAction-shaped data for the demo; replace with real known_actions
-	var demo_actions := [
-		{"name": "Bite", "ap": 2, "cooldown": 0},
-		{"name": "Claw", "ap": 2, "cooldown": 0},
-		{"name": "Fire Breath", "ap": 2, "cooldown": 2},
-		{"name": "Void Maw", "ap": 4, "cooldown": 0},
-		{"name": "Wing Buffet", "ap": 3, "cooldown": 1},
-		{"name": "Tail Sweep", "ap": 3, "cooldown": 0},
-		{"name": "Frost Exhale", "ap": 3, "cooldown": 0},
-	]
-
-	for data in demo_actions:
-		_add_action_button(data.name, data.ap, data.cooldown)
-
-
-func _add_action_button(action_name: String, ap_cost: int, cooldown_remaining: int) -> void:
+func _add_action_button(entity : Entity, index : int) -> void:
+	var known_action : KnownAction = entity.known_actions[index]
+	var action : Action = known_action.action
+	
+	## NOTE: Styling below is subject to change, and should use some ActionButton in the future
 	var btn := Button.new()
 	btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 	btn.custom_minimum_size = Vector2(0, 34)
-
-	# AP cost is ALWAYS shown; cooldown is an ADDITIONAL badge, never a replacement.
-	var label_text := "%s        %d AP" % [action_name, ap_cost]
-	if cooldown_remaining > 0:
-		label_text += "  ·  CD %d" % cooldown_remaining
-		btn.disabled = true
+	
+	var label_text := ACTION_BASE_LABEL % [action.action_name, action.action_point_cost]
+	if known_action.cooldown_remaining > 0:
+		label_text += ACTION_EXTRA_COOLDOWN_LABEL % known_action.cooldown_remaining
 
 	btn.text = label_text
-	btn.pressed.connect(func(): _on_action_pressed(action_name))
+	btn.disabled = not known_action.is_castable()
+	btn.pressed.connect(_on_action_pressed.bind(entity, index))
 	action_list.add_child(btn)
 
-func _on_action_pressed(action_name: String) -> void:
-	print("Cast pressed: ", action_name)
-	# Real implementation calls KnownAction.cast() here and re-renders on result.
+func _on_action_pressed(entity : Entity, index : int) -> void:
+	await entity.cast_action(index)
+	_refresh_turn_ui()
+
+func _on_target_requested(event : ActionEvent, target_faction : ActionEvent.TargetFaction, target_state : ActionEvent.TargetState) -> void:
+	is_awaiting_target = true
+	valid_target_pool = CombatSystem.get_valid_targets(target_faction, target_state)
+	_highlight_targetable_cards(valid_target_pool)
 
 func _refresh_active_turn_cards() -> void:
 	var current_entity := CombatSystem.get_current_actor()
 	for card : EntityInfoCard in player_roster_list.get_children():
 		card.set_active_turn(card.entity == current_entity)
+		card.render()
 	for card : EntityInfoCard in enemy_roster_list.get_children():
 		card.set_active_turn(card.entity == current_entity)
+		card.render()
 
 func _refresh_turn_ui() -> void:
 	_clear_selected_card()
-	_update_action_bar()
 	_refresh_active_turn_cards()
 	_set_inspector(CombatSystem.get_current_actor())
+	_update_action_bar()
 
 func _on_end_turn_button_pressed() -> void:
 	CombatSystem.end_current_actor_turn()
 	_refresh_turn_ui()
+
+func _highlight_targetable_cards(targets : Array[Entity]) -> void:
+	for card : EntityInfoCard in player_roster_list.get_children():
+		card.set_targetable(card.entity in targets)
+	for card : EntityInfoCard in enemy_roster_list.get_children():
+		card.set_targetable(card.entity in targets)
+
+func _clear_target_highlight() -> void:
+	for card : EntityInfoCard in player_roster_list.get_children():
+		card.set_targetable(false)
+	for card : EntityInfoCard in enemy_roster_list.get_children():
+		card.set_targetable(false)
