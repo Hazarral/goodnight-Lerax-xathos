@@ -1,13 +1,39 @@
-[gd_scene format=3 uid="uid://bocl36msa1k3k"]
+[gd_scene format=3 uid="uid://bngfkpyd36k1h"]
 
-[ext_resource type="Script" uid="uid://crv10n8t8f1hf" path="res://system/ui/shield_group.gd" id="1_5mo2n"]
 [ext_resource type="LabelSettings" uid="uid://cyb00v76gm434" path="res://HP_and_shield_label.tres" id="2_mr5ik"]
+
+[sub_resource type="GDScript" id="GDScript_1dt1w"]
+script/source = "class_name ShieldUI
+extends VBoxContainer
+
+@onready var shield_label := $ShieldLabel
+@onready var shield_bar := $ShieldBar
+
+const SHIELD_LABEL_TEXT := \"%d/%d %s Shield\"
+
+# Called once when creating the UI
+func setup_visuals(damage_type: int, max_val: int) -> void:
+	shield_bar.max_value = max_val
+	shield_bar.value = max_val
+	
+	var new_style = StyleBoxFlat.new()
+	new_style.bg_color = Color(DamageAndDoT.get_damage_color_hex(damage_type))
+	shield_bar.add_theme_stylebox_override(\"fill\", new_style)
+
+func update_visuals(damage_type: int, current_val: int, max_val: int) -> void:
+	shield_bar.value = current_val
+	shield_label.text = \"%d/%d %s Shield\" % [
+		current_val, 
+		max_val, 
+		DamageAndDoT.get_damage_type_name(damage_type)
+	]
+"
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jpyye"]
 bg_color = Color(1, 0.11372549, 0.45882353, 1)
 
 [node name="ShieldUI" type="VBoxContainer" unique_id=1984936909]
-script = ExtResource("1_5mo2n")
+script = SubResource("GDScript_1dt1w")
 
 [node name="ShieldLabel" type="Label" parent="." unique_id=1414274620]
 layout_mode = 2
