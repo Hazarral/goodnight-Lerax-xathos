@@ -27,10 +27,10 @@ func _ready() -> void:
 	_update_display()
 
 func _spawn_entities() -> void:
-	if not player_template:
+	if player_template == null:
 		_log("[color=red]No player_template assigned! Assign one in the Inspector.[/color]")
 		return
-	if not enemy_template:
+	if enemy_template == null:
 		_log("[color=red]No enemy_template assigned! Assign one in the Inspector.[/color]")
 		return
 
@@ -39,7 +39,7 @@ func _spawn_entities() -> void:
 	enemy_entity_2 = Entity.new(enemy_template)
 
 func _learn_starting_actions() -> void:
-	if not player_entity:
+	if player_entity == null:
 		return
 
 	for action in starting_actions:

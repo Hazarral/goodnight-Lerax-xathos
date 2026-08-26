@@ -7,8 +7,8 @@ signal target_requested(
 	target_state : ActionEvent.TargetState
 )
 
-## And in response, the UI/AI will pick and emit this signal
-signal target_chosen(entity : Entity)
+## If the entity is null, it is the same as cancelling, or there is no target and this cannot be casted
+signal target_resolved(entity : Entity)
 
 ## When a target die due to self-harm, typically
 signal force_refresh_turn_ui()

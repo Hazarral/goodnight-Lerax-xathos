@@ -46,7 +46,7 @@ signal card_pressed(card : EntityInfoCard)
 
 func _ready() -> void:
 	if debug_mode:
-		if not entity_template:
+		if entity_template == null:
 			push_error("No entity template found in debug mode! Please set an entity template")
 			return
 		
@@ -99,7 +99,7 @@ func _get_entity_state_name() -> String:
 	return STATE_NAME_DEAD
 
 func render() -> void:
-	if not entity:
+	if entity == null:
 		push_error("No entity found for render! Please call setup(entity) first")
 		return
 	

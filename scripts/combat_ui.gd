@@ -58,6 +58,8 @@ const ACTION_EXTRA_COOLDOWN_LABEL := "   ·    CD %d"
 ## 3. Signal and input
 var is_awaiting_target : bool = false
 var valid_target_pool : Array[Entity] = []
+var pending_action_index : int = -1   # which action button is currently mid-targeting
+var pending_source : Entity = null
 
 func _ready() -> void:
 	_combat_mockup()
@@ -88,7 +90,7 @@ func _combat_mockup() -> void:
 
 func _update_action_bar() -> void:
 	var current_entity := CombatSystem.get_current_actor()
-	if not current_entity:
+	if current_entity == null:
 		return
 	
 	current_entity_name_label.text = current_entity.template.entity_name
@@ -106,9 +108,8 @@ func _update_action_bar() -> void:
 func _on_entity_info_card_pressed(card : EntityInfoCard) -> void:
 	if is_awaiting_target:
 		if card.entity in valid_target_pool:
-			is_awaiting_target = false
-			_clear_target_highlight()
-			EventBus.emit_signal("target_chosen", card.entity)
+			_clear_pending_target_state()
+			EventBus.emit_signal("target_resolved", card.entity)
 		# else: invalid click while targeting — ignore, or flash a rejection cue
 		return
 	
@@ -118,6 +119,17 @@ func _on_entity_info_card_pressed(card : EntityInfoCard) -> void:
 	selected_card = card
 	
 	_set_inspector(card.entity)
+
+func _input(event : InputEvent) -> void:
+	if is_awaiting_target and event.is_action_pressed("target_cancel"):
+		_clear_pending_target_state()
+		EventBus.emit_signal("target_resolved", null)  # cancel = resolved with null
+
+func _clear_pending_target_state() -> void:
+	is_awaiting_target = false
+	pending_action_index = -1
+	pending_source = null
+	_clear_target_highlight()
 
 func _clear_selected_card() -> void:
 	if selected_card:
@@ -167,11 +179,6 @@ func _update_enemy_roster_header() -> void:
 	else:
 		enemy_roster_header.text = ENEMY_ROSTER_BASE_HEADER
 
-## --- EVERYTHING BELOW THIS LINE WAS AI-GENERATED ---
-
-## Example of the exact pattern you'd use once KnownAction/Entity are wired in:
-## for k in draechen.known_actions:
-##     _add_action_button(k.action, k.is_ready(), k.cooldown_remaining)
 func _populate_action_list(entity : Entity) -> void:
 	# Clear any placeholder buttons left in the scene, rebuild from "data"
 	for child in action_list.get_children():
@@ -199,6 +206,12 @@ func _add_action_button(entity : Entity, index : int) -> void:
 	action_list.add_child(btn)
 
 func _on_action_pressed(entity : Entity, index : int) -> void:
+	if is_awaiting_target:
+		return
+	
+	pending_action_index = index
+	pending_source = entity
+	
 	await entity.cast_action(index)
 	_refresh_turn_ui()
 

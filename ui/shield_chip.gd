@@ -13,7 +13,7 @@ func setup(p_entity : Entity, p_damage_type : DamageAndDoT.DamageType) -> void:
 	damage_type = p_damage_type
 
 func render() -> void:
-	if not entity:
+	if entity == null:
 		push_error("No entity found for render! Please call setup(entity, damage_type) first")
 		return
 	

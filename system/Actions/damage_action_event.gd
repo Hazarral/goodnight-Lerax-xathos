@@ -7,8 +7,12 @@ extends ActionEvent
 @export var potency_scaling : float
 @export var mastery_scaling : float
 
-func resolve(source : Entity) -> void:
-	var targets : Array[Entity] = await get_targets()
+func resolve(source : Entity) -> bool:
+	var targets : Variant = await get_targets()
+	if targets == null:
+		## Already cancelled!
+		print("DamageActionEvent had null targets! Cancelling...")
+		return false
 	
 	var multi_damage_event := MultiDamageEvent.new(source)
 	var final_amount = amount + potency_scaling * source.get_potency() + mastery_scaling * source.get_mastery()
@@ -18,3 +22,4 @@ func resolve(source : Entity) -> void:
 	
 	CombatSystem.register_multi_damage_event(multi_damage_event)
 	CombatSystem.process_damage_event_queue()
+	return true

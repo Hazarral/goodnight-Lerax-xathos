@@ -127,7 +127,7 @@ func advance_turn() -> void:
 		return
 	
 	current_actor = get_next_actor()
-	if not current_actor:
+	if current_actor == null:
 		end_combat()
 		return
 	

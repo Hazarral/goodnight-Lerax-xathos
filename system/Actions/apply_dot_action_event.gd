@@ -6,12 +6,15 @@ extends ActionEvent
 @export var stacks : int
 @export var duration : int
 
-func resolve(source : Entity) -> void:
+func resolve(source : Entity) -> bool:
 	if damage_type == DamageAndDoT.DamageType.VOID:
 		push_error("ApplyDoTActionEvent cannot apply Void. Please use ApplyVoidActionEvent")
-		return
+		return false
 	
-	var targets : Array[Entity] = await get_targets()
+	var targets : Variant = await get_targets()
+	if targets == null:
+		## Already cancelled!
+		return false
 	
 	for entity in targets:
 		var dot_instance : DoTInstance = null
@@ -22,3 +25,5 @@ func resolve(source : Entity) -> void:
 				dot_instance = DoTInstance.new(source, entity, damage_type, base_damage, stacks, duration)
 		
 		entity.apply_dot(dot_instance)
+	
+	return true

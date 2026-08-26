@@ -22,18 +22,24 @@ enum TargetCount {
 @export var target_faction : TargetFaction
 @export var target_count : TargetCount
 
-func get_targets() -> Array[Entity]:
+func get_targets() -> Variant:
+	## Either Array[Entity] or null, different from an empty Array[Entity]
 	var targets : Array[Entity] = []
 	
 	if target_count == TargetCount.SINGLE:
 		EventBus.emit_signal("target_requested", self, target_faction, target_state)
 		
 		## This signal will be emitted by UI on player side and by AI on enemy side
-		var picked : Entity = await EventBus.target_chosen
+		var picked : Entity = await EventBus.target_resolved
+		if picked == null:
+			print("Picked null! Cancelling...")
+			return null
+		
+		print("Picked something! Proceeding...")
 		targets = [picked]
 	else:
 		targets = CombatSystem.get_valid_targets(target_faction, target_state)
 
 	return targets
 
-@abstract func resolve(source : Entity) -> void
+@abstract func resolve(source : Entity) -> bool
