@@ -259,6 +259,13 @@ func reduce_hp(amount : int) -> void:
 	if current_hp <= 0:
 		die()
 
+func heal(amount : int) -> void:
+	if current_state == State.DEAD:
+		print("You cannot bring back the dead by healing them, my dear")
+		return
+	
+	current_hp = maxi(get_max_hp(), current_hp + amount)
+
 func die() -> void:
 	current_state = State.DEAD
 	current_hp = 0
