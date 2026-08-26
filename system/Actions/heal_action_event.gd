@@ -10,8 +10,13 @@ func resolve(source : Entity) -> bool:
 	if targets == null:
 		return false
 	
+	var multi_heal_event := MultiCombatEvent.new(source)
 	var final_amount = amount + potency_scaling * source.get_potency() + mastery_scaling * source.get_mastery()
 	for entity in targets:
-		entity.heal(final_amount)
+		var heal_event := HealEvent.new(source, entity, final_amount)
+		multi_heal_event.add_event(heal_event)
+	
+	CombatSystem.register_multi_combat_event(multi_heal_event)
+	CombatSystem.process_combat_event_queue()
 	
 	return true

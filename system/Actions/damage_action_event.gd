@@ -14,12 +14,12 @@ func resolve(source : Entity) -> bool:
 		print("DamageActionEvent had null targets! Cancelling...")
 		return false
 	
-	var multi_damage_event := MultiDamageEvent.new(source)
+	var multi_damage_event := MultiCombatEvent.new(source)
 	var final_amount = amount + potency_scaling * source.get_potency() + mastery_scaling * source.get_mastery()
 	for entity in targets:
 		var damage_event := DamageEvent.new(source, entity, damage_type, final_amount, ignore_shield)
 		multi_damage_event.add_event(damage_event)
 	
-	CombatSystem.register_multi_damage_event(multi_damage_event)
-	CombatSystem.process_damage_event_queue()
+	CombatSystem.register_multi_combat_event(multi_damage_event)
+	CombatSystem.process_combat_event_queue()
 	return true

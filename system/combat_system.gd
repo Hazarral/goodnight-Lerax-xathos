@@ -4,7 +4,7 @@ var draechen_player : Entity
 var player_on_field : Array[Entity]
 var enemy_on_field: Array[Entity]
 var enemy_reinforcement : Array[Entity]
-var damage_event_queue : Array[DamageEvent]
+var combat_event_queue : Array[CombatEvent]
 
 var turn_order : Array[Entity]
 var current_turn_index := 0
@@ -18,7 +18,7 @@ func reset() -> void:
 	player_on_field.clear()
 	enemy_on_field.clear()
 	enemy_reinforcement.clear()
-	damage_event_queue.clear()
+	combat_event_queue.clear()
 	
 	turn_order.clear()
 	current_turn_index = 0
@@ -156,18 +156,18 @@ func end_combat() -> void:
 	print("COMBAT ENDED!")
 	reset()
 
-func register_damage_event(damage_event : DamageEvent) -> void:
-	damage_event_queue.append(damage_event)
+func register_combat_event(combat_event : CombatEvent) -> void:
+	combat_event_queue.append(combat_event)
 
-func register_multi_damage_event(multi_damage_event : MultiDamageEvent) -> void:
-	damage_event_queue.append_array(multi_damage_event.data)
+func register_multi_combat_event(multi_combat_event : MultiCombatEvent) -> void:
+	combat_event_queue.append_array(multi_combat_event.data)
 
 func inject_damage_event(damage_event : DamageEvent) -> void:
-	damage_event_queue.push_front(damage_event)
+	combat_event_queue.push_front(damage_event)
 
-func process_damage_event_queue() -> void:
-	while not damage_event_queue.is_empty():
-		var current_event : DamageEvent = damage_event_queue.pop_front()
+func process_combat_event_queue() -> void:
+	while not combat_event_queue.is_empty():
+		var current_event : CombatEvent = combat_event_queue.pop_front()
 		
 		# NOTE: This may inject during resolve() but that is none of this script's business\
 		# current_event also gets ref = 0 when going out of scope
