@@ -10,6 +10,9 @@ var enemy_side : Array[Entity]
 const ENEMY_ROSTER_BASE_HEADER := "ENEMIES"
 const ENEMY_ROSTER_HAS_REINFORCEMENT_HEADER := "ENEMIES (REINFORCEMENT: %d)"
 
+@onready var player_roster_list := $Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList
+@onready var enemy_roster_list := $Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList
+
 ## 1. INSPECTOR
 @onready var inspector_name_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow/Name
 @onready var inspector_state_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow/State
@@ -17,14 +20,14 @@ const ENEMY_ROSTER_HAS_REINFORCEMENT_HEADER := "ENEMIES (REINFORCEMENT: %d)"
 @onready var inspector_potency_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/PotencyLine
 @onready var inspector_mastery_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/MasteryLine
 
+@onready var inspector_elemental_dot_list := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ElementalDoTList
+
 @onready var inspector_void_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidRow/VoidHBox/VoidDesc
 @onready var inspector_shield_grid := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid
 
-@onready var player_roster_list := $Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList
-@onready var enemy_roster_list := $Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList
-
 const ENTITY_INFO_CARD_SCENE : PackedScene = preload("res://ui/entity_info_card.tscn")
 const SHIELD_CHIP_SCENE : PackedScene = preload("res://ui/shield_chip.tscn")
+const DOT_BAR_SCENE : PackedScene = preload("res://ui/dot_bar.tscn")
 
 const INSPECTOR_STATE_TEXT := "[%s]"
 const STATE_ALIVE_TEXT := "ALIVE"
@@ -66,7 +69,12 @@ func _ready() -> void:
 	_refresh_turn_ui()
 	EventBus.target_requested.connect(_on_target_requested)
 	EventBus.force_refresh_turn_ui.connect(_refresh_turn_ui)
-	
+
+static func clear_children(container_list : Array[Node]) -> void:
+	for container in container_list:
+		for child in container.get_children():
+			child.queue_free()
+
 func _init_inspector() -> void:
 	for entity_card : EntityInfoCard in player_roster_list.get_children():
 		entity_card.card_pressed.connect(_on_entity_info_card_pressed)
@@ -136,8 +144,10 @@ func _clear_selected_card() -> void:
 		selected_card.set_selected(false)
 
 func _set_inspector(entity : Entity) -> void:
-	for child in inspector_shield_grid.get_children():
-		child.queue_free()
+	clear_children([
+		inspector_shield_grid, 
+		inspector_elemental_dot_list
+	])
 	
 	inspector_name_label.text = entity.template.entity_name
 	inspector_state_label.text = INSPECTOR_STATE_TEXT % [
@@ -154,11 +164,21 @@ func _set_inspector(entity : Entity) -> void:
 	
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		var damage_type := i as DamageAndDoT.DamageType
-		if entity.has_shield(damage_type):
+		var damage_over_time := DamageAndDoT.get_dot(damage_type)
+		var has_shield := entity.has_shield(damage_type)
+		var has_dot := entity.has_dot(damage_over_time)
+		
+		if has_shield:
 			var shield_chip : ShieldChip = SHIELD_CHIP_SCENE.instantiate()
 			inspector_shield_grid.add_child(shield_chip)
 			shield_chip.setup(entity, damage_type)
 			shield_chip.render()
+		
+		if has_dot:
+			var dot_bar : DoTBar = DOT_BAR_SCENE.instantiate()
+			inspector_elemental_dot_list.add_child(dot_bar)
+			dot_bar.setup(entity, entity.active_dots[damage_over_time])
+			dot_bar.render()
 
 func _add_roster_for_faction(is_player_faction : bool) -> void:
 	_add_roster(CombatSystem.get_on_field(is_player_faction), is_player_faction)
@@ -215,7 +235,7 @@ func _on_action_pressed(entity : Entity, index : int) -> void:
 	await entity.cast_action(index)
 	_refresh_turn_ui()
 
-func _on_target_requested(event : ActionEvent, target_faction : ActionEvent.TargetFaction, target_state : ActionEvent.TargetState) -> void:
+func _on_target_requested(_event : ActionEvent, target_faction : ActionEvent.TargetFaction, target_state : ActionEvent.TargetState) -> void:
 	is_awaiting_target = true
 	valid_target_pool = CombatSystem.get_valid_targets(target_faction, target_state)
 	_highlight_targetable_cards(valid_target_pool)

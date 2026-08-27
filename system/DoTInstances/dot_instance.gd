@@ -49,21 +49,21 @@ func tick_down() -> void:
 func expire() -> void:
 	emit_signal("expired", self)
 
-func calculate_damage(potency : int, mastery : int) -> float:
+func calculate_damage() -> float:
 	return DamageAndDoT.calculate_dot_damage(
 		DamageAndDoT.get_dot(damage_type),
 		base_damage,
-		potency,
-		mastery,
+		get_current_potency(),
+		get_current_mastery(),
 		stacks
 	)
 
-func calculate_attrition(potency : int, mastery : int) -> float:
+func calculate_attrition() -> float:
 	return DamageAndDoT.calculate_dot_attrition(
 		DamageAndDoT.get_dot(damage_type),
 		base_damage,
-		potency,
-		mastery,
+		get_current_potency(),
+		get_current_mastery(),
 		stacks,
 		duration
 	)

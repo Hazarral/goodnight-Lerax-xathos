@@ -1,9 +1,6 @@
 class_name BurnInstance
 extends DoTInstance
 
-const MAX_MULTIPLIER := 3.0
-const MULTIPLIER_STEP := 0.5
-
 var turns_elapsed : int
 
 func _init(p_caster : Entity, p_target : Entity, p_damage_type : DamageAndDoT.DamageType, p_base_damage : float, p_stacks : int, p_duration : int) -> void:
@@ -18,13 +15,13 @@ func tick_down() -> void:
 		expire()
 
 func get_burn_multiplier() -> float:
-	return minf(MAX_MULTIPLIER, 1.0 + MULTIPLIER_STEP * turns_elapsed)
+	return minf(DamageAndDoT.MAX_FIRE_MULTIPLIER, 1.0 + DamageAndDoT.FIRE_MULTIPLIER_STEP * turns_elapsed)
 
-func calculate_damage(potency : int, mastery : int) -> float:
+func calculate_damage() -> float:
 	return DamageAndDoT.calculate_dot_damage(
 		DamageAndDoT.get_dot(damage_type),
 		base_damage,
-		potency,
-		mastery,
+		get_current_potency(),
+		get_current_mastery(),
 		stacks
 	) * get_burn_multiplier()

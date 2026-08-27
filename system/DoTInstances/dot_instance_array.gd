@@ -10,12 +10,16 @@ func _init(dot_instance : DoTInstance = null) -> void:
 func has_dot() -> bool:
 	return not data.is_empty()
 
+func get_dot_type() -> DamageAndDoT.DoT:
+	## NOTE: Will crash if used on empty data
+	return data.front().damage_type
+
 func add_dot_instance(dot_instance : DoTInstance) -> void:	
 	if dot_instance.damage_type == DamageAndDoT.DamageType.VOID:
 		push_error("Void is not a valid DoTInstance, use VoidInstance instead")
 		return
 	
-	if not data.is_empty() and data.front().damage_type != dot_instance.damage_type:
+	if not data.is_empty() and get_dot_type() != dot_instance.damage_type:
 		push_error("Cannot add DoTInstance of a different type to this DoTInstanceArray")
 		return
 		
@@ -24,6 +28,13 @@ func add_dot_instance(dot_instance : DoTInstance) -> void:
 
 func remove_dot_instance(dot_instance : DoTInstance) -> void:
 	data.erase(dot_instance)
+
+func get_highest_duration() -> int:
+	var result : int = data.front().duration
+	for i in range(1, data.size()):
+		result = maxi(result, data[i].duration)
+	
+	return result
 
 func get_highest_potency() -> int:
 	var max_potency : int = 0
@@ -41,22 +52,46 @@ func tick_down() -> void:
 	for dot_instance in data:
 		dot_instance.tick_down()
 
-func calculate_total_damage() -> int:
-	var total_damage : float = 0.0
-	var highest_potency : int = get_highest_potency()
-	var highest_mastery : int = get_highest_mastery()
-	
+func resolve_damage(target : Entity, has_current : bool) -> void:	
 	for dot_instance in data:
-		total_damage += dot_instance.calculate_damage(highest_potency, highest_mastery)
-	
-	return ceili(total_damage)
+		var total_amount := ceili(dot_instance.calculate_damage())
+		
+		var damage_event := DamageEvent.new(
+			dot_instance.source, 
+			target, 
+			dot_instance.damage_type, 
+			total_amount
+		)
+		
+		CombatSystem.register_combat_event(damage_event)
+		
+		if not has_current or dot_instance.damage_type == DamageAndDoT.DamageType.WATER:
+			continue
+		
+		var echo_damage := ceili(DamageAndDoT.get_current_echo_damage(total_amount, dot_instance.get_current_mastery()))
+		var echo_damage_event := DamageEvent.new(
+			dot_instance.source,
+			target,
+			dot_instance.damage_type,
+			echo_damage
+		)
+		
+		CombatSystem.register_combat_event(echo_damage_event)
+		
+	CombatSystem.process_combat_event_queue()	
 
-func calculate_total_attrition() -> int:
-	var total_attrition : float = 0.0
-	var highest_potency : int = get_highest_potency()
-	var highest_mastery : int = get_highest_mastery()
+func calculate_total_damage() -> float:
+	var total_damage : float = 0.0
 	
 	for dot_instance in data:
-		total_attrition += dot_instance.calculate_attrition(highest_potency, highest_mastery)
+		total_damage += dot_instance.calculate_damage()
 	
-	return ceili(total_attrition)
+	return total_damage
+
+func calculate_total_attrition() -> float:
+	var total_attrition : float = 0.0
+	
+	for dot_instance in data:
+		total_attrition += dot_instance.calculate_attrition()
+	
+	return total_attrition

@@ -118,8 +118,8 @@ func get_active_shield_indices() -> Array[int]:
 	
 	return arr
 
-func has_dot(damage_type : DamageAndDoT.DoT) -> bool:
-	return active_dots[damage_type].has_dot()
+func has_dot(dot_type : DamageAndDoT.DoT) -> bool:
+	return active_dots[dot_type].has_dot()
 
 func has_void() -> bool:
 	return void_instance != null
@@ -141,13 +141,13 @@ func apply_void(stacks : int, is_void_on_player_faction : bool) -> void:
 	else:
 		void_instance.apply_stacks(stacks)
 
-func get_attrition(damage_type : DamageAndDoT.DamageType) -> int:
+func get_attrition(damage_type : DamageAndDoT.DamageType) -> float:
 	if not (has_shield(damage_type) and active_dots[damage_type].has_dot()):
 		return 0
 	
 	return active_dots[damage_type].calculate_total_attrition()
 
-func get_damage_per_turn(damage_over_time : DamageAndDoT.DoT) -> int:
+func get_damage_per_turn(damage_over_time : DamageAndDoT.DoT) -> float:
 	return active_dots[damage_over_time].calculate_total_damage()
 
 func get_void_stacks() -> int:
@@ -287,6 +287,23 @@ func begin_turn() -> void:
 	## Stage A: Shield regen + Attrition
 	_regen_shields()
 	
+	## Stage B: Resolve Crumble splash effect 
+	if has_dot(DamageAndDoT.DoT.CRUMBLE):
+		_resolve_crumble_splash_effect()
+	
+	## Stage C: Resolve DoT (only the damage part)
+	_resolve_dot_damage()
+	
+	## Stage D: Wind Shear blast effect
+	## TODO: Wind SHear deals a portion of all other elemental DoT as damage to all other targets on the same faction with Wind Shear
+	## TODO: Wind Shear deals a Syncrhonized Blast on all targtes of same faction who have Wind Shear 
+	
+	## Stage E: Void
+	## TODO: implement Void damage and escalation here
+	
+	## Stage F: Tick down on all DoT
+	_resolve_dot_tick_down()
+	
 	## Stage F: Actions
 	start_action_phase()
 
@@ -321,4 +338,39 @@ func cast_action(index : int) -> void:
 func _regen_shields() -> void:
 	var active_shield_indices := get_active_shield_indices()
 	for idx in active_shield_indices:
-		current_shields[idx] = maxi(0, max_shields[idx] - get_attrition(idx as DamageAndDoT.DamageType))
+		var attrition := ceili(get_attrition(idx as DamageAndDoT.DamageType))
+		current_shields[idx] = maxi(0, max_shields[idx] - attrition)
+
+func _resolve_crumble_splash_effect() -> void:
+	var total_damage := active_dots[DamageAndDoT.DoT.CRUMBLE].calculate_total_damage()
+	var non_earth_shield_damage := ceili(
+		DamageAndDoT.get_crumble_splash_damage(
+			total_damage, 
+			active_dots[DamageAndDoT.DoT.CRUMBLE].get_highest_potency()
+		)
+	)
+	var multi_damage_event := MultiCombatEvent.new(self)
+	var active_shield_indices := get_active_shield_indices()
+	
+	for idx in active_shield_indices:
+		if idx as DamageAndDoT.DamageType == DamageAndDoT.DamageType.EARTH:
+			continue
+		
+		var real_amount := mini(current_shields[idx], non_earth_shield_damage)
+		var damage_event := DamageEvent.new(self, self, idx as DamageAndDoT.DamageType, real_amount)
+		multi_damage_event.add_event(damage_event)
+	
+	CombatSystem.register_multi_combat_event(multi_damage_event)
+	CombatSystem.process_combat_event_queue()
+
+func _resolve_dot_damage() -> void:
+	var has_current := has_dot(DamageAndDoT.DoT.CURRENT)
+	for damage_over_time in DamageAndDoT.ELEMENT_COUNT:
+		if has_dot(damage_over_time as DamageAndDoT.DoT):
+			active_dots[damage_over_time].resolve_damage(self, has_current)
+
+func _resolve_dot_tick_down() -> void:
+	## NOTE: This is for decreasing duration afterward.
+	for damage_over_time in DamageAndDoT.ELEMENT_COUNT:
+		if has_dot(damage_over_time as DamageAndDoT.DoT):
+			active_dots[damage_over_time].tick_down()

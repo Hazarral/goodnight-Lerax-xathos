@@ -19,7 +19,7 @@ func render() -> void:
 	
 	var current := entity.current_shields[damage_type]
 	var max_val := entity.get_max_shield(damage_type)
-	var attrition := mini(entity.get_attrition(damage_type), entity.max_shields[damage_type])  # however your Entity exposes this
+	var attrition := mini(ceili(entity.get_attrition(damage_type)), entity.max_shields[damage_type])  # however your Entity exposes this
 	
 	element_label.text = DamageAndDoT.DamageType.keys()[damage_type]
 	
