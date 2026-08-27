@@ -282,8 +282,13 @@ func begin_turn() -> void:
 	if current_state == State.DEAD:
 		print("This target is dead!")
 		end_turn()
-	else:
-		start_action_phase()
+		return
+	
+	## Stage A: Shield regen + Attrition
+	_regen_shields()
+	
+	## Stage F: Actions
+	start_action_phase()
 
 func start_action_phase() -> void:
 	print("%s is starting action phase..." % template.entity_name)
@@ -310,3 +315,10 @@ func cast_action(index : int) -> void:
 	
 	if not is_cast_success:
 		push_error("Cannot cast %s due to cooldown or AP cost!" % known_actions[index].action.action_name)
+
+##Combat turn stages below
+
+func _regen_shields() -> void:
+	var active_shield_indices := get_active_shield_indices()
+	for idx in active_shield_indices:
+		current_shields[idx] = maxi(0, max_shields[idx] - get_attrition(idx as DamageAndDoT.DamageType))
