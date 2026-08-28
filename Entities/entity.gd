@@ -280,7 +280,8 @@ func begin_turn() -> void:
 	## TODO: Implement the pipeline here
 	print("%s is beginning their turn!" % template.entity_name)
 	if current_state == State.DEAD:
-		print("This target is dead!")
+		print("This target is dead! DoT will still tick down")
+		_resolve_dot_tick_down()
 		end_turn()
 		return
 	
@@ -295,8 +296,9 @@ func begin_turn() -> void:
 	_resolve_dot_damage()
 	
 	## Stage D: Wind Shear blast effect
-	## TODO: Wind SHear deals a portion of all other elemental DoT as damage to all other targets on the same faction with Wind Shear
-	## TODO: Wind Shear deals a Syncrhonized Blast on all targtes of same faction who have Wind Shear 
+	if has_dot(DamageAndDoT.DoT.WIND_SHEAR):
+		_resolve_wind_shear_spread_effect()
+		_resolve_wind_shear_blast_effect()
 	
 	## Stage E: Void
 	## TODO: implement Void damage and escalation here
@@ -336,10 +338,10 @@ func cast_action(index : int) -> void:
 ##Combat turn stages below
 
 func _regen_shields() -> void:
-	var active_shield_indices := get_active_shield_indices()
-	for idx in active_shield_indices:
-		var attrition := ceili(get_attrition(idx as DamageAndDoT.DamageType))
-		current_shields[idx] = maxi(0, max_shields[idx] - attrition)
+	for i in range(DamageAndDoT.ELEMENT_COUNT):
+		if max_shields[i] > 0:
+			var attrition := ceili(get_attrition(i as DamageAndDoT.DamageType))
+			current_shields[i] = maxi(0, max_shields[i] - attrition)
 
 func _resolve_crumble_splash_effect() -> void:
 	var total_damage := active_dots[DamageAndDoT.DoT.CRUMBLE].calculate_total_damage()
@@ -374,3 +376,66 @@ func _resolve_dot_tick_down() -> void:
 	for damage_over_time in DamageAndDoT.ELEMENT_COUNT:
 		if has_dot(damage_over_time as DamageAndDoT.DoT):
 			active_dots[damage_over_time].tick_down()
+
+func _resolve_wind_shear_spread_effect() -> void:
+	## NOTE: Damage Duplication is still sourced from the original sources
+	var faction := ActionEvent.TargetFaction.PLAYER if is_player_faction() else ActionEvent.TargetFaction.ENEMY
+	var valid_targets = CombatSystem.get_valid_targets(faction, ActionEvent.TargetState.ALL).filter(
+		func (entity : Entity) -> bool: return DamageAndDoT.get_wind_shear_spread_target_condition(self, entity)
+	)
+	
+	for dot_instance_array in active_dots:
+		if not dot_instance_array.has_dot():
+			continue
+		
+		if dot_instance_array.get_dot_type() == DamageAndDoT.DoT.WIND_SHEAR:
+			continue
+		
+		for instance in dot_instance_array.data:
+			for target in valid_targets:
+				var damage_event := DamageEvent.new(
+					instance.source, 
+					target, 
+					instance.damage_type, 
+					ceili(
+						DamageAndDoT.get_wind_shear_spread_damage(
+							instance.calculate_damage(), 
+							instance.get_current_mastery()
+						)
+					)
+				)
+				
+				CombatSystem.register_combat_event(damage_event)
+	
+	CombatSystem.process_combat_event_queue()
+
+func _resolve_wind_shear_blast_effect() -> void:
+	## NOTE: The blast is sourced from the emitter, aka this entity
+	var faction := ActionEvent.TargetFaction.PLAYER if is_player_faction() else ActionEvent.TargetFaction.ENEMY
+	var valid_targets = CombatSystem.get_valid_targets(faction, ActionEvent.TargetState.ALL).filter(
+		func (entity : Entity) -> bool: return DamageAndDoT.get_wind_shear_spread_target_condition(self, entity)
+	)
+	
+	var total_wind_shear_damage := active_dots[DamageAndDoT.DoT.WIND_SHEAR].calculate_total_damage()
+	var highest_potency := active_dots[DamageAndDoT.DoT.WIND_SHEAR].get_highest_potency()
+	
+	## +1 due to "self" being filtered
+	var afflicted_count := valid_targets.size() + 1
+	
+	for target in valid_targets:
+		var damage_event := DamageEvent.new(
+			self,
+			target,
+			DamageAndDoT.DamageType.WIND,
+			ceili(
+				DamageAndDoT.get_wind_shear_blast_damage(
+					total_wind_shear_damage,
+					highest_potency,
+					afflicted_count
+				)
+			)
+		)
+		
+		CombatSystem.register_combat_event(damage_event)
+	
+	CombatSystem.process_combat_event_queue()

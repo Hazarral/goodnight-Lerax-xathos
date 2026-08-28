@@ -23,5 +23,6 @@ func calculate_damage() -> float:
 		base_damage,
 		get_current_potency(),
 		get_current_mastery(),
-		stacks
+		stacks,
+		duration
 	) * get_burn_multiplier()

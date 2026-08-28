@@ -11,8 +11,10 @@ var dot_instance_array : DoTInstanceArray
 const HEADER_TEXT_FRONT := "%s"
 const SHIELD_PRESENT_TEXT_PART := " -> %s Shield"
 const HEADER_TEXT_BACK := ", %d Damage, %d Attrition, %d Turn%s left"
+const BURN_STAGE_DETAIL := " (x%.1f)"
 
-const DETAIL_LINE_TEXT := "> %s, %.2f Base Damage, %.2f Attrition, %d Stack%s, %d Turn%s\n"
+const DETAIL_LINE_TEXT := "> %s, %.2f Base Damage, %.2f Attrition, %d Stack%s, %d Turn%s"
+
 
 func setup(p_entity : Entity, p_dot_instance_array : DoTInstanceArray) -> void:
 	entity = p_entity
@@ -44,6 +46,11 @@ func render() -> void:
 			instance.duration,
 			"s" if instance.duration != 1 else ""
 		]
+		
+		if dot_type == DamageAndDoT.DoT.BURN:
+			details_label.text += BURN_STAGE_DETAIL % instance.get_burn_multiplier()
+		
+		details_label.text += "\n"
 
 func _on_dropdown_button_pressed() -> void:
 	# "XOR with 1" trick

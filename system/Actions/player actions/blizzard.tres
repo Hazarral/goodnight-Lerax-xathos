@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://blnmhbujyq2dn"]
 
-[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_e48gu"]
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_cflqy"]
 [ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/Actions/damage_action_event.gd" id="2_0mgk2"]
 [ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/Actions/apply_dot_action_event.gd" id="3_xvhb5"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="4_ohlxy"]
@@ -31,5 +31,5 @@ action_name = "Blizzard"
 action_point_cost = 3
 cooldown = 2
 description = "Deals %.2f Ice damage to all alive enemies, applies %d stacks of Frostbite at %.2f base damage for %d turns to all enemies hit."
-action_events = Array[ExtResource("1_e48gu")]([SubResource("Resource_t76v7"), SubResource("Resource_he07f")])
+action_events = Array[ExtResource("1_cflqy")]([SubResource("Resource_t76v7"), SubResource("Resource_he07f")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"

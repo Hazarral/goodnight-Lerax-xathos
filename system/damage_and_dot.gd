@@ -89,6 +89,11 @@ const FIRE_MULTIPLIER_STEP := 0.5
 const CURRENT_BASE_ECHO_EFFECTIVENESS := 20.0
 const CURRENT_ECHO_MASTERY_COEFFICIENT := 0.2
 
+const WIND_SHEAR_BASE_SPREAD_EFFECTIVENESS := 20.0
+const WIND_SHEAR_SPREAD_MASTERY_COEFFICIENT := 0.1
+const WIND_SHEAR_BASE_BLAST_EFFECTIVENESS := 40.0
+const WIND_SHEAR_BLAST_POTENCY_COEFFICIENT := 0.25
+
 const CRUMBLE_BASE_SPLASH := 20.0
 const CRUMBLE_SPLASH_POTENCY_COEFFICIENT := 0.1
 
@@ -135,7 +140,7 @@ func get_damage_color_hex(damage_type : DamageType) -> String:
 	return ""
 
 ## CALCULATE DAMAGE
-func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, mastery : int, stacks: int) -> float:
+func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, mastery : int, stacks : int, duration : int) -> float:
 	if dot_type == DoT.VOID:
 		push_error("Void has special damage! Please use VoidInstance.get_void_damage(...)")
 		return 0.0
@@ -144,7 +149,7 @@ func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, ma
 	var potency_coef : float = coefs[Coefficient.DAMAGE_POTENCY]
 	var mastery_coef : float = coefs[Coefficient.DAMAGE_MASTERY]
 	
-	var raw_damage : float = (base_damage + (potency_coef * potency) + (mastery_coef * mastery)) * stacks
+	var raw_damage : float = (base_damage + duration + (potency_coef * potency) + (mastery_coef * mastery)) * stacks
 		
 	return raw_damage
 
@@ -167,3 +172,12 @@ func get_crumble_splash_damage(total_damage : float, potency : int) -> float:
 
 func get_current_echo_damage(total_damage : float, mastery : int) -> float:
 	return total_damage * (CURRENT_BASE_ECHO_EFFECTIVENESS + CURRENT_ECHO_MASTERY_COEFFICIENT * mastery) / 100.0
+
+func get_wind_shear_spread_damage(total_damage : float, mastery : int) -> float:
+	return total_damage * (WIND_SHEAR_BASE_SPREAD_EFFECTIVENESS + WIND_SHEAR_SPREAD_MASTERY_COEFFICIENT * mastery) / 100.0
+
+func get_wind_shear_spread_target_condition(source : Entity, target : Entity) -> bool:
+	return target.has_dot(DoT.WIND_SHEAR) and target != source
+
+func get_wind_shear_blast_damage(total_wind_shear_damage : float, potency : int, afflicted_count : int) -> float:
+	return total_wind_shear_damage * (WIND_SHEAR_BASE_BLAST_EFFECTIVENESS + WIND_SHEAR_BLAST_POTENCY_COEFFICIENT * potency) * afflicted_count
