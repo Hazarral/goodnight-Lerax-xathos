@@ -180,4 +180,4 @@ func get_wind_shear_spread_target_condition(source : Entity, target : Entity) ->
 	return target.has_dot(DoT.WIND_SHEAR) and target != source
 
 func get_wind_shear_blast_damage(total_wind_shear_damage : float, potency : int, afflicted_count : int) -> float:
-	return total_wind_shear_damage * (WIND_SHEAR_BASE_BLAST_EFFECTIVENESS + WIND_SHEAR_BLAST_POTENCY_COEFFICIENT * potency) * afflicted_count
+	return total_wind_shear_damage * (WIND_SHEAR_BASE_BLAST_EFFECTIVENESS + WIND_SHEAR_BLAST_POTENCY_COEFFICIENT * potency) / 100.0 * afflicted_count

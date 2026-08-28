@@ -256,6 +256,7 @@ func reduce_hp(amount : int) -> void:
 		return
 	
 	current_hp = maxi(0, current_hp - amount)
+	print("%s received %d damage!" % [template.entity_name, amount])
 	if current_hp <= 0:
 		die()
 
