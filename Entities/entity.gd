@@ -82,7 +82,7 @@ func get_max_action_point() -> int:
 func get_action_point_regen_per_turn() -> int:
 	return template.action_point_regen_per_turn
 
-func recover_ap() -> void:
+func recover_action_point() -> void:
 	current_action_point = mini(current_action_point + template.action_point_regen_per_turn, template.max_action_point)
 
 func has_shield(damage_type : DamageAndDoT.DamageType) -> bool:
@@ -312,7 +312,7 @@ func start_action_phase() -> void:
 
 func end_turn() -> void:
 	print("%s's turn ended!" % template.entity_name)
-	recover_ap()
+	recover_action_point()
 	tick_cooldowns()
 	CombatSystem.on_turn_finished()
 	EventBus.emit_signal("force_refresh_turn_ui")
