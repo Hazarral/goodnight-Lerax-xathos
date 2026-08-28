@@ -255,8 +255,9 @@ func reduce_hp(amount : int) -> void:
 	if current_state == State.DEAD:
 		return
 	
+	print("%s received %d damage to HP!" % [template.entity_name, amount])
 	current_hp = maxi(0, current_hp - amount)
-	print("%s received %d damage!" % [template.entity_name, amount])
+	
 	if current_hp <= 0:
 		die()
 
@@ -423,6 +424,8 @@ func _resolve_wind_shear_blast_effect() -> void:
 	## +1 due to "self" being filtered
 	var afflicted_count := valid_targets.size() + 1
 	
+	var entity_names := valid_targets.map(func(entity : Entity) -> String: return entity.template.entity_name)
+	print("Wind Shear Blast Targets: ", entity_names)
 	for target in valid_targets:
 		var damage_event := DamageEvent.new(
 			self,
