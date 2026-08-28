@@ -1,4 +1,4 @@
-class_name ActionEvent
+@abstract class_name ActionEvent
 extends Resource
 
 enum TargetFaction {
@@ -18,10 +18,28 @@ enum TargetCount {
 	ALL
 }
 
-var source : Entity
 @export var target_state : TargetState
 @export var target_faction : TargetFaction
 @export var target_count : TargetCount
 
-func resolve() -> void:
-	print("This exists for base class of ActionEvent as a reminder only, remember to overwrite it!")
+func get_targets() -> Variant:
+	## Either Array[Entity] or null, different from an empty Array[Entity]
+	var targets : Array[Entity] = []
+	
+	if target_count == TargetCount.SINGLE:
+		EventBus.emit_signal("target_requested", self, target_faction, target_state)
+		
+		## This signal will be emitted by UI on player side and by AI on enemy side
+		var picked : Entity = await EventBus.target_resolved
+		if picked == null:
+			print("Picked null! Cancelling...")
+			return null
+		
+		print("Picked something! Proceeding...")
+		targets = [picked]
+	else:
+		targets = CombatSystem.get_valid_targets(target_faction, target_state)
+
+	return targets
+
+@abstract func resolve(source : Entity) -> bool

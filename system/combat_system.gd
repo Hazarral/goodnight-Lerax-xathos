@@ -1,12 +1,16 @@
 extends Node
 
+var draechen_player : Entity
 var player_on_field : Array[Entity]
 var enemy_on_field: Array[Entity]
 var enemy_reinforcement : Array[Entity]
-var damage_event_queue : Array[DamageEvent]
+var combat_event_queue : Array[CombatEvent]
 
 var turn_order : Array[Entity]
 var current_turn_index := 0
+var turn_counter := 0
+var round_counter := 0
+var current_actor : Entity = null
 
 const MAX_ALIVE_ENEMY_ON_FIELD := 5
 
@@ -14,10 +18,42 @@ func reset() -> void:
 	player_on_field.clear()
 	enemy_on_field.clear()
 	enemy_reinforcement.clear()
-	damage_event_queue.clear()
+	combat_event_queue.clear()
 	
 	turn_order.clear()
 	current_turn_index = 0
+	turn_counter = 0
+
+func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side_templates : Array[EntityTemplate]) -> void:
+	## 1. Ensure clean data before anything
+	reset()
+	
+	## 2. Create the entities in memory. We will ignore magnification for now
+	## NOTE: Implement magnification later
+	var player_side : Array[Entity] = []
+	var enemy_side : Array[Entity] = []
+	
+	for template in player_side_templates:
+		player_side.append(Entity.new(template))
+	
+	for template in enemy_side_templates:
+		enemy_side.append(Entity.new(template))
+	
+	## 3. Now we initialize factions for proper storage
+	initialize_factions(player_side, enemy_side)
+	
+	## 4. Turn order is finalized
+	build_turn_order()
+
+func initialize_encounter(player_party : Array[Entity], enemy_side_templates : Array[EntityTemplate]) -> void:
+	## NOTE: Use this for the actual game, because player party is persistent
+	reset()
+	var enemy_side : Array[Entity] = []
+	for template in enemy_side_templates:
+		enemy_side.append(Entity.new(template))
+	
+	initialize_factions(player_party, enemy_side)
+	build_turn_order()
 
 func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]) -> void:
 	if player_side.is_empty() or enemy_side.is_empty():
@@ -26,6 +62,7 @@ func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]
 	
 	for entity in player_side:
 		# NOTE: For now, player can have as many entities on the field as they want
+		draechen_player = player_side.front()
 		add_player_faction(entity)
 	
 	for entity in enemy_side:
@@ -33,8 +70,6 @@ func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]
 			add_enemy_faction(entity)
 		else:
 			add_enemy_reinforcement(entity)
-	
-	build_turn_order()
 
 func build_turn_order() -> void:
 	turn_order.append_array(player_on_field)
@@ -42,14 +77,14 @@ func build_turn_order() -> void:
 
 func add_player_faction(entity : Entity) -> void:
 	if not entity.is_player_faction():
-		push_error("Entity %s is not player faction! Cannot add to player faction list." % entity.template.entity_name)
+		push_error("Entity %s is not player faction! Check the template list passed into initialize_combat() — this entity's template has is_player_faction=false but was routed to player_side." % entity.template.entity_name)
 		return	
 	
 	player_on_field.append(entity)
 
 func add_enemy_faction(entity : Entity) -> void:
 	if entity.is_player_faction():
-		push_error("Entity %s is not enemy faction! Cannot add to enemy faction list." % entity.template.entity_name)
+		push_error("Entity %s is not enemy faction! Check the template list passed into initialize_combat() — this entity's template has is_player_faction=true but was routed to enemy_side." % entity.template.entity_name)
 		return	
 	
 	enemy_on_field.append(entity)
@@ -67,57 +102,72 @@ func add_reinforcement_to_field() -> void:
 		enemy_on_field.append(entity)
 		turn_order.append(entity)
 
+func backfill_reinforcements() -> void:
+	while get_alive_targets(enemy_on_field).size() < MAX_ALIVE_ENEMY_ON_FIELD and not enemy_reinforcement.is_empty():
+		add_reinforcement_to_field()
+
 func get_next_actor() -> Entity:
-	var attempts := 0
-	while attempts < turn_order.size():
-		var entity = turn_order[current_turn_index]
-		current_turn_index = (current_turn_index + 1) % turn_order.size()
-		
-		if entity.current_state == Entity.State.ALIVE:
-			return entity
-		
-		attempts += 1
+	var entity = turn_order[current_turn_index]
 	
-	return null  # everyone in turn_order is dead — combat should have ended already
+	turn_counter += 1
+	if current_turn_index == 0:
+		round_counter += 1
+	
+	current_turn_index = (current_turn_index + 1) % turn_order.size()
+	
+	return entity
+
+func get_turn_counter() -> int:
+	return turn_counter
 
 func advance_turn() -> void:
-	var entity := get_next_actor()
-	if not entity:
+	## NOTE: This is the official way to advance turn and get next entity in the turn order
+	if is_combat_over():
 		end_combat()
-	else:
-		entity.take_turn()
+		return
+	
+	current_actor = get_next_actor()
+	if current_actor == null:
+		end_combat()
+		return
+	
+	current_actor.begin_turn()
+
+func on_turn_finished() -> void:
+	## NOTE: This is meant to be called by entities to report having finished their turn
+	advance_turn()
+
+func get_current_actor() -> Entity:
+	return current_actor
+
+func end_current_actor_turn() -> void:
+	current_actor.end_turn()
+	EventBus.emit_signal("force_refresh_turn_ui")
+
+func is_combat_over() -> bool:
+	if draechen_player.current_state == Entity.State.DEAD:
+		return true
+	if get_dead_targets(enemy_on_field).size() == enemy_on_field.size():
+		return true
+	
+	return false
 
 func end_combat() -> void:
 	print("COMBAT ENDED!")
-	
-	var dead_player_count := get_dead_targets(player_on_field).size() 
-	var dead_enemy_count := get_dead_targets(enemy_on_field).size()
-	var player_on_field_count := player_on_field.size()
-	var enemy_total_count := enemy_on_field.size() + enemy_reinforcement.size()
-	
-	if dead_player_count == player_on_field_count:
-		print("Combat lost! All player characters are dead.")	
-	elif dead_enemy_count == enemy_total_count:
-		print("Combat won! All enemies including reinforcements are dead.")	
-	elif dead_player_count + dead_enemy_count == player_on_field_count + enemy_total_count:
-		print("Everyone is dead somehow...At least Evernight won.")
-	else:
-		print("Combat ended for an unknown reason! Neither side is wiped, and not everyone is dead!")
-	
 	reset()
 
-func register_damage_event(damage_event : DamageEvent) -> void:
-	damage_event_queue.append(damage_event)
+func register_combat_event(combat_event : CombatEvent) -> void:
+	combat_event_queue.append(combat_event)
 
-func register_multi_damage_event(multi_damage_event : MultiDamageEvent) -> void:
-	damage_event_queue.append_array(multi_damage_event.data)
+func register_multi_combat_event(multi_combat_event : MultiCombatEvent) -> void:
+	combat_event_queue.append_array(multi_combat_event.data)
 
 func inject_damage_event(damage_event : DamageEvent) -> void:
-	damage_event_queue.push_front(damage_event)
+	combat_event_queue.push_front(damage_event)
 
-func process_damage_event_queue() -> void:
-	while not damage_event_queue.is_empty():
-		var current_event : DamageEvent = damage_event_queue.pop_front()
+func process_combat_event_queue() -> void:
+	while not combat_event_queue.is_empty():
+		var current_event : CombatEvent = combat_event_queue.pop_front()
 		
 		# NOTE: This may inject during resolve() but that is none of this script's business\
 		# current_event also gets ref = 0 when going out of scope
@@ -131,6 +181,9 @@ func get_alive_targets(faction : Array[Entity]) -> Array[Entity]:
 
 func get_dead_targets(faction : Array[Entity]) -> Array[Entity]:
 	return (faction.filter(func(entity): return entity.current_state == Entity.State.DEAD))
+
+func get_enemy_reinforcement_count() -> int:
+	return enemy_reinforcement.size()
 
 func get_valid_targets(faction_filter : ActionEvent.TargetFaction, state_filter : ActionEvent.TargetState) -> Array[Entity]:
 	var targets : Array[Entity] = []

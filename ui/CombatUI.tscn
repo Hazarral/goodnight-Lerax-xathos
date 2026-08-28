@@ -1,0 +1,396 @@
+[gd_scene format=3 uid="uid://00irjgp2o0tn"]
+
+[ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_theme"]
+[ext_resource type="Script" uid="uid://drekl6s4imnxo" path="res://scripts/combat_ui.gd" id="2_script"]
+[ext_resource type="Resource" uid="uid://rnqvtjaoiwov" path="res://Entities/templates/player_the_dragon.tres" id="4_0ncfs"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="5_0ncfs"]
+[ext_resource type="Resource" uid="uid://g0gfyafsh524" path="res://system/Actions/enemy actions/fireball.tres" id="6_4d4xh"]
+[ext_resource type="Resource" uid="uid://bryq065munqlv" path="res://system/Actions/player actions/invoke_flame.tres" id="6_gftf7"]
+[ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://Entities/entity_template.gd" id="6_rqx7n"]
+
+[sub_resource type="Resource" id="Resource_1482v"]
+script = ExtResource("6_rqx7n")
+entity_name = "Ally1"
+is_player_faction = true
+potency = 10
+mastery = 10
+max_hp = 200
+max_action_point = 5
+starting_action_point = 2
+action_point_regen_per_turn = 5
+innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_gftf7")])
+metadata/_custom_type_script = "uid://nf30jicvf3ri"
+
+[sub_resource type="Resource" id="Resource_0ncfs"]
+script = ExtResource("6_rqx7n")
+entity_name = "Enemy1"
+potency = 5
+mastery = 5
+max_hp = 20000
+fire_shield = 100
+poison_shield = 200
+max_action_point = 5
+starting_action_point = 2
+action_point_regen_per_turn = 2
+innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_4d4xh")])
+metadata/_custom_type_script = "uid://nf30jicvf3ri"
+
+[sub_resource type="Resource" id="Resource_rqx7n"]
+script = ExtResource("6_rqx7n")
+entity_name = "Enemy2"
+mastery = 5
+max_hp = 1000
+water_shield = 100
+wind_shield = 100
+physical_shield = 100
+max_action_point = 5
+starting_action_point = 5
+action_point_regen_per_turn = 1
+innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_4d4xh")])
+metadata/_custom_type_script = "uid://nf30jicvf3ri"
+
+[node name="CombatUI" type="Control" unique_id=1152202896]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_script")
+player_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("4_0ncfs"), SubResource("Resource_1482v")])
+enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([SubResource("Resource_0ncfs"), SubResource("Resource_rqx7n")])
+
+[node name="Background" type="ColorRect" parent="." unique_id=1394668291]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.047, 0.043, 0.055, 1)
+
+[node name="Frame" type="MarginContainer" parent="." unique_id=1620882336]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 24
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="Root" type="VBoxContainer" parent="Frame" unique_id=1407618481]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Topbar" type="PanelContainer" parent="Frame/Root" unique_id=689072876]
+layout_mode = 2
+theme_type_variation = &"RaisedPanel"
+
+[node name="TopbarRow" type="HBoxContainer" parent="Frame/Root/Topbar" unique_id=1682216773]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Lifespan" type="VBoxContainer" parent="Frame/Root/Topbar/TopbarRow" unique_id=490550482]
+layout_mode = 2
+size_flags_horizontal = 4
+alignment = 2
+
+[node name="LifespanLabel" type="Label" parent="Frame/Root/Topbar/TopbarRow/Lifespan" unique_id=948809278]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 20
+text = "TIME TO LIVE"
+horizontal_alignment = 2
+
+[node name="LifespanValue" type="Label" parent="Frame/Root/Topbar/TopbarRow/Lifespan" unique_id=756974847]
+layout_mode = 2
+theme_type_variation = &"EmberLabel"
+theme_override_font_sizes/font_size = 15
+text = "4 days, 6 hrs"
+horizontal_alignment = 1
+
+[node name="MidRow" type="HBoxContainer" parent="Frame/Root" unique_id=1641242799]
+custom_minimum_size = Vector2(0, 340)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 1
+
+[node name="PartyPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=751493100]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="PartyCol" type="VBoxContainer" parent="Frame/Root/MidRow/PartyPanel" unique_id=343256538]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="Label" parent="Frame/Root/MidRow/PartyPanel/PartyCol" unique_id=1612595729]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "YOUR PARTY"
+
+[node name="RosterScroll" type="ScrollContainer" parent="Frame/Root/MidRow/PartyPanel/PartyCol" unique_id=599630738]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RosterList" type="VBoxContainer" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll" unique_id=434083413]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="EnemyPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=1248686686]
+custom_minimum_size = Vector2(250, 0)
+layout_mode = 2
+
+[node name="EnemyCol" type="VBoxContainer" parent="Frame/Root/MidRow/EnemyPanel" unique_id=1304019750]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="Label" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol" unique_id=1007214872]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "ENEMIES"
+
+[node name="RosterScroll" type="ScrollContainer" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol" unique_id=517870269]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="RosterList" type="VBoxContainer" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll" unique_id=1448608430]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="InspectorPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=1009306168]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="InspectorCol" type="VBoxContainer" parent="Frame/Root/MidRow/InspectorPanel" unique_id=1443366090]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Header" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol" unique_id=1095148201]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "INSPECTOR"
+
+[node name="InspScroll" type="ScrollContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol" unique_id=57609054]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="InspBody" type="VBoxContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll" unique_id=379258]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="TitleRow" type="HBoxContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1068601400]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Name" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow" unique_id=1370425191]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+theme_type_variation = &"NameLabel"
+theme_override_font_sizes/font_size = 25
+text = "EntityName"
+
+[node name="State" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow" unique_id=2052893267]
+layout_mode = 2
+size_flags_vertical = 1
+theme_type_variation = &"NameLabel"
+theme_override_font_sizes/font_size = 25
+text = "[STATE]"
+horizontal_alignment = 2
+
+[node name="HPLine" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=2085227888]
+layout_mode = 2
+theme_type_variation = &"MonoLabelBright"
+theme_override_font_sizes/font_size = 20
+text = "HP: X / X"
+
+[node name="PotencyLine" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1413498432]
+layout_mode = 2
+theme_type_variation = &"MonoLabelBright"
+theme_override_font_sizes/font_size = 20
+text = "Potency: X (+y)"
+
+[node name="MasteryLine" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1555152114]
+layout_mode = 2
+theme_type_variation = &"MonoLabelBright"
+theme_override_font_sizes/font_size = 20
+text = "Mastery: X (+y)"
+
+[node name="ShieldGrid" type="GridContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1719927465]
+layout_mode = 2
+theme_override_constants/h_separation = 6
+theme_override_constants/v_separation = 6
+columns = 4
+
+[node name="ElementalDoTList" type="VBoxContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=930276820]
+layout_mode = 2
+
+[node name="VoidRow" type="PanelContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=547875691]
+layout_mode = 2
+theme_type_variation = &"CardPanel"
+
+[node name="VoidHBox" type="HBoxContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidRow" unique_id=1191662845]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="VoidName" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidRow/VoidHBox" unique_id=573707452]
+layout_mode = 2
+theme_type_variation = &"VoidLabel"
+text = "Void"
+
+[node name="VoidDesc" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidRow/VoidHBox" unique_id=869447406]
+layout_mode = 2
+theme_type_variation = &"MonoLabel"
+text = "×2 stacks · escalates each turn · unremovable"
+
+[node name="LogPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=305808400]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="LogCol" type="VBoxContainer" parent="Frame/Root/MidRow/LogPanel" unique_id=503906168]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Header" type="Label" parent="Frame/Root/MidRow/LogPanel/LogCol" unique_id=924506501]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "COMBAT LOG"
+
+[node name="LogScroll" type="ScrollContainer" parent="Frame/Root/MidRow/LogPanel/LogCol" unique_id=1670322581]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LogText" type="RichTextLabel" parent="Frame/Root/MidRow/LogPanel/LogCol/LogScroll" unique_id=1338062492]
+layout_mode = 2
+size_flags_horizontal = 3
+bbcode_enabled = true
+text = "[color=#d97757]— Turn 4 —[/color]
+Draechen casts [b]Fire Breath[/b] on Enemy 1.
+Fire Shield absorbs [color=#d97757]64[/color] dmg.
+Enemy 1's [b]Void[/b] escalates — [color=#ff006a]41 dmg[/color] direct to HP."
+fit_content = true
+
+[node name="ActionBar" type="PanelContainer" parent="Frame/Root" unique_id=962627189]
+custom_minimum_size = Vector2(0, 200)
+layout_mode = 2
+theme_type_variation = &"RaisedPanel"
+
+[node name="ActionBarRow" type="HBoxContainer" parent="Frame/Root/ActionBar" unique_id=1053541163]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="Frame/Root/ActionBar/ActionBarRow" unique_id=2008118611]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer" unique_id=1672440537]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer" unique_id=1911302802]
+layout_mode = 2
+
+[node name="PortraitBox" type="PanelContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1042154836]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_type_variation = &"CardPanel"
+
+[node name="PortraitCell" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer" unique_id=439180414]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+theme_override_constants/separation = 4
+
+[node name="PortraitName" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=1805180956]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_type_variation = &"NameLabel"
+text = "Draechen"
+
+[node name="PotencyLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=1535197067]
+layout_mode = 2
+size_flags_horizontal = 2
+theme_type_variation = &"NameLabel"
+text = "Potency: X"
+
+[node name="MasteryLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=547243573]
+layout_mode = 2
+size_flags_horizontal = 0
+theme_type_variation = &"NameLabel"
+text = "Mastery: X"
+
+[node name="EndTurnButton" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer" unique_id=1837436638]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+theme = ExtResource("1_theme")
+text = "End Turn"
+
+[node name="ActionScroll" type="ScrollContainer" parent="Frame/Root/ActionBar/ActionBarRow" unique_id=717535405]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll" unique_id=1496125928]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="APBlock" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer" unique_id=2033460896]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="APLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock" unique_id=235915660]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "ACTION POINTS  6 / 10"
+
+[node name="APPips" type="HBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock" unique_id=1945833613]
+layout_mode = 2
+theme_override_constants/separation = 3
+
+[node name="Pip1" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1801259963]
+custom_minimum_size = Vector2(11, 11)
+layout_mode = 2
+theme_type_variation = &"VoidBadge"
+
+[node name="Pip2" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1977587349]
+custom_minimum_size = Vector2(11, 11)
+layout_mode = 2
+theme_type_variation = &"VoidBadge"
+
+[node name="Pip3" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1614814622]
+custom_minimum_size = Vector2(11, 11)
+layout_mode = 2
+
+[node name="ActionList" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer" unique_id=1095021438]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 5
+
+[node name="BiteBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=1150993094]
+layout_mode = 2
+text = "Bite                                    2 AP"
+alignment = 0
+
+[node name="ClawBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=2020932971]
+layout_mode = 2
+text = "Claw                                    2 AP"
+alignment = 0
+
+[node name="FireBreathBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=1984824394]
+layout_mode = 2
+disabled = true
+text = "Fire Breath                    2 AP · CD 2"
+alignment = 0
+
+[connection signal="pressed" from="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]

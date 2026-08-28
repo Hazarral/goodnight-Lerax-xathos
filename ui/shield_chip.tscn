@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://b28ht6m51ru7k"]
+
+[ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_r6yhy"]
+[ext_resource type="Script" uid="uid://dy66e1prt6ikg" path="res://ui/shield_chip.gd" id="2_eshws"]
+[ext_resource type="PackedScene" uid="uid://b5xyxbyj2ekvo" path="res://ui/shield_bar.tscn" id="3_a0rye"]
+
+[node name="ShieldChip" type="PanelContainer" unique_id=490078155]
+custom_minimum_size = Vector2(150, 0)
+theme = ExtResource("1_r6yhy")
+theme_type_variation = &"CardPanel"
+script = ExtResource("2_eshws")
+
+[node name="ChipVBox" type="VBoxContainer" parent="." unique_id=1814126481]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="ElementLabel" type="Label" parent="ChipVBox" unique_id=615304596]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+theme_override_font_sizes/font_size = 13
+text = "ELEMENT"
+
+[node name="ValLabel" type="RichTextLabel" parent="ChipVBox" unique_id=2096884657]
+layout_mode = 2
+theme = ExtResource("1_r6yhy")
+theme_type_variation = &"MonoLabelBright"
+theme_override_font_sizes/normal_font_size = 15
+bbcode_enabled = true
+text = "X / X (-y)"
+fit_content = true
+scroll_active = false
+
+[node name="ShieldBar" parent="ChipVBox" unique_id=450865572 instance=ExtResource("3_a0rye")]
+layout_mode = 2

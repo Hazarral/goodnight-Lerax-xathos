@@ -33,16 +33,15 @@ enum Coefficient {
 
 # The Master Balance Table
 # Format: [Damage Potency, Damage Mastery, Attrition Potency, Attrition Mastery]
-const DOT_COEFFICIENTS : Dictionary[DoT, Array] = {
+const DOT_COEFFICIENTS : Dictionary[DoT, PackedFloat32Array] = {
 	DoT.BURN:       [2.0, 0.1, 0.1, 1.5],
+	DoT.CURRENT:    [0.2, 0.2, 0.2, 0.2],
 	DoT.WIND_SHEAR: [1.0, 0.1, 0.1, 2.0],
-	DoT.CURRENT:    [0.0, 0.0, 0.0, 0.0], # Fill these with your actual balance numbers
-	DoT.POISON:     [0.2, 0.5, 0.8, 2.5], 
-	DoT.SHOCK:      [1.0, 0.5, 0.5, 1.0],
-	DoT.BLEED:      [0.5, 0.2, 0.5, 0.2],
-	DoT.CRUMBLE:    [1.5, 0.5, 1.0, 1.0],
-	DoT.FROSTBITE:  [1.0, 0.5, 1.0, 0.5],
-	DoT.VOID:       [1.0, 1.0, 0.0, 0.0]  # Void has no Attrition
+	DoT.POISON:     [0.2, 0.1, 0.5, 3.0],
+	DoT.SHOCK:      [1.5, 0.5, 0.2, 0.5],
+	DoT.BLEED:      [0.1, 0.1, 1.0, 1.0],
+	DoT.CRUMBLE:    [2.5, 0.1, 0.5, 0.5],
+	DoT.FROSTBITE:  [0.5, 0.5, 1.0, 1.5]
 }
 
 const ELEMENT_COUNT := 8
@@ -83,10 +82,20 @@ const EARTH_COLOR_HEX := "#836540"
 const ICE_COLOR_HEX := "#bad3fb"
 const VOID_COLOR_HEX := "#ff1d75"
 
+## Special effects
+const MAX_FIRE_MULTIPLIER := 3.0
+const FIRE_MULTIPLIER_STEP := 0.5
+
+const CURRENT_BASE_ECHO_EFFECTIVENESS := 20.0
+const CURRENT_ECHO_MASTERY_COEFFICIENT := 0.2
+
+const CRUMBLE_BASE_SPLASH := 20.0
+const CRUMBLE_SPLASH_POTENCY_COEFFICIENT := 0.1
+
 func get_dot(damage_type : DamageType) -> DoT:
 	return damage_type as DoT
 
-func get_damage_type_name(damage_type : DamageType) -> StringName:
+func get_damage_type_name(damage_type : DamageType) -> String:
 	match damage_type:
 		DamageType.FIRE: return FIRE
 		DamageType.WATER: return WATER
@@ -97,7 +106,20 @@ func get_damage_type_name(damage_type : DamageType) -> StringName:
 		DamageType.EARTH: return EARTH
 		DamageType.ICE: return ICE
 		DamageType.VOID: return VOID
-	return &""
+	return ""
+
+func get_damage_over_time_name(damage_over_time : DoT) -> String:
+	match damage_over_time:
+		DoT.BURN: return BURN
+		DoT.CURRENT: return CURRENT
+		DoT.WIND_SHEAR: return WIND_SHEAR
+		DoT.POISON: return POISON
+		DoT.SHOCK: return SHOCK
+		DoT.BLEED: return BLEED
+		DoT.CRUMBLE: return CRUMBLE
+		DoT.FROSTBITE: return FROSTBITE
+		DoT.VOID: return VOID
+	return ""
 
 func get_damage_color_hex(damage_type : DamageType) -> String:
 	match damage_type:
@@ -118,7 +140,7 @@ func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, ma
 		push_error("Void has special damage! Please use VoidInstance.get_void_damage(...)")
 		return 0.0
 	
-	var coefs : Array[float] = DOT_COEFFICIENTS[dot_type]
+	var coefs := DOT_COEFFICIENTS[dot_type]
 	var potency_coef : float = coefs[Coefficient.DAMAGE_POTENCY]
 	var mastery_coef : float = coefs[Coefficient.DAMAGE_MASTERY]
 	
@@ -132,10 +154,16 @@ func calculate_dot_attrition(dot_type : DoT, base_damage : float, potency : int,
 		push_error("Void has no Attrition!")
 		return 0.0
 	
-	var coefs : Array[float] = DOT_COEFFICIENTS[dot_type]
+	var coefs := DOT_COEFFICIENTS[dot_type]
 	var potency_coef : float = coefs[Coefficient.ATTRITION_POTENCY]
 	var mastery_coef : float = coefs[Coefficient.ATTRITION_MASTERY]
 	
 	var raw_attrition : float = (base_damage + stacks + (potency_coef * potency) + (mastery_coef * mastery)) * duration
 	
 	return raw_attrition
+
+func get_crumble_splash_damage(total_damage : float, potency : int) -> float:
+	return total_damage * (CRUMBLE_BASE_SPLASH + CRUMBLE_SPLASH_POTENCY_COEFFICIENT * potency) / 100.0
+
+func get_current_echo_damage(total_damage : float, mastery : int) -> float:
+	return total_damage * (CURRENT_BASE_ECHO_EFFECTIVENESS + CURRENT_ECHO_MASTERY_COEFFICIENT * mastery) / 100.0

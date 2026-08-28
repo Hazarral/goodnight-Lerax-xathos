@@ -3,12 +3,13 @@ extends ActionEvent
 
 @export var stacks : int
 
-func resolve() -> void:
-	var targets : Array[Entity] = CombatSystem.get_valid_targets(target_faction, target_state)
-	
-	if target_count == TargetCount.SINGLE:
-		print("Single target apply Void action not implemented!")
-		return
+func resolve(source : Entity) -> bool:
+	var targets : Variant = await get_targets()
+	if targets == null:
+		## Already cancelled!
+		return false
 	
 	for entity in targets:
 		entity.apply_void(stacks, source.is_player_faction())
+	
+	return true

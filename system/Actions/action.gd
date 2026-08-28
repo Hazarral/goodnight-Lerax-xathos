@@ -10,10 +10,23 @@ extends Resource
 ## Cooldown, in turns
 @export var cooldown : int
 
+## Description: what it does
+@export_multiline var description : String 
+
 ## List of modular action this will perform in order, all ActionEvent have the same targeting specification as this Action
 @export var action_events : Array[ActionEvent]
 
-func cast(source : Entity) -> void:	
+func cast(source : Entity) -> bool:	
+	var counter : int = 0
+	
 	for action_event in action_events:
-		action_event.source = source
-		action_event.resolve()
+		var dynamic_event: Variant = action_event
+		var success : bool = await dynamic_event.resolve(source)
+		print("ActionEvent index %d success status: %s" % [counter, success])
+		if not success:
+			return false
+		
+		print("%s: ActionEvent index %d succeeded" % [action_name, counter])
+		counter += 1
+	
+	return true
