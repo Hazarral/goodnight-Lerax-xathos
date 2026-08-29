@@ -341,6 +341,10 @@ func heal(amount : int) -> void:
 	CombatSystem.inject_combat_event(damage_event)
 
 func die() -> void:
+	if current_state == State.DEAD:
+		print("The dead is no more, but more can be lost.")
+		return
+	
 	current_state = State.DEAD
 	current_hp = 0
 	print("Entity %s died" % template.entity_name)
@@ -348,8 +352,14 @@ func die() -> void:
 	if not is_player_faction():
 		CombatSystem.backfill_reinforcements()
 	
+	## Resolve poison effect here
+	if not has_dot(DamageAndDoT.DoT.POISON):
+		end_turn()
+		return
+	
+	##TODO: Explode on death, dealing damage and transfer Poison to highest current HP target
 	end_turn()
-
+	
 func begin_turn() -> void:
 	## TODO: Implement the pipeline here
 	print("%s is beginning their turn!" % template.entity_name)
