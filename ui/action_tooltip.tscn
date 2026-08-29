@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://ug4xllp6tnm6"]
+
+[ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_q6v30"]
+[ext_resource type="Script" uid="uid://bfdffh6xjwnpd" path="res://ui/action_tooltip.gd" id="2_w284u"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_o88mx"]
+color = Color(0.8509804, 0.46666667, 0.34117648, 1)
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=271922960]
+script = ExtResource("2_w284u")
+
+[node name="ActionTooltip" type="PanelContainer" parent="." unique_id=263831637]
+top_level = true
+custom_minimum_size = Vector2(800, 400)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_q6v30")
+theme_type_variation = &"ActionTooltipPanel"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ActionTooltip" unique_id=1268584289]
+layout_mode = 2
+
+[node name="Header" type="HBoxContainer" parent="ActionTooltip/VBoxContainer" unique_id=1455688551]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ActionName" type="Label" parent="ActionTooltip/VBoxContainer/Header" unique_id=780525396]
+layout_mode = 2
+size_flags_horizontal = 3
+theme = ExtResource("1_q6v30")
+theme_type_variation = &"TooltipLabel"
+theme_override_font_sizes/font_size = 25
+text = "Action Name"
+
+[node name="APCost" type="Label" parent="ActionTooltip/VBoxContainer/Header" unique_id=783267879]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "X AP"
+
+[node name="Cooldown" type="Label" parent="ActionTooltip/VBoxContainer/Header" unique_id=1068994098]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "X CD"
+
+[node name="HSeparator" type="HSeparator" parent="ActionTooltip/VBoxContainer" unique_id=2093456190]
+layout_mode = 2
+theme = ExtResource("1_q6v30")
+theme_override_styles/separator = SubResource("StyleBoxLine_o88mx")
+
+[node name="Description" type="RichTextLabel" parent="ActionTooltip/VBoxContainer" unique_id=51325282]
+layout_mode = 2
+theme_override_font_sizes/normal_font_size = 18
+bbcode_enabled = true
+text = "Description here"
+fit_content = true
+scroll_active = false

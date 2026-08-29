@@ -4,6 +4,13 @@
 [ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/Actions/damage_action_event.gd" id="2_vikv0"]
 [ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/Actions/apply_dot_action_event.gd" id="3_0um7y"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="4_dn15n"]
+[ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="4_j4t6s"]
+[ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="5_ttvnk"]
+[ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="6_24ith"]
+[ext_resource type="Script" uid="uid://b5tvpmksfnn2p" path="res://system/ui/description_segments/damage_segment.gd" id="7_vajap"]
+[ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="8_3fmnw"]
+[ext_resource type="Script" uid="uid://c2vel0thkoyid" path="res://system/ui/description_segments/comma_segment.gd" id="9_0cu02"]
+[ext_resource type="Script" uid="uid://boalnkb0mp4cw" path="res://system/ui/description_segments/dot_segment.gd" id="10_dcmy5"]
 
 [sub_resource type="Resource" id="Resource_t76v7"]
 script = ExtResource("2_vikv0")
@@ -25,11 +32,61 @@ target_faction = 1
 target_count = 1
 metadata/_custom_type_script = "uid://dl0omykhmcmxj"
 
+[sub_resource type="Resource" id="Resource_q6v30"]
+script = ExtResource("5_ttvnk")
+text = "The Draechen breathes out the putrid air from the depths of Agas to rot his prey from the inside."
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_w284u"]
+script = ExtResource("6_24ith")
+metadata/_custom_type_script = "uid://d0c4l5ycbx5ue"
+
+[sub_resource type="Resource" id="Resource_rultl"]
+script = ExtResource("5_ttvnk")
+text = "Deals"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_f476e"]
+script = ExtResource("7_vajap")
+damage_type = 3
+base_damage = 20.0
+potency_scaling = 0.2
+mastery_scaling = 0.8
+metadata/_custom_type_script = "uid://b5tvpmksfnn2p"
+
+[sub_resource type="Resource" id="Resource_46ch2"]
+script = ExtResource("8_3fmnw")
+target_count = 1
+target_faction = 1
+metadata/_custom_type_script = "uid://cfp2mohxm1c47"
+
+[sub_resource type="Resource" id="Resource_nb7xk"]
+script = ExtResource("9_0cu02")
+metadata/_custom_type_script = "uid://c2vel0thkoyid"
+
+[sub_resource type="Resource" id="Resource_nxqxx"]
+script = ExtResource("5_ttvnk")
+text = "applies"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_s7nnk"]
+script = ExtResource("10_dcmy5")
+damage_over_time_type = 3
+stacks = 2
+base_damage = 20.0
+duration = 7
+metadata/_custom_type_script = "uid://boalnkb0mp4cw"
+
+[sub_resource type="Resource" id="Resource_m3bid"]
+script = ExtResource("5_ttvnk")
+text = "to all targets hit."
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
 [resource]
 script = ExtResource("4_dn15n")
 action_name = "Miasma"
 action_point_cost = 3
 cooldown = 2
-description = "Deals %.2f Poison damage to all alive enemies, applies %d stacks of Poison at %.2f base damage for %d turns to all enemies hit."
+description_segments = Array[ExtResource("4_j4t6s")]([SubResource("Resource_q6v30"), SubResource("Resource_w284u"), SubResource("Resource_rultl"), SubResource("Resource_f476e"), SubResource("Resource_46ch2"), SubResource("Resource_nb7xk"), SubResource("Resource_nxqxx"), SubResource("Resource_s7nnk"), SubResource("Resource_m3bid")])
 action_events = Array[ExtResource("1_if4ai")]([SubResource("Resource_t76v7"), SubResource("Resource_he07f")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"

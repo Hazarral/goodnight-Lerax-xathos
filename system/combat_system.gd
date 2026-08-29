@@ -142,7 +142,7 @@ func get_current_actor() -> Entity:
 
 func end_current_actor_turn() -> void:
 	current_actor.end_turn()
-	EventBus.emit_signal("force_refresh_turn_ui")
+	EventBus.force_refresh_turn_ui.emit()
 
 func is_combat_over() -> bool:
 	if draechen_player.current_state == Entity.State.DEAD:
@@ -162,7 +162,7 @@ func register_combat_event(combat_event : CombatEvent) -> void:
 func register_multi_combat_event(multi_combat_event : MultiCombatEvent) -> void:
 	combat_event_queue.append_array(multi_combat_event.data)
 
-func inject_damage_event(damage_event : DamageEvent) -> void:
+func inject_combat_event(damage_event : CombatEvent) -> void:
 	combat_event_queue.push_front(damage_event)
 
 func process_combat_event_queue() -> void:

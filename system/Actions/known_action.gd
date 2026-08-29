@@ -8,6 +8,11 @@ var cooldown_remaining  : int = 0
 func _init(p_action : Action, p_source : Entity) -> void:
 	action = p_action
 	source = p_source
+	
+	## NOTE: THis is for the tooltip!
+	for seg in action.description_segments:
+		if seg is DamageSegment or seg is HealSegment:
+			seg.set_source(source)
 
 func _is_ready() -> bool:
 	return cooldown_remaining <= 0

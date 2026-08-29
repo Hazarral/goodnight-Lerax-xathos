@@ -27,7 +27,7 @@ func get_targets() -> Variant:
 	var targets : Array[Entity] = []
 	
 	if target_count == TargetCount.SINGLE:
-		EventBus.emit_signal("target_requested", self, target_faction, target_state)
+		EventBus.target_requested.emit(self, target_faction, target_state)
 		
 		## This signal will be emitted by UI on player side and by AI on enemy side
 		var picked : Entity = await EventBus.target_resolved

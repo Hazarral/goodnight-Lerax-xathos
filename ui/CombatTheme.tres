@@ -4,6 +4,17 @@
 [ext_resource type="FontFile" uid="uid://dnvbfcyb1st3x" path="res://fonts/Spectral-Regular.ttf" id="2_spectral"]
 [ext_resource type="FontFile" uid="uid://bhcacfnjacp18" path="res://fonts/JetBrainsMono-Regular.ttf" id="4_mono"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q6v30"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0.11764706, 0.105882354, 0.12941177, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_disabled"]
 content_margin_left = 12.0
 content_margin_top = 8.0
@@ -161,6 +172,8 @@ border_color = Color(1, 0, 0.4157, 1)
 [resource]
 default_font = ExtResource("2_spectral")
 default_font_size = 14
+ActionTooltipPanel/base_type = &"PanelContainer"
+ActionTooltipPanel/styles/panel = SubResource("StyleBoxFlat_q6v30")
 Button/colors/font_color = Color(0.91, 0.886, 0.831, 1)
 Button/colors/font_disabled_color = Color(0.58, 0.553, 0.518, 1)
 Button/colors/font_hover_color = Color(0.91, 0.886, 0.831, 1)

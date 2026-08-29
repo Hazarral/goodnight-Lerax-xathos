@@ -11,7 +11,7 @@ extends Resource
 @export var cooldown : int
 
 ## Description: what it does
-@export_multiline var description : String 
+@export var description_segments : Array[DescriptionSegment]
 
 ## List of modular action this will perform in order, all ActionEvent have the same targeting specification as this Action
 @export var action_events : Array[ActionEvent]
