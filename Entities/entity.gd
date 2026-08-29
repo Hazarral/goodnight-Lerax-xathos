@@ -305,7 +305,33 @@ func heal(amount : int) -> void:
 		print("You cannot bring back the dead by healing them, my dear")
 		return
 	
-	current_hp = maxi(get_max_hp(), current_hp + amount)
+	## Normal healing short-circuit
+	if not has_dot(DamageAndDoT.DoT.BLEED):
+		current_hp = mini(get_max_hp(), current_hp + amount)
+		print("HP: %d/%d" % [current_hp, get_max_hp()])
+		return
+	
+	## THe real elaborate healing
+	var highest_mastery := active_dots[DamageAndDoT.DoT.BLEED].get_highest_mastery()
+	var highest_potency := active_dots[DamageAndDoT.DoT.BLEED].get_highest_potency()
+	var stacks_count := active_dots[DamageAndDoT.DoT.BLEED].get_all_stacks_count()
+	var healing_reduction := DamageAndDoT.get_bleed_healing_reduction(highest_mastery)
+	var real_amount := maxi(0, ceili(amount * (1 - healing_reduction)))
+	
+	# NOTE: Heal first, before damage
+	current_hp = mini(get_max_hp(), current_hp + real_amount)
+	
+	var anti_heal_damage := ceili(DamageAndDoT.get_bleed_anti_heal_damage(amount, highest_mastery, highest_potency, stacks_count))
+	var damage_event := DamageEvent.new(
+		self,
+		self,
+		DamageAndDoT.DamageType.PHYSICAL,
+		anti_heal_damage,
+		true
+	)
+	
+	# NOTE: If injected, never call process_combat_event_queue further
+	CombatSystem.inject_combat_event(damage_event)
 
 func die() -> void:
 	current_state = State.DEAD
@@ -420,10 +446,7 @@ func _resolve_dot_tick_down() -> void:
 
 func _resolve_wind_shear_spread_effect() -> void:
 	## NOTE: Damage Duplication is still sourced from the original sources
-	var faction := ActionEvent.TargetFaction.PLAYER if is_player_faction() else ActionEvent.TargetFaction.ENEMY
-	var valid_targets = CombatSystem.get_valid_targets(faction, ActionEvent.TargetState.ALL).filter(
-		func (entity : Entity) -> bool: return DamageAndDoT.get_wind_shear_spread_target_condition(self, entity)
-	)
+	var valid_targets = DamageAndDoT.get_wind_shear_special_effect_targets(self, is_player_faction())
 	
 	for dot_instance_array in active_dots:
 		if not dot_instance_array.has_dot():
@@ -452,10 +475,7 @@ func _resolve_wind_shear_spread_effect() -> void:
 
 func _resolve_wind_shear_blast_effect() -> void:
 	## NOTE: The blast is sourced from the emitter, aka this entity
-	var faction := ActionEvent.TargetFaction.PLAYER if is_player_faction() else ActionEvent.TargetFaction.ENEMY
-	var valid_targets = CombatSystem.get_valid_targets(faction, ActionEvent.TargetState.ALL).filter(
-		func (entity : Entity) -> bool: return DamageAndDoT.get_wind_shear_spread_target_condition(self, entity)
-	)
+	var valid_targets = DamageAndDoT.get_wind_shear_special_effect_targets(self, is_player_faction())
 	
 	var total_wind_shear_damage := active_dots[DamageAndDoT.DoT.WIND_SHEAR].calculate_total_damage()
 	var highest_potency := active_dots[DamageAndDoT.DoT.WIND_SHEAR].get_highest_potency()

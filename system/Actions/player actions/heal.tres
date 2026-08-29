@@ -14,11 +14,12 @@ script = ExtResource("2_e48hm")
 amount = 50
 potency_scaling = 0.5
 mastery_scaling = 0.5
+target_faction = 2
 metadata/_custom_type_script = "uid://jdkkvelphwtm"
 
 [sub_resource type="Resource" id="Resource_q6v30"]
 script = ExtResource("4_lhef7")
-text = "The Draechen breathes vigor into those that stand on his side."
+text = "The Draechen breathes vigor into life."
 metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 
 [sub_resource type="Resource" id="Resource_w284u"]
@@ -27,7 +28,7 @@ metadata/_custom_type_script = "uid://d0c4l5ycbx5ue"
 
 [sub_resource type="Resource" id="Resource_rultl"]
 script = ExtResource("4_lhef7")
-text = "Heals"
+text = "Recovers"
 metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 
 [sub_resource type="Resource" id="Resource_f476e"]
@@ -39,6 +40,7 @@ metadata/_custom_type_script = "uid://cfps8viah6gb1"
 
 [sub_resource type="Resource" id="Resource_46ch2"]
 script = ExtResource("7_3kj06")
+target_faction = 2
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"
 
 [resource]

@@ -36,6 +36,13 @@ func get_highest_duration() -> int:
 	
 	return result
 
+func get_all_stacks_count() -> int:
+	var result : int = 0
+	for dot_instance in data:
+		result += dot_instance.stacks
+	
+	return result
+
 func get_highest_potency() -> int:
 	var max_potency : int = 0
 	for dot_instance in data:

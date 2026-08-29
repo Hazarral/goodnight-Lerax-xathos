@@ -96,6 +96,10 @@ const WIND_SHEAR_SPREAD_MASTERY_COEFFICIENT := 0.1
 const WIND_SHEAR_BASE_BLAST_EFFECTIVENESS := 40.0
 const WIND_SHEAR_BLAST_POTENCY_COEFFICIENT := 0.25
 
+const BLEED_HEALING_REDUCTION_MASTERY_COEFFICIENT := 0.5
+const BLEED_BONUS_FLAT_DAMAGE_POTENCY_COEFFICIENT := 1.5
+const BLEED_BONUS_FLAT_DAMAGE_STACKS_COEFFICIENT := 10.0
+
 const CRUMBLE_BASE_SPLASH := 20.0
 const CRUMBLE_SPLASH_POTENCY_COEFFICIENT := 0.1
 
@@ -172,17 +176,69 @@ func calculate_dot_attrition(dot_type : DoT, base_damage : float, potency : int,
 	
 	return raw_attrition
 
-func get_crumble_splash_damage(total_damage : float, potency : int) -> float:
-	return total_damage * (CRUMBLE_BASE_SPLASH + CRUMBLE_SPLASH_POTENCY_COEFFICIENT * potency) / 100.0
+## CURRENT
+func get_current_echo_effectiveness(mastery : int, use_percent : bool = false) -> float:
+	var value := (CURRENT_BASE_ECHO_EFFECTIVENESS + CURRENT_ECHO_MASTERY_COEFFICIENT * mastery)
+	if use_percent:
+		return value
+	
+	return value / 100.0	
 
 func get_current_echo_damage(total_damage : float, mastery : int) -> float:
-	return total_damage * (CURRENT_BASE_ECHO_EFFECTIVENESS + CURRENT_ECHO_MASTERY_COEFFICIENT * mastery) / 100.0
+	return total_damage * get_current_echo_effectiveness(mastery)
 
-func get_wind_shear_spread_damage(total_damage : float, mastery : int) -> float:
-	return total_damage * (WIND_SHEAR_BASE_SPREAD_EFFECTIVENESS + WIND_SHEAR_SPREAD_MASTERY_COEFFICIENT * mastery) / 100.0
-
+## WIND SHEAR
 func get_wind_shear_spread_target_condition(source : Entity, target : Entity) -> bool:
 	return target.has_dot(DoT.WIND_SHEAR) and target != source
 
+func get_wind_shear_special_effect_targets(source : Entity, is_player_faction : bool) -> Array[Entity]:
+	var faction := ActionEvent.TargetFaction.PLAYER if is_player_faction else ActionEvent.TargetFaction.ENEMY
+	var valid_targets = CombatSystem.get_valid_targets(faction, ActionEvent.TargetState.ALL).filter(
+		func (entity : Entity) -> bool: return DamageAndDoT.get_wind_shear_spread_target_condition(source, entity)
+	)
+	return valid_targets
+
+func get_wind_shear_spread_effectiveess(mastery : int, use_percent : bool = false) -> float:
+	var value := (WIND_SHEAR_BASE_SPREAD_EFFECTIVENESS + WIND_SHEAR_SPREAD_MASTERY_COEFFICIENT * mastery)
+	if use_percent:
+		return value
+		
+	return value / 100.0
+
+func get_wind_shear_spread_damage(total_damage : float, mastery : int) -> float:
+	return total_damage * get_wind_shear_spread_effectiveess(mastery)
+
+func get_wind_shear_blast_effectiveness(potency : int, use_percent : bool = false) -> float:
+	var value := (WIND_SHEAR_BASE_BLAST_EFFECTIVENESS + WIND_SHEAR_BLAST_POTENCY_COEFFICIENT * potency)
+	if use_percent:
+		return value
+	
+	return value / 100.0
+
 func get_wind_shear_blast_damage(total_wind_shear_damage : float, potency : int, afflicted_count : int) -> float:
-	return total_wind_shear_damage * (WIND_SHEAR_BASE_BLAST_EFFECTIVENESS + WIND_SHEAR_BLAST_POTENCY_COEFFICIENT * potency) / 100.0 * afflicted_count
+	return total_wind_shear_damage * get_wind_shear_blast_effectiveness(potency) * afflicted_count
+
+## BLEED
+func get_bleed_healing_reduction(mastery : int, use_percent : bool = false) -> float:
+	var value := (BLEED_HEALING_REDUCTION_MASTERY_COEFFICIENT * mastery)
+	if use_percent:
+		return value
+	
+	return value / 100.0
+
+func get_bleed_anti_heal_flat_damage_bonus(potency : int, stacks : int) -> float:
+	return BLEED_BONUS_FLAT_DAMAGE_POTENCY_COEFFICIENT * potency + BLEED_BONUS_FLAT_DAMAGE_STACKS_COEFFICIENT * stacks
+
+func get_bleed_anti_heal_damage(total_healing : float, mastery : int, potency : int, stacks : int) -> float:
+	return total_healing * get_bleed_healing_reduction(mastery) + get_bleed_anti_heal_flat_damage_bonus(potency, stacks)
+
+## CRUMBLE
+func get_crumble_splash_effectiveness(potency : int, use_percent : bool = false) -> float:
+	var value := (CRUMBLE_BASE_SPLASH + CRUMBLE_SPLASH_POTENCY_COEFFICIENT * potency)
+	if use_percent:
+		return value
+	
+	return value / 100.0
+
+func get_crumble_splash_damage(total_damage : float, potency : int) -> float:
+	return total_damage * get_crumble_splash_effectiveness(potency)

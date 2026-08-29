@@ -162,7 +162,7 @@ func register_combat_event(combat_event : CombatEvent) -> void:
 func register_multi_combat_event(multi_combat_event : MultiCombatEvent) -> void:
 	combat_event_queue.append_array(multi_combat_event.data)
 
-func inject_damage_event(damage_event : DamageEvent) -> void:
+func inject_combat_event(damage_event : CombatEvent) -> void:
 	combat_event_queue.push_front(damage_event)
 
 func process_combat_event_queue() -> void:
