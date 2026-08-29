@@ -142,7 +142,7 @@ func get_current_actor() -> Entity:
 
 func end_current_actor_turn() -> void:
 	current_actor.end_turn()
-	EventBus.emit_signal("force_refresh_turn_ui")
+	EventBus.force_refresh_turn_ui.emit()
 
 func is_combat_over() -> bool:
 	if draechen_player.current_state == Entity.State.DEAD:

@@ -358,7 +358,7 @@ func end_turn() -> void:
 	recover_action_point()
 	tick_cooldowns()
 	CombatSystem.on_turn_finished()
-	EventBus.emit_signal("force_refresh_turn_ui")
+	EventBus.force_refresh_turn_ui.emit()
 
 func learn_action(action : Action) -> void:
 	known_actions.append(KnownAction.new(action, self))

@@ -8,8 +8,8 @@ extends PanelContainer
 var entity : Entity
 var dot_instance_array : DoTInstanceArray
 
-const HEADER_TEXT_FRONT := "%s"
-const SHIELD_PRESENT_TEXT_PART := " -> %s Shield"
+const HEADER_TEXT_FRONT := "[color=%s]%s[/color]"
+const SHIELD_PRESENT_TEXT_PART := " -> [color=%s]%s Shield[/color]"
 const HEADER_TEXT_BACK := ", %d Damage, %d Attrition, %d Turn%s left"
 const BURN_STAGE_DETAIL := " (x%.1f)"
 
@@ -23,9 +23,16 @@ func setup(p_entity : Entity, p_dot_instance_array : DoTInstanceArray) -> void:
 
 func render() -> void:	
 	var dot_type := dot_instance_array.get_dot_type()
-	dot_header.text = HEADER_TEXT_FRONT % DamageAndDoT.get_damage_over_time_name(dot_type)
-	if entity.has_shield(dot_type as DamageAndDoT.DamageType):
-		dot_header.text += SHIELD_PRESENT_TEXT_PART % DamageAndDoT.get_damage_type_name(dot_type as DamageAndDoT.DamageType)
+	var damage_type := DamageAndDoT.get_damage_type(dot_type)
+	dot_header.text = HEADER_TEXT_FRONT % [
+		DamageAndDoT.get_damage_color_hex(damage_type),
+		DamageAndDoT.get_damage_over_time_name(dot_type)
+	]
+	if entity.has_shield(damage_type):
+		dot_header.text += SHIELD_PRESENT_TEXT_PART % [
+			DamageAndDoT.get_damage_color_hex(damage_type),
+			DamageAndDoT.get_damage_type_name(damage_type)
+		]
 	
 	var highest_duration := dot_instance_array.get_highest_duration()
 	dot_header.text += HEADER_TEXT_BACK % [

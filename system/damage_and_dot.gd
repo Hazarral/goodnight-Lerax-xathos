@@ -72,15 +72,17 @@ const CRUMBLE := &"Crumble"
 const FROSTBITE := &"Frostbite"
 
 # Colors
-const FIRE_COLOR_HEX := "#c0471a"
+const FIRE_COLOR_HEX := "#eb571e"
 const WATER_COLOR_HEX := "#44a1e2"
 const WIND_COLOR_HEX := "#6da88f"
 const POISON_COLOR_HEX := "#5ed85d"
-const LIGHTNING_COLOR_HEX := "#3761ff"
-const PHYSICAL_COLOR_HEX := "#b4b4b4"
-const EARTH_COLOR_HEX := "#836540"
+const LIGHTNING_COLOR_HEX := "#5d3bc4"
+const PHYSICAL_COLOR_HEX := "#d6d6d6"
+const EARTH_COLOR_HEX := "#876600"
 const ICE_COLOR_HEX := "#bad3fb"
 const VOID_COLOR_HEX := "#ff1d75"
+const GENERIC_COLOR_HEX := "#ffd4cc"
+const HEALING_COLOR_HEX := "#00f0d8"
 
 ## Special effects
 const MAX_FIRE_MULTIPLIER := 3.0
@@ -99,6 +101,9 @@ const CRUMBLE_SPLASH_POTENCY_COEFFICIENT := 0.1
 
 func get_dot(damage_type : DamageType) -> DoT:
 	return damage_type as DoT
+
+func get_damage_type(damage_over_time_type : DoT) -> DamageType:
+	return damage_over_time_type as DamageType
 
 func get_damage_type_name(damage_type : DamageType) -> String:
 	match damage_type:

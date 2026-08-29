@@ -55,8 +55,7 @@ const AP_TEXT := "ACTION POINTS: %d / %d (+%d / TURN)"
 
 @onready var action_list := $Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList
 
-const ACTION_BASE_LABEL := "%s            %d AP"
-const ACTION_EXTRA_COOLDOWN_LABEL := "   ·    CD %d"
+const ACTION_BUTTON := preload("res://ui/action_button.tscn")
 
 ## 3. Signal and input
 var is_awaiting_target : bool = false
@@ -117,7 +116,7 @@ func _on_entity_info_card_pressed(card : EntityInfoCard) -> void:
 	if is_awaiting_target:
 		if card.entity in valid_target_pool:
 			_clear_pending_target_state()
-			EventBus.emit_signal("target_resolved", card.entity)
+			EventBus.target_resolved.emit(card.entity)
 		# else: invalid click while targeting — ignore, or flash a rejection cue
 		return
 	
@@ -131,7 +130,7 @@ func _on_entity_info_card_pressed(card : EntityInfoCard) -> void:
 func _input(event : InputEvent) -> void:
 	if is_awaiting_target and event.is_action_pressed("target_cancel"):
 		_clear_pending_target_state()
-		EventBus.emit_signal("target_resolved", null)  # cancel = resolved with null
+		EventBus.target_resolved.emit(null)  # cancel = resolved with null
 
 func _clear_pending_target_state() -> void:
 	is_awaiting_target = false
@@ -212,18 +211,11 @@ func _add_action_button(entity : Entity, index : int) -> void:
 	var action : Action = known_action.action
 	
 	## NOTE: Styling below is subject to change, and should use some ActionButton in the future
-	var btn := Button.new()
-	btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	btn.custom_minimum_size = Vector2(0, 34)
-	
-	var label_text := ACTION_BASE_LABEL % [action.action_name, action.action_point_cost]
-	if known_action.cooldown_remaining > 0:
-		label_text += ACTION_EXTRA_COOLDOWN_LABEL % known_action.cooldown_remaining
-
-	btn.text = label_text
-	btn.disabled = not known_action.is_castable()
-	btn.pressed.connect(_on_action_pressed.bind(entity, index))
+	var btn := ACTION_BUTTON.instantiate()
 	action_list.add_child(btn)
+	btn.setup(entity, index)
+	btn.render()
+	btn.pressed_action.connect(_on_action_pressed)
 
 func _on_action_pressed(entity : Entity, index : int) -> void:
 	if is_awaiting_target:

@@ -46,7 +46,7 @@ func tick_down() -> void:
 		expire()
 
 func expire() -> void:
-	emit_signal("expired", self)
+	expired.emit(self)
 
 func calculate_damage() -> float:
 	return DamageAndDoT.calculate_dot_damage(

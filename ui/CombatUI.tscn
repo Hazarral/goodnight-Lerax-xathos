@@ -7,8 +7,7 @@
 [ext_resource type="Resource" uid="uid://g0gfyafsh524" path="res://system/Actions/enemy actions/fireball.tres" id="6_4d4xh"]
 [ext_resource type="Resource" uid="uid://bryq065munqlv" path="res://system/Actions/player actions/invoke_flame.tres" id="6_gftf7"]
 [ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://Entities/entity_template.gd" id="6_rqx7n"]
-[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="8_nsbht"]
-[ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/Actions/apply_dot_action_event.gd" id="9_bnnle"]
+[ext_resource type="PackedScene" uid="uid://bi7f7265qr116" path="res://ui/action_button.tscn" id="8_v1jbt"]
 
 [sub_resource type="Resource" id="Resource_1482v"]
 script = ExtResource("6_rqx7n")
@@ -23,23 +22,6 @@ action_point_regen_per_turn = 5
 innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_gftf7")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
-[sub_resource type="Resource" id="Resource_bnnle"]
-script = ExtResource("9_bnnle")
-damage_type = 2
-base_damage = 20.0
-stacks = 3
-duration = 5
-target_count = 1
-metadata/_custom_type_script = "uid://dl0omykhmcmxj"
-
-[sub_resource type="Resource" id="Resource_nsbht"]
-script = ExtResource("5_0ncfs")
-action_name = "Modified Tornado"
-action_point_cost = 1
-cooldown = 1
-action_events = Array[ExtResource("8_nsbht")]([SubResource("Resource_bnnle")])
-metadata/_custom_type_script = "uid://doysxg78oub0w"
-
 [sub_resource type="Resource" id="Resource_0ncfs"]
 script = ExtResource("6_rqx7n")
 entity_name = "Enemy1"
@@ -51,7 +33,7 @@ poison_shield = 200
 max_action_point = 5
 starting_action_point = 2
 action_point_regen_per_turn = 2
-innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_4d4xh"), SubResource("Resource_nsbht")])
+innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_4d4xh")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
 [sub_resource type="Resource" id="Resource_rqx7n"]
@@ -396,10 +378,8 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
-[node name="BiteBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=1150993094]
+[node name="BiteBtn" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=1563405365 instance=ExtResource("8_v1jbt")]
 layout_mode = 2
-text = "Bite                                    2 AP"
-alignment = 0
 
 [node name="ClawBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=2020932971]
 layout_mode = 2

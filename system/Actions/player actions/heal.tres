@@ -3,6 +3,11 @@
 [ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_apa6y"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="2_apa6y"]
 [ext_resource type="Script" uid="uid://jdkkvelphwtm" path="res://system/Actions/heal_action_event.gd" id="2_e48hm"]
+[ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="3_ugxad"]
+[ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="4_lhef7"]
+[ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="5_hsaua"]
+[ext_resource type="Script" uid="uid://cfps8viah6gb1" path="res://system/ui/description_segments/heal_segment.gd" id="6_skjnw"]
+[ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="7_3kj06"]
 
 [sub_resource type="Resource" id="Resource_e48hm"]
 script = ExtResource("2_e48hm")
@@ -11,11 +16,36 @@ potency_scaling = 0.5
 mastery_scaling = 0.5
 metadata/_custom_type_script = "uid://jdkkvelphwtm"
 
+[sub_resource type="Resource" id="Resource_q6v30"]
+script = ExtResource("4_lhef7")
+text = "The Draechen breathes vigor into those that stand on his side."
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_w284u"]
+script = ExtResource("5_hsaua")
+metadata/_custom_type_script = "uid://d0c4l5ycbx5ue"
+
+[sub_resource type="Resource" id="Resource_rultl"]
+script = ExtResource("4_lhef7")
+text = "Heals"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_f476e"]
+script = ExtResource("6_skjnw")
+base_healing = 50.0
+potency_scaling = 0.5
+mastery_scaling = 0.5
+metadata/_custom_type_script = "uid://cfps8viah6gb1"
+
+[sub_resource type="Resource" id="Resource_46ch2"]
+script = ExtResource("7_3kj06")
+metadata/_custom_type_script = "uid://cfp2mohxm1c47"
+
 [resource]
 script = ExtResource("2_apa6y")
 action_name = "Heal"
 action_point_cost = 4
 cooldown = 2
-description = "Heals target for %.2f HP."
+description_segments = Array[ExtResource("3_ugxad")]([SubResource("Resource_q6v30"), SubResource("Resource_w284u"), SubResource("Resource_rultl"), SubResource("Resource_f476e"), SubResource("Resource_46ch2")])
 action_events = Array[ExtResource("1_apa6y")]([SubResource("Resource_e48hm")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"

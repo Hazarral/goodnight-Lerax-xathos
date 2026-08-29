@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://bi7f7265qr116"]
+
+[ext_resource type="Script" uid="uid://s733lnpy3uhi" path="res://ui/action_button.gd" id="1_qbsgc"]
+
+[sub_resource type="Theme" id="Theme_jpyye"]
+
+[node name="ActionButton" type="Button" unique_id=1563405365]
+custom_minimum_size = Vector2(0, 35)
+theme = SubResource("Theme_jpyye")
+text = "Bite                                    2 AP"
+alignment = 0
+script = ExtResource("1_qbsgc")
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
+[connection signal="pressed" from="." to="." method="_on_pressed"]
