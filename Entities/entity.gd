@@ -256,15 +256,22 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 		break
 	
 	var shield_damage_dealt : Dictionary[int, int] = {}
+	var newly_broken_indices : Array[int] = []
 	var total_shield_damage := 0
 	for idx in range(current_shields.size()):
 		var delta : int = shields_before[idx] - current_shields[idx]
 		if delta > 0:
 			shield_damage_dealt[idx] = delta
 			total_shield_damage += delta
+		if shields_before[idx] > 0 and current_shields[idx] == 0:
+			newly_broken_indices.append(idx)
 	
 	_print_sca_damage_to_shield(damage_type, shield_damage_dealt, total_shield_damage)
 	# What is left will go to HP, even if it is 0
+	
+	if not newly_broken_indices.is_empty():
+		_trigger_frostbite_on_break(newly_broken_indices)
+	
 	if remaining_damage > 0:
 		reduce_hp(damage_type, remaining_damage)
 
@@ -502,3 +509,16 @@ func _resolve_wind_shear_blast_effect() -> void:
 		CombatSystem.register_combat_event(damage_event)
 	
 	CombatSystem.process_combat_event_queue()
+
+func _trigger_frostbite_on_break(newly_broken_indices : Array[int]) -> void:
+	for idx in newly_broken_indices:
+		var multiplier : float = DamageAndDoT.FROSTBITE_ICE_SHIELD_BREAK_COEFFICIENT if ((idx as DamageAndDoT.DamageType) == DamageAndDoT.DamageType.ICE) else DamageAndDoT.FROSTBITE_NON_ICE_SHIELD_BREAK_COEFFICIENT
+		var damage_event := DamageEvent.new(
+			self,
+			self,
+			DamageAndDoT.DamageType.ICE,
+			ceili(multiplier * max_shields[idx]),
+			true
+		)
+		
+		CombatSystem.inject_combat_event(damage_event)
