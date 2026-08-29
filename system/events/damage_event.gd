@@ -18,6 +18,6 @@ func _init(p_source : Entity, p_target : Entity, p_damage_type : DamageAndDoT.Da
 
 func resolve() -> void:
 	if ignore_shield:
-		target.reduce_hp(amount)
+		target.reduce_hp(damage_type, amount)
 	else:
 		target.take_damage(damage_type, amount)

@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://7q5a667sefg0"]
 
-[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_5wwg0"]
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_k87ix"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="2_0gcgf"]
 [ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/Actions/damage_action_event.gd" id="2_tx7u0"]
 
@@ -18,5 +18,5 @@ script = ExtResource("2_0gcgf")
 action_name = "Bite"
 action_point_cost = 2
 description = "Deals %.2f Void damage to one alive enemy."
-action_events = Array[ExtResource("1_5wwg0")]([SubResource("Resource_tx7u0")])
+action_events = Array[ExtResource("1_k87ix")]([SubResource("Resource_tx7u0")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"

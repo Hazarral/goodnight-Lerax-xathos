@@ -30,7 +30,6 @@ func _init(p_target : Entity, p_stacks : int, p_is_player_faction : bool) -> voi
 	turns_elapsed = 0
 
 func tick_down() -> void:
-	print("Will implement further Void logic later")	
 	turns_elapsed += 1
 
 func apply_stacks(incoming_stacks : int) -> void:

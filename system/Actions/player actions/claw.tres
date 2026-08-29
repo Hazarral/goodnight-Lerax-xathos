@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://dnjqnigrx558j"]
 
-[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_t6eeg"]
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_mguh3"]
 [ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/Actions/damage_action_event.gd" id="2_4mp8l"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="2_gqg50"]
 
@@ -19,5 +19,5 @@ script = ExtResource("2_gqg50")
 action_name = "Claw"
 action_point_cost = 3
 description = "Deals %.2f Void damage to all alive enemies."
-action_events = Array[ExtResource("1_t6eeg")]([SubResource("Resource_4mp8l")])
+action_events = Array[ExtResource("1_mguh3")]([SubResource("Resource_4mp8l")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"

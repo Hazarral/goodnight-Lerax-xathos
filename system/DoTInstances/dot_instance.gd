@@ -41,7 +41,6 @@ func get_current_mastery() -> int:
 	return cached_mastery
 
 func tick_down() -> void:
-	print("Will implement further logic later")
 	duration -= 1
 	if duration <= 0:
 		expire()
@@ -55,7 +54,8 @@ func calculate_damage() -> float:
 		base_damage,
 		get_current_potency(),
 		get_current_mastery(),
-		stacks
+		stacks,
+		duration
 	)
 
 func calculate_attrition() -> float:

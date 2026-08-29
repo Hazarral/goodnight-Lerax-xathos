@@ -161,7 +161,7 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -
 	# 1. Void Special Case
 	if damage_type == DamageAndDoT.DamageType.VOID:
 		if is_any_shield_breached() or has_no_shields():
-			reduce_hp(incoming_damage)
+			reduce_hp(damage_type, incoming_damage)
 		else:
 			shield_cascade(damage_type, incoming_damage)
 		return
@@ -173,14 +173,21 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -
 			var damage_to_shield = mini(shield_hp, incoming_damage)
 			current_shields[damage_type] -= damage_to_shield
 			
+			print("> Resonance! %s's %s shield received %d %s damage!" % [
+				template.entity_name,
+				DamageAndDoT.get_damage_type_name(damage_type), 
+				damage_to_shield,
+				DamageAndDoT.get_damage_type_name(damage_type)
+				]
+			)
 			var surplus = incoming_damage - damage_to_shield
 			if surplus > 0:
-				reduce_hp(surplus)
+				reduce_hp(damage_type, surplus)
 			
 			return
 		
 		# Shield is broken, matching damage goes straight to HP
-		reduce_hp(incoming_damage)
+		reduce_hp(damage_type, incoming_damage)
 		return
 			
 	# 3. Wrong Element Case (50% Penalty, hits weakest shield)
@@ -193,6 +200,7 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 		else DamageAndDoT.PENALIZED_MULTIPLIER_AGAINST_SHIELD
 	)
 	
+	var shields_before : PackedInt64Array = current_shields.duplicate()
 	var remaining_damage : int = incoming_damage
 	var active_shield_indices : Array[int] = get_active_shield_indices()
 	
@@ -247,17 +255,50 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 		remaining_damage = 0
 		break
 	
+	var shield_damage_dealt : Dictionary[int, int] = {}
+	var total_shield_damage := 0
+	for idx in range(current_shields.size()):
+		var delta : int = shields_before[idx] - current_shields[idx]
+		if delta > 0:
+			shield_damage_dealt[idx] = delta
+			total_shield_damage += delta
+	
+	_print_sca_damage_to_shield(damage_type, shield_damage_dealt, total_shield_damage)
 	# What is left will go to HP, even if it is 0
 	if remaining_damage > 0:
-		reduce_hp(remaining_damage)
+		reduce_hp(damage_type, remaining_damage)
 
-func reduce_hp(amount : int) -> void:
+func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int) -> void:
 	if current_state == State.DEAD:
 		return
 	
+	print("> %s received %d %s damage to HP!" % [
+		template.entity_name,
+		amount,
+		DamageAndDoT.get_damage_type_name(damage_type)
+		]
+	)
 	current_hp = maxi(0, current_hp - amount)
+	
 	if current_hp <= 0:
 		die()
+
+func _print_sca_damage_to_shield(incoming_damage_type : DamageAndDoT.DamageType, shield_damage : Dictionary[int, int], total_shield_damage : int) -> void:
+	print("> %s received a total of %d %s damage to shield" % [
+		template.entity_name, 
+		total_shield_damage,
+		DamageAndDoT.get_damage_type_name(incoming_damage_type)
+		]
+	)
+	
+	for i in shield_damage:
+		var damage_type := i as DamageAndDoT.DamageType
+		print(">> %s shield received %d %s damage" % [
+			DamageAndDoT.get_damage_type_name(damage_type), 
+			shield_damage[damage_type],
+			DamageAndDoT.get_damage_type_name(incoming_damage_type)
+			]
+		)
 
 func heal(amount : int) -> void:
 	if current_state == State.DEAD:
@@ -280,7 +321,8 @@ func begin_turn() -> void:
 	## TODO: Implement the pipeline here
 	print("%s is beginning their turn!" % template.entity_name)
 	if current_state == State.DEAD:
-		print("This target is dead!")
+		print("This target is dead! DoT will still tick down")
+		_resolve_dot_tick_down()
 		end_turn()
 		return
 	
@@ -295,8 +337,9 @@ func begin_turn() -> void:
 	_resolve_dot_damage()
 	
 	## Stage D: Wind Shear blast effect
-	## TODO: Wind SHear deals a portion of all other elemental DoT as damage to all other targets on the same faction with Wind Shear
-	## TODO: Wind Shear deals a Syncrhonized Blast on all targtes of same faction who have Wind Shear 
+	if has_dot(DamageAndDoT.DoT.WIND_SHEAR):
+		_resolve_wind_shear_spread_effect()
+		_resolve_wind_shear_blast_effect()
 	
 	## Stage E: Void
 	## TODO: implement Void damage and escalation here
@@ -336,10 +379,10 @@ func cast_action(index : int) -> void:
 ##Combat turn stages below
 
 func _regen_shields() -> void:
-	var active_shield_indices := get_active_shield_indices()
-	for idx in active_shield_indices:
-		var attrition := ceili(get_attrition(idx as DamageAndDoT.DamageType))
-		current_shields[idx] = maxi(0, max_shields[idx] - attrition)
+	for i in range(DamageAndDoT.ELEMENT_COUNT):
+		if max_shields[i] > 0:
+			var attrition := ceili(get_attrition(i as DamageAndDoT.DamageType))
+			current_shields[i] = maxi(0, max_shields[i] - attrition)
 
 func _resolve_crumble_splash_effect() -> void:
 	var total_damage := active_dots[DamageAndDoT.DoT.CRUMBLE].calculate_total_damage()
@@ -374,3 +417,68 @@ func _resolve_dot_tick_down() -> void:
 	for damage_over_time in DamageAndDoT.ELEMENT_COUNT:
 		if has_dot(damage_over_time as DamageAndDoT.DoT):
 			active_dots[damage_over_time].tick_down()
+
+func _resolve_wind_shear_spread_effect() -> void:
+	## NOTE: Damage Duplication is still sourced from the original sources
+	var faction := ActionEvent.TargetFaction.PLAYER if is_player_faction() else ActionEvent.TargetFaction.ENEMY
+	var valid_targets = CombatSystem.get_valid_targets(faction, ActionEvent.TargetState.ALL).filter(
+		func (entity : Entity) -> bool: return DamageAndDoT.get_wind_shear_spread_target_condition(self, entity)
+	)
+	
+	for dot_instance_array in active_dots:
+		if not dot_instance_array.has_dot():
+			continue
+		
+		if dot_instance_array.get_dot_type() == DamageAndDoT.DoT.WIND_SHEAR:
+			continue
+		
+		for instance in dot_instance_array.data:
+			for target in valid_targets:
+				var damage_event := DamageEvent.new(
+					instance.source, 
+					target, 
+					instance.damage_type, 
+					ceili(
+						DamageAndDoT.get_wind_shear_spread_damage(
+							instance.calculate_damage(), 
+							instance.get_current_mastery()
+						)
+					)
+				)
+				
+				CombatSystem.register_combat_event(damage_event)
+	
+	CombatSystem.process_combat_event_queue()
+
+func _resolve_wind_shear_blast_effect() -> void:
+	## NOTE: The blast is sourced from the emitter, aka this entity
+	var faction := ActionEvent.TargetFaction.PLAYER if is_player_faction() else ActionEvent.TargetFaction.ENEMY
+	var valid_targets = CombatSystem.get_valid_targets(faction, ActionEvent.TargetState.ALL).filter(
+		func (entity : Entity) -> bool: return DamageAndDoT.get_wind_shear_spread_target_condition(self, entity)
+	)
+	
+	var total_wind_shear_damage := active_dots[DamageAndDoT.DoT.WIND_SHEAR].calculate_total_damage()
+	var highest_potency := active_dots[DamageAndDoT.DoT.WIND_SHEAR].get_highest_potency()
+	
+	## +1 due to "self" being filtered
+	var afflicted_count := valid_targets.size() + 1
+	
+	var entity_names := valid_targets.map(func(entity : Entity) -> String: return entity.template.entity_name)
+	print("Wind Shear Blast Targets: ", entity_names)
+	for target in valid_targets:
+		var damage_event := DamageEvent.new(
+			self,
+			target,
+			DamageAndDoT.DamageType.WIND,
+			ceili(
+				DamageAndDoT.get_wind_shear_blast_damage(
+					total_wind_shear_damage,
+					highest_potency,
+					afflicted_count
+				)
+			)
+		)
+		
+		CombatSystem.register_combat_event(damage_event)
+	
+	CombatSystem.process_combat_event_queue()

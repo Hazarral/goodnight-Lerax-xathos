@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://g0gfyafsh524"]
 
-[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_31i3i"]
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_tja4d"]
 [ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/Actions/damage_action_event.gd" id="2_htfbt"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="2_tja4d"]
 
@@ -18,5 +18,5 @@ action_name = "Fireball"
 action_point_cost = 2
 cooldown = 2
 description = "Throw a Fireball at any alive entity, dealing Fire damage."
-action_events = Array[ExtResource("1_31i3i")]([SubResource("Resource_htfbt")])
+action_events = Array[ExtResource("1_tja4d")]([SubResource("Resource_htfbt")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"

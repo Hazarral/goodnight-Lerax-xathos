@@ -8,7 +8,6 @@ func _init(p_caster : Entity, p_target : Entity, p_damage_type : DamageAndDoT.Da
 	turns_elapsed = 0
 
 func tick_down() -> void:
-	print("Will implement further Burn logic later")
 	duration -= 1
 	turns_elapsed += 1
 	if duration <= 0:
@@ -23,5 +22,6 @@ func calculate_damage() -> float:
 		base_damage,
 		get_current_potency(),
 		get_current_mastery(),
-		stacks
+		stacks,
+		duration
 	) * get_burn_multiplier()
