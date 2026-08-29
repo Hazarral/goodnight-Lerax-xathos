@@ -161,7 +161,7 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -
 	# 1. Void Special Case
 	if damage_type == DamageAndDoT.DamageType.VOID:
 		if is_any_shield_breached() or has_no_shields():
-			reduce_hp(incoming_damage)
+			reduce_hp(damage_type, incoming_damage)
 		else:
 			shield_cascade(damage_type, incoming_damage)
 		return
@@ -173,14 +173,21 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -
 			var damage_to_shield = mini(shield_hp, incoming_damage)
 			current_shields[damage_type] -= damage_to_shield
 			
+			print("> Resonance! %s's %s shield received %d %s damage!" % [
+				template.entity_name,
+				DamageAndDoT.get_damage_type_name(damage_type), 
+				damage_to_shield,
+				DamageAndDoT.get_damage_type_name(damage_type)
+				]
+			)
 			var surplus = incoming_damage - damage_to_shield
 			if surplus > 0:
-				reduce_hp(surplus)
+				reduce_hp(damage_type, surplus)
 			
 			return
 		
 		# Shield is broken, matching damage goes straight to HP
-		reduce_hp(incoming_damage)
+		reduce_hp(damage_type, incoming_damage)
 		return
 			
 	# 3. Wrong Element Case (50% Penalty, hits weakest shield)
@@ -193,6 +200,7 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 		else DamageAndDoT.PENALIZED_MULTIPLIER_AGAINST_SHIELD
 	)
 	
+	var shields_before : PackedInt64Array = current_shields.duplicate()
 	var remaining_damage : int = incoming_damage
 	var active_shield_indices : Array[int] = get_active_shield_indices()
 	
@@ -247,19 +255,50 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 		remaining_damage = 0
 		break
 	
+	var shield_damage_dealt : Dictionary[int, int] = {}
+	var total_shield_damage := 0
+	for idx in range(current_shields.size()):
+		var delta : int = shields_before[idx] - current_shields[idx]
+		if delta > 0:
+			shield_damage_dealt[idx] = delta
+			total_shield_damage += delta
+	
+	_print_sca_damage_to_shield(damage_type, shield_damage_dealt, total_shield_damage)
 	# What is left will go to HP, even if it is 0
 	if remaining_damage > 0:
-		reduce_hp(remaining_damage)
+		reduce_hp(damage_type, remaining_damage)
 
-func reduce_hp(amount : int) -> void:
+func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int) -> void:
 	if current_state == State.DEAD:
 		return
 	
-	print("%s received %d damage to HP!" % [template.entity_name, amount])
+	print("> %s received %d %s damage to HP!" % [
+		template.entity_name,
+		amount,
+		DamageAndDoT.get_damage_type_name(damage_type)
+		]
+	)
 	current_hp = maxi(0, current_hp - amount)
 	
 	if current_hp <= 0:
 		die()
+
+func _print_sca_damage_to_shield(incoming_damage_type : DamageAndDoT.DamageType, shield_damage : Dictionary[int, int], total_shield_damage : int) -> void:
+	print("> %s received a total of %d %s damage to shield" % [
+		template.entity_name, 
+		total_shield_damage,
+		DamageAndDoT.get_damage_type_name(incoming_damage_type)
+		]
+	)
+	
+	for i in shield_damage:
+		var damage_type := i as DamageAndDoT.DamageType
+		print(">> %s shield received %d %s damage" % [
+			DamageAndDoT.get_damage_type_name(damage_type), 
+			shield_damage[damage_type],
+			DamageAndDoT.get_damage_type_name(incoming_damage_type)
+			]
+		)
 
 func heal(amount : int) -> void:
 	if current_state == State.DEAD:

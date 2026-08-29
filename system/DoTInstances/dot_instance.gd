@@ -41,7 +41,6 @@ func get_current_mastery() -> int:
 	return cached_mastery
 
 func tick_down() -> void:
-	print("Will implement further logic later")
 	duration -= 1
 	if duration <= 0:
 		expire()
