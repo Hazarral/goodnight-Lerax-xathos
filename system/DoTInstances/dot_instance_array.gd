@@ -29,6 +29,9 @@ func add_dot_instance(dot_instance : DoTInstance) -> void:
 func remove_dot_instance(dot_instance : DoTInstance) -> void:
 	data.erase(dot_instance)
 
+func clear_all_instances() -> void:
+	data.clear()
+
 func get_highest_duration() -> int:
 	var result : int = data.front().duration
 	for i in range(1, data.size()):

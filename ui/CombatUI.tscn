@@ -7,6 +7,7 @@
 [ext_resource type="Resource" uid="uid://g0gfyafsh524" path="res://system/Actions/enemy actions/fireball.tres" id="6_4d4xh"]
 [ext_resource type="Resource" uid="uid://bryq065munqlv" path="res://system/Actions/player actions/invoke_flame.tres" id="6_gftf7"]
 [ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://Entities/entity_template.gd" id="6_rqx7n"]
+[ext_resource type="Resource" uid="uid://chfo1o7314g3d" path="res://system/Actions/player actions/exalted_restoration.tres" id="8_nsbht"]
 [ext_resource type="PackedScene" uid="uid://bi7f7265qr116" path="res://ui/action_button.tscn" id="8_v1jbt"]
 
 [sub_resource type="Resource" id="Resource_1482v"]
@@ -30,17 +31,18 @@ mastery = 5
 max_hp = 20000
 fire_shield = 100
 poison_shield = 200
+ice_shield = 100
 max_action_point = 5
 starting_action_point = 2
 action_point_regen_per_turn = 2
-innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_4d4xh")])
+innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_4d4xh"), ExtResource("6_gftf7"), ExtResource("8_nsbht")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
 [sub_resource type="Resource" id="Resource_rqx7n"]
 script = ExtResource("6_rqx7n")
 entity_name = "Enemy2"
 mastery = 5
-max_hp = 1000
+max_hp = 200
 water_shield = 100
 wind_shield = 100
 physical_shield = 100

@@ -96,6 +96,13 @@ const WIND_SHEAR_SPREAD_MASTERY_COEFFICIENT := 0.1
 const WIND_SHEAR_BASE_BLAST_EFFECTIVENESS := 40.0
 const WIND_SHEAR_BLAST_POTENCY_COEFFICIENT := 0.25
 
+const SHOCK_BASE_DAMAGE_ON_ACTION_EFFECTIVENESS := 100.0
+const SHOCK_DAMAGE_ON_ACTION_POTENCY_COEFFICIENT := 0.1
+const SHOCK_MAX_AP_SCALING := 3.0
+
+const POISON_BASE_ATTRITION_EXPLOSION_EFFECTIVENESS := 30.0
+const POISON_ATTRITION_EXPLOSION_MASTERY_COEFFICIENT := 0.2
+
 const BLEED_HEALING_REDUCTION_MASTERY_COEFFICIENT := 0.5
 const BLEED_BONUS_FLAT_DAMAGE_POTENCY_COEFFICIENT := 1.5
 const BLEED_BONUS_FLAT_DAMAGE_STACKS_COEFFICIENT := 10.0
@@ -220,6 +227,43 @@ func get_wind_shear_blast_effectiveness(potency : int, use_percent : bool = fals
 
 func get_wind_shear_blast_damage(total_wind_shear_damage : float, potency : int, afflicted_count : int) -> float:
 	return total_wind_shear_damage * get_wind_shear_blast_effectiveness(potency) * afflicted_count
+
+## SHOCK
+func get_shock_damage_on_action_effectiveness(potency : int, use_percent : bool = false) -> float:
+	var value := SHOCK_BASE_DAMAGE_ON_ACTION_EFFECTIVENESS + SHOCK_DAMAGE_ON_ACTION_POTENCY_COEFFICIENT * potency
+	if use_percent:
+		return value
+	
+	return value / 100.0
+
+func get_shock_damage_on_action(total_shock_damage : float, potency : int, action_point_spent : int) -> float:
+	var multiplier := minf(SHOCK_MAX_AP_SCALING, action_point_spent)
+	return total_shock_damage * get_shock_damage_on_action_effectiveness(potency) * multiplier
+
+## POISON
+func get_poison_attrition_explosion_effectiveness(mastery : int, use_percent : bool = false) -> float:
+	var value := POISON_BASE_ATTRITION_EXPLOSION_EFFECTIVENESS + POISON_ATTRITION_EXPLOSION_MASTERY_COEFFICIENT * mastery
+	if use_percent:
+		return value
+	
+	return value / 100.0 
+
+func get_poison_attrition_explosion_damage(total_attrition : int, mastery : int) -> float:
+	return total_attrition * get_poison_attrition_explosion_effectiveness(mastery)
+
+func get_poison_special_effect_targets(source : Entity, is_player_faction : bool) -> Array[Entity]:
+	var faction := ActionEvent.TargetFaction.PLAYER if is_player_faction else ActionEvent.TargetFaction.ENEMY
+	var valid_targets = CombatSystem.get_valid_targets(faction, ActionEvent.TargetState.ALL).filter(
+		func (entity : Entity) -> bool: return entity != source
+	)
+	return valid_targets
+
+func transfer_poison_damage_over_time(source : Entity, target : Entity) -> void:
+	## NOTE: This must only be called after checking that the source has poison
+	for poison_instance : DoTInstance in source.active_dots[DamageAndDoT.DoT.POISON].data:
+		target.apply_dot(poison_instance)
+	
+	source.active_dots[DamageAndDoT.DoT.POISON].clear_all_instances()
 
 ## BLEED
 func get_bleed_healing_reduction(mastery : int, use_percent : bool = false) -> float:
