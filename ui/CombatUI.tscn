@@ -53,6 +53,8 @@ action_point_regen_per_turn = 1
 innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_4d4xh")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
+[sub_resource type="Theme" id="Theme_qbsgc"]
+
 [node name="CombatUI" type="Control" unique_id=1152202896]
 layout_mode = 3
 anchors_preset = 15
@@ -305,25 +307,30 @@ theme_override_constants/separation = 4
 [node name="PortraitName" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=1805180956]
 layout_mode = 2
 size_flags_horizontal = 0
+theme = SubResource("Theme_qbsgc")
 theme_type_variation = &"NameLabel"
+theme_override_font_sizes/font_size = 20
 text = "Draechen"
 
 [node name="PotencyLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=1535197067]
 layout_mode = 2
 size_flags_horizontal = 2
 theme_type_variation = &"NameLabel"
+theme_override_font_sizes/font_size = 15
 text = "Potency: X"
 
 [node name="MasteryLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=547243573]
 layout_mode = 2
 size_flags_horizontal = 0
 theme_type_variation = &"NameLabel"
+theme_override_font_sizes/font_size = 15
 text = "Mastery: X"
 
 [node name="EndTurnButton" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer" unique_id=1837436638]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 theme = ExtResource("1_theme")
+theme_override_font_sizes/font_size = 20
 text = "End Turn"
 
 [node name="ActionScroll" type="ScrollContainer" parent="Frame/Root/ActionBar/ActionBarRow" unique_id=717535405]
@@ -368,16 +375,5 @@ theme_override_constants/separation = 5
 
 [node name="BiteBtn" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=1563405365 instance=ExtResource("8_v1jbt")]
 layout_mode = 2
-
-[node name="ClawBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=2020932971]
-layout_mode = 2
-text = "Claw                                    2 AP"
-alignment = 0
-
-[node name="FireBreathBtn" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=1984824394]
-layout_mode = 2
-disabled = true
-text = "Fire Breath                    2 AP · CD 2"
-alignment = 0
 
 [connection signal="pressed" from="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]
