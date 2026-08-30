@@ -131,6 +131,24 @@ func has_dot(dot_type : DamageAndDoT.DoT) -> bool:
 func has_void() -> bool:
 	return void_instance != null
 
+func get_void_stacks() -> int:
+	if not has_void():
+		return 0
+	
+	return void_instance.stacks
+
+func get_void_elapsed_turns() -> int:
+	if not has_void():
+		return 0
+	
+	return void_instance.turns_elapsed
+
+func get_current_void_damage() -> int:
+	if not has_void():
+		return 0
+	
+	return void_instance.get_current_damage(CombatSystem.get_the_draechen())
+
 func get_total_attrition() -> int:
 	var result := 0.0
 	for dot_instance_array in active_dots:
@@ -166,9 +184,6 @@ func get_attrition(damage_type : DamageAndDoT.DamageType) -> float:
 
 func get_damage_per_turn(damage_over_time : DamageAndDoT.DoT) -> float:
 	return active_dots[damage_over_time].calculate_total_damage()
-
-func get_void_stacks() -> int:
-	return void_instance.stacks
 
 func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -> void:
 	if current_state == State.DEAD:

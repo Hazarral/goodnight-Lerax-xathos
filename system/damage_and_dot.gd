@@ -306,7 +306,10 @@ const ENEMY_BASE_DAMAGE := 10
 const ENEMY_POTENCY_COEFFICIENT_SCALING := 10.0
 const ENEMY_MASTERY_COEFFICIENT_SCALING := 10.0
 
-func calculate_player_void_damage(dragon_max_hp : int, dragon_total_max_shield : int, potency : int, mastery: int, total_target_attrition : int, stacks : int, turns_elapsed : int) -> int:	
+func get_void_escalation(turns_elapsed : int) -> float:
+	return pow(ESCALATION_MULTIPLIER_BASE, turns_elapsed)
+
+func get_void_damage_to_enemy(dragon_max_hp : int, dragon_total_max_shield : int, potency : int, mastery: int, total_target_attrition : int, stacks : int, turns_elapsed : int) -> int:	
 	return ceili(
 		(
 			MAX_HP_SCALING * dragon_max_hp + 
@@ -314,15 +317,15 @@ func calculate_player_void_damage(dragon_max_hp : int, dragon_total_max_shield :
 			POTENCY_COEFFICIENT_SCALING * pow(potency, POTENCY_EXPONENT_SCALING) +
 			MASTERY_COEFFICIENT_SCALING * pow(mastery, MASTERY_EXPONENT_SCALING) + 
 			pow(total_target_attrition, TOTAL_ATTRITION_EXPONENT_SCALING)
-		) * stacks * pow(ESCALATION_MULTIPLIER_BASE, turns_elapsed)
+		) * stacks * get_void_escalation(turns_elapsed)
 	)
 
-func calculate_enemy_void_damage(highest_enemy_potency : int, highest_enemy_mastery : int, total_target_attrition : int, stacks : int, turns_elapsed : int) -> int:
+func get_void_damage_to_player(highest_enemy_potency : int, highest_enemy_mastery : int, total_target_attrition : int, stacks : int, turns_elapsed : int) -> int:
 	return ceili(
 		(
 			ENEMY_BASE_DAMAGE +
 			ENEMY_POTENCY_COEFFICIENT_SCALING * log(highest_enemy_potency + 1) +
 			ENEMY_MASTERY_COEFFICIENT_SCALING * log(highest_enemy_mastery + 1) +
 			pow(total_target_attrition, TOTAL_ATTRITION_EXPONENT_SCALING)
-		) * stacks * pow(ESCALATION_MULTIPLIER_BASE, turns_elapsed)
+		) * stacks * get_void_escalation(turns_elapsed)
 	)

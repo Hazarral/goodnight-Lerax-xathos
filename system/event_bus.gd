@@ -16,6 +16,10 @@ signal target_resolved(entity : Entity)
 @warning_ignore("unused_signal")
 signal force_refresh_turn_ui()
 
+## When the combat system inished initializing
+@warning_ignore("unused_signal")
+signal combat_initialization_finished()
+
 ## When the CombatSystem finishes processing its queue and has released the lock
 @warning_ignore("unused_signal")
 signal combat_event_queue_processing_finished()

@@ -18,32 +18,7 @@ func escalate() -> void:
 	turns_elapsed += 1
 
 func deal_damage(the_draechen : Player) -> void:
-	
-	var void_damage := 0
-	
-	if is_player_faction:
-		var encounter_potency_and_mastery := CombatSystem.get_highest_enemy_potency_and_mastery()
-		void_damage = ceili(
-			DamageAndDoT.calculate_enemy_void_damage(
-				encounter_potency_and_mastery.potency,
-				encounter_potency_and_mastery.mastery,
-				target.get_total_attrition(),
-				stacks,
-				turns_elapsed
-			)	
-		)
-	else:
-		void_damage = ceili(
-			DamageAndDoT.calculate_player_void_damage(
-				the_draechen.get_max_hp(), 
-				the_draechen.get_total_max_shield(),
-				the_draechen.get_potency(),
-				the_draechen.get_mastery(),
-				target.get_total_attrition(),
-				stacks,
-				turns_elapsed
-			)
-		)
+	var void_damage := get_current_damage(the_draechen)
 	
 	var damage_event := DamageEvent.new(
 		null,
@@ -54,6 +29,35 @@ func deal_damage(the_draechen : Player) -> void:
 	
 	CombatSystem.register_combat_event(damage_event)
 	CombatSystem.process_combat_event_queue()
+
+func get_current_damage(the_draechen : Player) -> int:
+	var void_damage := 0
+	
+	if is_player_faction:
+		var encounter_potency_and_mastery := CombatSystem.get_highest_enemy_potency_and_mastery()
+		void_damage = ceili(
+			DamageAndDoT.get_void_damage_to_player(
+				encounter_potency_and_mastery.potency,
+				encounter_potency_and_mastery.mastery,
+				target.get_total_attrition(),
+				stacks,
+				turns_elapsed
+			)	
+		)
+	else:
+		void_damage = ceili(
+			DamageAndDoT.get_void_damage_to_enemy(
+				the_draechen.get_max_hp(), 
+				the_draechen.get_total_max_shield(),
+				the_draechen.get_potency(),
+				the_draechen.get_mastery(),
+				target.get_total_attrition(),
+				stacks,
+				turns_elapsed
+			)
+		)
+	
+	return void_damage
 
 func apply_stacks(incoming_stacks : int) -> void:
 	stacks += incoming_stacks
