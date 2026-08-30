@@ -3,7 +3,11 @@ extends DescriptionSegment
 
 @export var value : int
 
-const TEMPLATE := "%d Turns"
+const TEMPLATE := "[color=%s]%d Turn%s[/color]"
 
 func to_text() -> String:
-	return TEMPLATE % value
+	return TEMPLATE % [
+		DamageAndDoT.GENERIC_COLOR_HEX,
+		value,
+		"s" if value > 1 else ""
+	]
