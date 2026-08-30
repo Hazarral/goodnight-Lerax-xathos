@@ -24,9 +24,9 @@ func tick_cooldown() -> void:
 	if cooldown_remaining > 0:
 		cooldown_remaining -= 1
 
-func cast() -> bool:
+func cast() -> CastResult:
 	if not is_castable():
-		return false
+		return CastResult.new(false, 0)
 	
 	source.current_action_point -= action.action_point_cost
 	
@@ -36,9 +36,9 @@ func cast() -> bool:
 	if not success:
 		source.current_action_point += action.action_point_cost
 		print("Refunded AP cost for %s" % action.action_name)
-		return false
+		return CastResult.new(false, 0)
 	
 	cooldown_remaining = action.cooldown
 	print("Casted %s succesfully!" % action.action_name)
 	
-	return true
+	return CastResult.new(false, action.action_point_cost)

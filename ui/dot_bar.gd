@@ -18,7 +18,7 @@ const CURRENT_ECHO_EFFECTIVENESS_DETAIL := " (%.2f%% Echo)"
 const WIND_SHEAR_SPREAD_EFFECTIVENESS_DETAIL := " (%.2f%% Spread)"
 const WIND_SHEAR_BLAST_TARGET_COUNT_DETAIL := " (%.2f%% Blast)"
 const POISON_EXPLOSION_EFFECTIVENESS_DETAIL := " (%.2f%% Total Attrition (%d) Damage on death)"
-const SHOCK_EFFECTIVENESS_DETAIL := " (%.2f%% per AP)"
+const SHOCK_EFFECTIVENESS_DETAIL := " (%.2f%% Shock Damage per AP)"
 const BLEED_HEALING_REDUCTION_EFFECTIVENESS_DETAIL := " (%.2f%% Healing reduced, "
 const BLEED_ANTI_HEAL_DAMAGE_DETAIL := "%.2f%% + %d Damage on heal)"
 const CRUMBLE_SPLASH_EFFECTIVENESS_DETAIL := " (%.2f%% Shield Splash)"
@@ -95,7 +95,7 @@ func _add_special_effect_detail_to_header(instance_array : DoTInstanceArray) -> 
 				DamageAndDoT.get_poison_attrition_explosion_damage(total_attrition, highest_mastery)
 			]
 		DamageAndDoT.DoT.SHOCK:
-			pass
+			bonus_text = SHOCK_EFFECTIVENESS_DETAIL % DamageAndDoT.get_shock_damage_on_action_effectiveness(highest_potency, true)
 		DamageAndDoT.DoT.BLEED:
 			var healing_reduction_percent := DamageAndDoT.get_bleed_healing_reduction(highest_mastery, true)
 			bonus_text = BLEED_HEALING_REDUCTION_EFFECTIVENESS_DETAIL % minf(100.0, healing_reduction_percent)

@@ -96,6 +96,10 @@ const WIND_SHEAR_SPREAD_MASTERY_COEFFICIENT := 0.1
 const WIND_SHEAR_BASE_BLAST_EFFECTIVENESS := 40.0
 const WIND_SHEAR_BLAST_POTENCY_COEFFICIENT := 0.25
 
+const SHOCK_BASE_DAMAGE_ON_ACTION_EFFECTIVENESS := 100.0
+const SHOCK_DAMAGE_ON_ACTION_POTENCY_COEFFICIENT := 0.1
+const SHOCK_MAX_AP_SCALING := 3.0
+
 const POISON_BASE_ATTRITION_EXPLOSION_EFFECTIVENESS := 30.0
 const POISON_ATTRITION_EXPLOSION_MASTERY_COEFFICIENT := 0.2
 
@@ -223,6 +227,18 @@ func get_wind_shear_blast_effectiveness(potency : int, use_percent : bool = fals
 
 func get_wind_shear_blast_damage(total_wind_shear_damage : float, potency : int, afflicted_count : int) -> float:
 	return total_wind_shear_damage * get_wind_shear_blast_effectiveness(potency) * afflicted_count
+
+## SHOCK
+func get_shock_damage_on_action_effectiveness(potency : int, use_percent : bool = false) -> float:
+	var value := SHOCK_BASE_DAMAGE_ON_ACTION_EFFECTIVENESS + SHOCK_DAMAGE_ON_ACTION_POTENCY_COEFFICIENT * potency
+	if use_percent:
+		return value
+	
+	return value / 100.0
+
+func get_shock_damage_on_action(total_shock_damage : float, potency : int, action_point_spent : int) -> float:
+	var multiplier := minf(SHOCK_MAX_AP_SCALING, action_point_spent)
+	return total_shock_damage * get_shock_damage_on_action_effectiveness(potency) * multiplier
 
 ## POISON
 func get_poison_attrition_explosion_effectiveness(mastery : int, use_percent : bool = false) -> float:

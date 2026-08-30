@@ -403,10 +403,13 @@ func tick_cooldowns() -> void:
 		known_action.tick_cooldown()
 
 func cast_action(index : int) -> void:
-	var is_cast_success := await known_actions[index].cast()
+	var cast_result := await known_actions[index].cast()
 	
-	if not is_cast_success:
+	if not cast_result.success:
 		push_error("Cannot cast %s due to cooldown or AP cost!" % known_actions[index].action.action_name)
+	
+	if has_dot(DamageAndDoT.DoT.SHOCK):
+		_trigger_shock_damage_on_action(cast_result.ap_spent)
 
 ##Combat turn stages below
 
@@ -572,3 +575,20 @@ func _trigger_poison_explosion_on_death() -> void:
 	
 	if highest_hp_target != null:
 		DamageAndDoT.transfer_poison_damage_over_time(self, highest_hp_target)
+
+func _trigger_shock_damage_on_action(ap_spent : int) -> void:
+	var total_shock_damage := active_dots[DamageAndDoT.DoT.SHOCK].calculate_total_damage()
+	var highest_potency := active_dots[DamageAndDoT.DoT.SHOCK].get_highest_potency()
+	var shock_damage_on_action := ceili(DamageAndDoT.get_shock_damage_on_action(total_shock_damage, highest_potency, ap_spent))
+	var damage_event := DamageEvent.new(
+		self,
+		self,
+		DamageAndDoT.DamageType.LIGHTNING,
+		shock_damage_on_action,
+		true
+	)
+	
+	CombatSystem.inject_combat_event(damage_event)
+	
+	## NOTE: Called unconditionally. If the queue is processing, this is a no-op, else we force it to resolve immediately
+	CombatSystem.process_combat_event_queue()
