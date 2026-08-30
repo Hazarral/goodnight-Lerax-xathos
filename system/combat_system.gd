@@ -12,6 +12,8 @@ var turn_counter := 0
 var round_counter := 0
 var current_actor : Entity = null
 
+var is_processing_combat_event_queue : bool = false
+
 const MAX_ALIVE_ENEMY_ON_FIELD := 5
 
 func reset() -> void:
@@ -23,6 +25,8 @@ func reset() -> void:
 	turn_order.clear()
 	current_turn_index = 0
 	turn_counter = 0
+	
+	is_processing_combat_event_queue = false
 
 func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side_templates : Array[EntityTemplate]) -> void:
 	## 1. Ensure clean data before anything
@@ -140,6 +144,9 @@ func on_turn_finished() -> void:
 func get_current_actor() -> Entity:
 	return current_actor
 
+func is_current_actor(entity : Entity) -> bool:
+	return entity == current_actor
+
 func end_current_actor_turn() -> void:
 	current_actor.end_turn()
 	EventBus.force_refresh_turn_ui.emit()
@@ -166,12 +173,20 @@ func inject_combat_event(damage_event : CombatEvent) -> void:
 	combat_event_queue.push_front(damage_event)
 
 func process_combat_event_queue() -> void:
+	if is_processing_combat_event_queue:
+		return
+	
+	is_processing_combat_event_queue = true
+	
 	while not combat_event_queue.is_empty():
 		var current_event : CombatEvent = combat_event_queue.pop_front()
 		
 		# NOTE: This may inject during resolve() but that is none of this script's business\
 		# current_event also gets ref = 0 when going out of scope
 		current_event.resolve()
+	
+	is_processing_combat_event_queue = false
+	EventBus.combat_event_queue_processing_finished.emit()
 
 func get_on_field(is_player_faction : bool) -> Array[Entity]:
 	return player_on_field if is_player_faction else enemy_on_field

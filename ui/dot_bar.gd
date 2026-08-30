@@ -17,10 +17,10 @@ const BURN_STAGE_DETAIL := " (x%.1f)"
 const CURRENT_ECHO_EFFECTIVENESS_DETAIL := " (%.2f%% Echo)"
 const WIND_SHEAR_SPREAD_EFFECTIVENESS_DETAIL := " (%.2f%% Spread)"
 const WIND_SHEAR_BLAST_TARGET_COUNT_DETAIL := " (%.2f%% Blast)"
-const POISON_EXPLOSION_EFFECTIVENESS_DETAIL := " (%.2f%% Total Attrition Bomb on Death)"
+const POISON_EXPLOSION_EFFECTIVENESS_DETAIL := " (%.2f%% Total Attrition (%d) Damage on death)"
 const SHOCK_EFFECTIVENESS_DETAIL := " (%.2f%% per AP)"
 const BLEED_HEALING_REDUCTION_EFFECTIVENESS_DETAIL := " (%.2f%% Healing reduced, "
-const BLEED_ANTI_HEAL_DAMAGE_DETAIL := "%.2f%% + %d damage on heal)"
+const BLEED_ANTI_HEAL_DAMAGE_DETAIL := "%.2f%% + %d Damage on heal)"
 const CRUMBLE_SPLASH_EFFECTIVENESS_DETAIL := " (%.2f%% Shield Splash)"
 const FROSTBITE_DETAIL:= " (Prone to Shield Break)"
 
@@ -89,7 +89,11 @@ func _add_special_effect_detail_to_header(instance_array : DoTInstanceArray) -> 
 			bonus_text = WIND_SHEAR_SPREAD_EFFECTIVENESS_DETAIL % DamageAndDoT.get_wind_shear_spread_effectiveess(highest_mastery, true)
 			bonus_text += WIND_SHEAR_BLAST_TARGET_COUNT_DETAIL % (afflicted_count * 100.0)
 		DamageAndDoT.DoT.POISON:
-			pass
+			var total_attrition := entity.get_total_attrition()
+			bonus_text = POISON_EXPLOSION_EFFECTIVENESS_DETAIL % [
+				DamageAndDoT.get_poison_attrition_explosion_effectiveness(highest_mastery, true),
+				DamageAndDoT.get_poison_attrition_explosion_damage(total_attrition, highest_mastery)
+			]
 		DamageAndDoT.DoT.SHOCK:
 			pass
 		DamageAndDoT.DoT.BLEED:

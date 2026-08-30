@@ -124,6 +124,16 @@ func has_dot(dot_type : DamageAndDoT.DoT) -> bool:
 func has_void() -> bool:
 	return void_instance != null
 
+func get_total_attrition() -> int:
+	var result := 0.0
+	for dot_instance_array in active_dots:
+		if not dot_instance_array.has_dot():
+			continue
+		
+		result += dot_instance_array.calculate_total_attrition()
+	
+	return ceili(result)
+
 func is_player_faction() -> bool:
 	return template.is_player_faction
 
@@ -318,27 +328,7 @@ func heal(amount : int) -> void:
 		print("HP: %d/%d" % [current_hp, get_max_hp()])
 		return
 	
-	## THe real elaborate healing
-	var highest_mastery := active_dots[DamageAndDoT.DoT.BLEED].get_highest_mastery()
-	var highest_potency := active_dots[DamageAndDoT.DoT.BLEED].get_highest_potency()
-	var stacks_count := active_dots[DamageAndDoT.DoT.BLEED].get_all_stacks_count()
-	var healing_reduction := DamageAndDoT.get_bleed_healing_reduction(highest_mastery)
-	var real_amount := maxi(0, ceili(amount * (1 - healing_reduction)))
-	
-	# NOTE: Heal first, before damage
-	current_hp = mini(get_max_hp(), current_hp + real_amount)
-	
-	var anti_heal_damage := ceili(DamageAndDoT.get_bleed_anti_heal_damage(amount, highest_mastery, highest_potency, stacks_count))
-	var damage_event := DamageEvent.new(
-		self,
-		self,
-		DamageAndDoT.DamageType.PHYSICAL,
-		anti_heal_damage,
-		true
-	)
-	
-	# NOTE: If injected, never call process_combat_event_queue further
-	CombatSystem.inject_combat_event(damage_event)
+	_trigger_bleed_anti_heal_effect(amount)
 
 func die() -> void:
 	if current_state == State.DEAD:
@@ -349,16 +339,15 @@ func die() -> void:
 	current_hp = 0
 	print("Entity %s died" % template.entity_name)
 	
+	## Resolve poison effect here
+	if has_dot(DamageAndDoT.DoT.POISON):
+		_trigger_poison_explosion_on_death()
+	
 	if not is_player_faction():
 		CombatSystem.backfill_reinforcements()
 	
-	## Resolve poison effect here
-	if not has_dot(DamageAndDoT.DoT.POISON):
+	if CombatSystem.is_current_actor(self):
 		end_turn()
-		return
-	
-	##TODO: Explode on death, dealing damage and transfer Poison to highest current HP target
-	end_turn()
 	
 func begin_turn() -> void:
 	## TODO: Implement the pipeline here
@@ -532,3 +521,54 @@ func _trigger_frostbite_on_break(newly_broken_indices : Array[int]) -> void:
 		)
 		
 		CombatSystem.inject_combat_event(damage_event)
+
+func _trigger_bleed_anti_heal_effect(heal_amount : int) -> void:
+	## THe real elaborate healing
+	var highest_mastery := active_dots[DamageAndDoT.DoT.BLEED].get_highest_mastery()
+	var highest_potency := active_dots[DamageAndDoT.DoT.BLEED].get_highest_potency()
+	var stacks_count := active_dots[DamageAndDoT.DoT.BLEED].get_all_stacks_count()
+	var healing_reduction := DamageAndDoT.get_bleed_healing_reduction(highest_mastery)
+	var real_amount := maxi(0, ceili(heal_amount * (1 - healing_reduction)))
+	
+	# NOTE: Heal first, before damage
+	current_hp = mini(get_max_hp(), current_hp + real_amount)
+	
+	var anti_heal_damage := ceili(DamageAndDoT.get_bleed_anti_heal_damage(heal_amount, highest_mastery, highest_potency, stacks_count))
+	var damage_event := DamageEvent.new(
+		self,
+		self,
+		DamageAndDoT.DamageType.PHYSICAL,
+		anti_heal_damage,
+		true
+	)
+	
+	# NOTE: If injected, never call process_combat_event_queue further
+	CombatSystem.inject_combat_event(damage_event)
+
+func _trigger_poison_explosion_on_death() -> void:
+	var valid_targets := DamageAndDoT.get_poison_special_effect_targets(self, is_player_faction())
+	var highest_mastery := active_dots[DamageAndDoT.DoT.POISON].get_highest_mastery()
+	var explosion_damage := ceili(DamageAndDoT.get_poison_attrition_explosion_damage(get_total_attrition(), highest_mastery))
+	
+	for entity in valid_targets:
+		var damage_event := DamageEvent.new(
+			self,
+			entity,
+			DamageAndDoT.DamageType.POISON,
+			explosion_damage
+		)
+		
+		CombatSystem.inject_combat_event(damage_event)
+	
+	await EventBus.combat_event_queue_processing_finished
+	
+	var highest_hp_target : Entity = null
+	for entity in valid_targets:
+		if entity.current_state != Entity.State.ALIVE:
+			continue
+		
+		if highest_hp_target == null or entity.current_hp > highest_hp_target.current_hp:
+			highest_hp_target = entity
+	
+	if highest_hp_target != null:
+		DamageAndDoT.transfer_poison_damage_over_time(self, highest_hp_target)
