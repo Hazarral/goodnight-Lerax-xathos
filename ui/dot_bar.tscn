@@ -30,8 +30,8 @@ theme = SubResource("Theme_jpyye")
 text = "▼"
 
 [node name="DoTHeader" type="RichTextLabel" parent="VBoxContainer/HBoxContainer" unique_id=1468808125]
-custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+size_flags_horizontal = 3
 theme = SubResource("Theme_orua6")
 theme_override_colors/default_color = Color(0.9098039, 0.8862745, 0.83137256, 1)
 theme_override_font_sizes/normal_font_size = 15
@@ -39,7 +39,6 @@ bbcode_enabled = true
 text = "Burn -> Fire Shield, X Damage, X Attrition, X Turns left"
 fit_content = true
 scroll_active = false
-autowrap_mode = 0
 vertical_alignment = 1
 
 [node name="Details" type="RichTextLabel" parent="VBoxContainer" unique_id=1372565386]
@@ -51,6 +50,5 @@ text = "> Source 1, X Base Damage, X Attrition, X Stacks, X Turns
 "
 fit_content = true
 scroll_active = false
-autowrap_mode = 0
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/DropdownButton" to="." method="_on_dropdown_button_pressed"]

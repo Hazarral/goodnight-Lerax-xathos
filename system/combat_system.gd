@@ -1,6 +1,8 @@
 extends Node
 
-var draechen_player : Entity
+var draechen_player : Player
+const DRAECHEN_TEMPLATE := preload("res://Entities/templates/player_the_draechen.tres")
+
 var player_on_field : Array[Entity]
 var enemy_on_field: Array[Entity]
 var enemy_reinforcement : Array[Entity]
@@ -31,6 +33,8 @@ func reset() -> void:
 func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side_templates : Array[EntityTemplate]) -> void:
 	## 1. Ensure clean data before anything
 	reset()
+	print("player_side_templates size: ", player_side_templates.size())
+	print("enemy_side_templates size: ", enemy_side_templates.size())
 	
 	## 2. Create the entities in memory. We will ignore magnification for now
 	## NOTE: Implement magnification later
@@ -38,7 +42,11 @@ func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side
 	var enemy_side : Array[Entity] = []
 	
 	for template in player_side_templates:
-		player_side.append(Entity.new(template))
+		if template == DRAECHEN_TEMPLATE:
+			draechen_player = Player.new(template)
+			player_side.append(draechen_player)
+		else:
+			player_side.append(Entity.new(template))
 	
 	for template in enemy_side_templates:
 		enemy_side.append(Entity.new(template))
@@ -48,6 +56,9 @@ func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side
 	
 	## 4. Turn order is finalized
 	build_turn_order()
+	print("draechen_player after init: ", draechen_player)
+	EventBus.combat_initialization_finished.emit()
+	print("Combat init finished!")
 
 func initialize_encounter(player_party : Array[Entity], enemy_side_templates : Array[EntityTemplate]) -> void:
 	## NOTE: Use this for the actual game, because player party is persistent
@@ -58,6 +69,7 @@ func initialize_encounter(player_party : Array[Entity], enemy_side_templates : A
 	
 	initialize_factions(player_party, enemy_side)
 	build_turn_order()
+	EventBus.combat_initialization_finished.emit()
 
 func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]) -> void:
 	if player_side.is_empty() or enemy_side.is_empty():
@@ -66,7 +78,7 @@ func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]
 	
 	for entity in player_side:
 		# NOTE: For now, player can have as many entities on the field as they want
-		draechen_player = player_side.front()
+		draechen_player = player_side.front() as Player
 		add_player_faction(entity)
 	
 	for entity in enemy_side:
@@ -141,6 +153,9 @@ func on_turn_finished() -> void:
 	## NOTE: This is meant to be called by entities to report having finished their turn
 	advance_turn()
 
+func get_the_draechen() -> Player:
+	return draechen_player
+
 func get_current_actor() -> Entity:
 	return current_actor
 
@@ -152,7 +167,7 @@ func end_current_actor_turn() -> void:
 	EventBus.force_refresh_turn_ui.emit()
 
 func is_combat_over() -> bool:
-	if draechen_player.current_state == Entity.State.DEAD:
+	if draechen_player != null and draechen_player.current_state == Entity.State.DEAD:
 		return true
 	if get_dead_targets(enemy_on_field).size() == enemy_on_field.size():
 		return true
@@ -221,3 +236,13 @@ func get_valid_targets(faction_filter : ActionEvent.TargetFaction, state_filter 
 	
 	## Guard that is unreachable anyway
 	return targets
+
+func get_highest_enemy_potency_and_mastery() -> EncounterPotencyAndMastery:
+	var enemies := enemy_on_field + enemy_reinforcement
+	var highest_potency := 0
+	var highest_mastery := 0
+	for enemy in enemies:
+		highest_potency = maxi(highest_potency, enemy.get_potency())
+		highest_mastery = maxi(highest_mastery, enemy.get_mastery())
+	
+	return EncounterPotencyAndMastery.new(highest_potency, highest_mastery)

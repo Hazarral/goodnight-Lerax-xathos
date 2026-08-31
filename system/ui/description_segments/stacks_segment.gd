@@ -3,7 +3,11 @@ extends DescriptionSegment
 
 @export var value : int
 
-const TEMPlATE := "%d Stacks of"
+const TEMPlATE := "[color=%s]%d Stack%s[/color] of"
 
 func to_text() -> String:
-	return TEMPlATE % value
+	return TEMPlATE % [
+		DamageAndDoT.GENERIC_COLOR_HEX,
+		value,
+		"s" if value > 1 else ""
+	]

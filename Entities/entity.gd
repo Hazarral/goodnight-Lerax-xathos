@@ -118,11 +118,36 @@ func get_active_shield_indices() -> Array[int]:
 	
 	return arr
 
+func get_total_max_shield() -> int:
+	var result := 0
+	for shield in max_shields:
+		result += shield
+	
+	return result
+
 func has_dot(dot_type : DamageAndDoT.DoT) -> bool:
 	return active_dots[dot_type].has_dot()
 
 func has_void() -> bool:
 	return void_instance != null
+
+func get_void_stacks() -> int:
+	if not has_void():
+		return 0
+	
+	return void_instance.stacks
+
+func get_void_elapsed_turns() -> int:
+	if not has_void():
+		return 0
+	
+	return void_instance.turns_elapsed
+
+func get_current_void_damage() -> int:
+	if not has_void():
+		return 0
+	
+	return void_instance.get_current_damage(CombatSystem.get_the_draechen())
 
 func get_total_attrition() -> int:
 	var result := 0.0
@@ -159,9 +184,6 @@ func get_attrition(damage_type : DamageAndDoT.DamageType) -> float:
 
 func get_damage_per_turn(damage_over_time : DamageAndDoT.DoT) -> float:
 	return active_dots[damage_over_time].calculate_total_damage()
-
-func get_void_stacks() -> int:
-	return void_instance.stacks
 
 func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -> void:
 	if current_state == State.DEAD:
@@ -279,7 +301,7 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 	_print_sca_damage_to_shield(damage_type, shield_damage_dealt, total_shield_damage)
 	# What is left will go to HP, even if it is 0
 	
-	if not newly_broken_indices.is_empty():
+	if has_dot(DamageAndDoT.DoT.FROSTBITE) and not newly_broken_indices.is_empty():
 		_trigger_frostbite_on_break(newly_broken_indices)
 	
 	if remaining_damage > 0:
@@ -375,6 +397,7 @@ func begin_turn() -> void:
 	
 	## Stage E: Void
 	## TODO: implement Void damage and escalation here
+	_resolve_void()
 	
 	## Stage F: Tick down on all DoT
 	_resolve_dot_tick_down()
@@ -592,3 +615,11 @@ func _trigger_shock_damage_on_action(ap_spent : int) -> void:
 	
 	## NOTE: Called unconditionally. If the queue is processing, this is a no-op, else we force it to resolve immediately
 	CombatSystem.process_combat_event_queue()
+
+func _resolve_void() -> void:
+	if void_instance == null:
+		## No Void for now
+		return
+	
+	void_instance.deal_damage(CombatSystem.get_the_draechen())
+	void_instance.escalate()

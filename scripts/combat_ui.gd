@@ -1,6 +1,9 @@
 class_name CombatUI
 extends Control
 
+## Lifespan
+@onready var lifespan_value_label := $Frame/Root/Topbar/TopbarRow/Lifespan/LifespanValue
+
 @export var player_faction_entity_templates : Array[EntityTemplate]
 @export var enemy_faction_entity_templates : Array[EntityTemplate]
 var player_side : Array[Entity]
@@ -39,6 +42,8 @@ const INSPECTOR_MASTERY_TEXT := "Mastery: %d"
 
 var selected_card : EntityInfoCard = null
 
+@onready var void_bar := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidBar
+
 ## 2. Action bar
 @onready var current_entity_name_label := $Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell/PortraitName
 @onready var current_entity_potency_label := $Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell/PotencyLabel
@@ -64,15 +69,21 @@ var pending_action_index : int = -1   # which action button is currently mid-tar
 var pending_source : Entity = null
 
 func _ready() -> void:
-	_combat_mockup()
-	_refresh_turn_ui()
+	EventBus.combat_initialization_finished.connect(_set_time_to_live)
 	EventBus.target_requested.connect(_on_target_requested)
 	EventBus.force_refresh_turn_ui.connect(_refresh_turn_ui)
+	
+	_combat_mockup()
+	_refresh_turn_ui()
 
 static func clear_children(container_list : Array[Node]) -> void:
 	for container in container_list:
 		for child in container.get_children():
 			child.queue_free()
+
+func _set_time_to_live() -> void:
+	print("Setting time to live...")
+	lifespan_value_label.text = CombatSystem.get_the_draechen().get_time_to_live_str()
 
 func _init_inspector() -> void:
 	for entity_card : EntityInfoCard in player_roster_list.get_children():
@@ -178,6 +189,11 @@ func _set_inspector(entity : Entity) -> void:
 			inspector_elemental_dot_list.add_child(dot_bar)
 			dot_bar.setup(entity, entity.active_dots[damage_over_time])
 			dot_bar.render()
+	
+	void_bar.visible = entity.has_void()
+	if entity.has_void():
+		void_bar.setup(entity)
+		void_bar.render()
 
 func _add_roster_for_faction(is_player_faction : bool) -> void:
 	_add_roster(CombatSystem.get_on_field(is_player_faction), is_player_faction)

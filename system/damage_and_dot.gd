@@ -289,3 +289,43 @@ func get_crumble_splash_effectiveness(potency : int, use_percent : bool = false)
 
 func get_crumble_splash_damage(total_damage : float, potency : int) -> float:
 	return total_damage * get_crumble_splash_effectiveness(potency)
+
+## VOID
+## Player scaling
+const MAX_HP_SCALING := 0.05
+const TOTAL_MAX_SHIELD_SCALING := 0.05
+const POTENCY_COEFFICIENT_SCALING := 0.5
+const POTENCY_EXPONENT_SCALING := 1.2
+const MASTERY_COEFFICIENT_SCALING := 0.5
+const MASTERY_EXPONENT_SCALING := 1.2
+const TOTAL_ATTRITION_EXPONENT_SCALING := 0.7
+const ESCALATION_MULTIPLIER_BASE := 1.20
+
+## Enemy scaling
+const ENEMY_BASE_DAMAGE := 10
+const ENEMY_POTENCY_COEFFICIENT_SCALING := 10.0
+const ENEMY_MASTERY_COEFFICIENT_SCALING := 10.0
+
+func get_void_escalation(turns_elapsed : int) -> float:
+	return pow(ESCALATION_MULTIPLIER_BASE, turns_elapsed)
+
+func get_void_damage_to_enemy(dragon_max_hp : int, dragon_total_max_shield : int, potency : int, mastery: int, total_target_attrition : int, stacks : int, turns_elapsed : int) -> int:	
+	return ceili(
+		(
+			MAX_HP_SCALING * dragon_max_hp + 
+			TOTAL_MAX_SHIELD_SCALING * dragon_total_max_shield +
+			POTENCY_COEFFICIENT_SCALING * pow(potency, POTENCY_EXPONENT_SCALING) +
+			MASTERY_COEFFICIENT_SCALING * pow(mastery, MASTERY_EXPONENT_SCALING) + 
+			pow(total_target_attrition, TOTAL_ATTRITION_EXPONENT_SCALING)
+		) * stacks * get_void_escalation(turns_elapsed)
+	)
+
+func get_void_damage_to_player(highest_enemy_potency : int, highest_enemy_mastery : int, total_target_attrition : int, stacks : int, turns_elapsed : int) -> int:
+	return ceili(
+		(
+			ENEMY_BASE_DAMAGE +
+			ENEMY_POTENCY_COEFFICIENT_SCALING * log(highest_enemy_potency + 1) +
+			ENEMY_MASTERY_COEFFICIENT_SCALING * log(highest_enemy_mastery + 1) +
+			pow(total_target_attrition, TOTAL_ATTRITION_EXPONENT_SCALING)
+		) * stacks * get_void_escalation(turns_elapsed)
+	)

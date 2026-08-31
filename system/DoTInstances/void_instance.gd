@@ -6,21 +6,6 @@ const damage_type := DamageAndDoT.DamageType.VOID
 var stacks : int
 var is_player_faction : bool
 
-## Player scaling
-const MAX_HP_SCALING := 0.05
-const TOTAL_MAX_SHIELD_SCALING := 0.05
-const POTENCY_COEFFICIENT_SCALING := 0.5
-const POTENCY_EXPONENT_SCALING := 1.5
-const MASTERY_COEFFICIENT_SCALING := 0.5
-const MASTERY_EXPONENT_SCALING := 1.5
-const TOTAL_ATTRITION_EXPONENT_SCALING := 0.7
-const ESCALATION_MULTIPLIER_BASE := 1.25
-
-## Enemy scaling
-const ENEMY_BASE_DAMAGE := 10
-const ENEMY_POTENCY_COEFFICIENT_SCALING := 10.0
-const ENEMY_MASTERY_COEFFICIENT_SCALING := 10.0
-
 var turns_elapsed : int
 
 func _init(p_target : Entity, p_stacks : int, p_is_player_faction : bool) -> void:
@@ -29,25 +14,50 @@ func _init(p_target : Entity, p_stacks : int, p_is_player_faction : bool) -> voi
 	is_player_faction = p_is_player_faction
 	turns_elapsed = 0
 
-func tick_down() -> void:
+func escalate() -> void:
 	turns_elapsed += 1
+
+func deal_damage(the_draechen : Player) -> void:
+	var void_damage := get_current_damage(the_draechen)
+	
+	var damage_event := DamageEvent.new(
+		null,
+		target,
+		DamageAndDoT.DamageType.VOID,
+		void_damage
+	)
+	
+	CombatSystem.register_combat_event(damage_event)
+	CombatSystem.process_combat_event_queue()
+
+func get_current_damage(the_draechen : Player) -> int:
+	var void_damage := 0
+	
+	if is_player_faction:
+		var encounter_potency_and_mastery := CombatSystem.get_highest_enemy_potency_and_mastery()
+		void_damage = ceili(
+			DamageAndDoT.get_void_damage_to_player(
+				encounter_potency_and_mastery.potency,
+				encounter_potency_and_mastery.mastery,
+				target.get_total_attrition(),
+				stacks,
+				turns_elapsed
+			)	
+		)
+	else:
+		void_damage = ceili(
+			DamageAndDoT.get_void_damage_to_enemy(
+				the_draechen.get_max_hp(), 
+				the_draechen.get_total_max_shield(),
+				the_draechen.get_potency(),
+				the_draechen.get_mastery(),
+				target.get_total_attrition(),
+				stacks,
+				turns_elapsed
+			)
+		)
+	
+	return void_damage
 
 func apply_stacks(incoming_stacks : int) -> void:
 	stacks += incoming_stacks
-
-func calculate_player_void_damage(dragon_max_hp : int, dragon_total_max_shield : int, potency : int, mastery: int, total_target_attrition : int) -> int:	
-	return ceili(
-		(MAX_HP_SCALING * dragon_max_hp + 
-		TOTAL_MAX_SHIELD_SCALING * dragon_total_max_shield +
-		POTENCY_COEFFICIENT_SCALING * pow(potency, POTENCY_EXPONENT_SCALING) +
-		MASTERY_COEFFICIENT_SCALING * pow(mastery, MASTERY_EXPONENT_SCALING) + 
-		pow(total_target_attrition, TOTAL_ATTRITION_EXPONENT_SCALING)) * stacks * pow(ESCALATION_MULTIPLIER_BASE, turns_elapsed)
-	)
-
-func calculate_enemy_void_damage(highest_enemy_potency : int, highest_enemy_mastery : int, total_target_attrition : int) -> int:
-	return ceili(
-		(ENEMY_BASE_DAMAGE +
-		ENEMY_POTENCY_COEFFICIENT_SCALING * log(highest_enemy_potency + 1) +
-		ENEMY_MASTERY_COEFFICIENT_SCALING * log(highest_enemy_mastery + 1) +
-		pow(total_target_attrition, TOTAL_ATTRITION_EXPONENT_SCALING)) * stacks * pow(ESCALATION_MULTIPLIER_BASE, turns_elapsed)
-	)
