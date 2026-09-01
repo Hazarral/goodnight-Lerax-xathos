@@ -1,0 +1,110 @@
+[gd_resource type="Resource" script_class="Action" format=3 uid="uid://ksdxxiw7ck7i"]
+
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_d0fye"]
+[ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="2_3v7b5"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/Actions/damage_action_event.gd" id="2_t3bao"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="3_et80i"]
+[ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/Actions/apply_dot_action_event.gd" id="3_vnk4y"]
+[ext_resource type="Script" uid="uid://jdkkvelphwtm" path="res://system/Actions/heal_action_event.gd" id="4_4rnhi"]
+[ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="6_7ywvy"]
+[ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="7_xhqtq"]
+[ext_resource type="Script" uid="uid://b5tvpmksfnn2p" path="res://system/ui/description_segments/damage_segment.gd" id="8_b4tc5"]
+[ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="9_kwx1b"]
+[ext_resource type="Script" uid="uid://c2vel0thkoyid" path="res://system/ui/description_segments/comma_segment.gd" id="10_v5etq"]
+[ext_resource type="Script" uid="uid://boalnkb0mp4cw" path="res://system/ui/description_segments/dot_segment.gd" id="11_0hreh"]
+[ext_resource type="Script" uid="uid://cfps8viah6gb1" path="res://system/ui/description_segments/heal_segment.gd" id="12_nys7l"]
+
+[sub_resource type="Resource" id="Resource_t3bao"]
+script = ExtResource("2_t3bao")
+damage_type = 5
+amount = 80
+potency_scaling = 2.0
+target_state = 2
+metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
+
+[sub_resource type="Resource" id="Resource_vnk4y"]
+script = ExtResource("3_vnk4y")
+damage_type = 5
+base_damage = 1.0
+stacks = 10
+duration = 3
+target_state = 2
+target_mode = 2
+metadata/_custom_type_script = "uid://dl0omykhmcmxj"
+
+[sub_resource type="Resource" id="Resource_4rnhi"]
+script = ExtResource("4_4rnhi")
+amount = 40
+potency_scaling = 1.0
+target_faction = 1
+target_mode = 1
+metadata/_custom_type_script = "uid://jdkkvelphwtm"
+
+[sub_resource type="Resource" id="Resource_nsbht"]
+script = ExtResource("6_7ywvy")
+text = "Thrusts at the target with fierce vigor and passion, rupturing the unblessed's insides. Recovers vitality as the unblessed shall thank us for the wonderful bleeding."
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_bnnle"]
+script = ExtResource("7_xhqtq")
+metadata/_custom_type_script = "uid://d0c4l5ycbx5ue"
+
+[sub_resource type="Resource" id="Resource_28h72"]
+script = ExtResource("6_7ywvy")
+text = "Deals"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_cwnra"]
+script = ExtResource("8_b4tc5")
+damage_type = 5
+base_damage = 80.0
+potency_scaling = 2.0
+metadata/_custom_type_script = "uid://b5tvpmksfnn2p"
+
+[sub_resource type="Resource" id="Resource_u37hb"]
+script = ExtResource("9_kwx1b")
+target_state = 2
+metadata/_custom_type_script = "uid://cfp2mohxm1c47"
+
+[sub_resource type="Resource" id="Resource_xfgh3"]
+script = ExtResource("10_v5etq")
+metadata/_custom_type_script = "uid://c2vel0thkoyid"
+
+[sub_resource type="Resource" id="Resource_gccix"]
+script = ExtResource("6_7ywvy")
+text = "applies"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_qjcwn"]
+script = ExtResource("11_0hreh")
+damage_over_time_type = 5
+stacks = 10
+base_damage = 1.0
+duration = 3
+metadata/_custom_type_script = "uid://boalnkb0mp4cw"
+
+[sub_resource type="Resource" id="Resource_xibjb"]
+script = ExtResource("6_7ywvy")
+text = "to the target hit. Then recovers"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_mw613"]
+script = ExtResource("12_nys7l")
+base_healing = 40.0
+potency_scaling = 1.0
+metadata/_custom_type_script = "uid://cfps8viah6gb1"
+
+[sub_resource type="Resource" id="Resource_gqcgt"]
+script = ExtResource("6_7ywvy")
+text = "to self."
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[resource]
+script = ExtResource("3_et80i")
+origin = 1
+action_name = "Pelvic Thrust"
+action_point_cost = 3
+cooldown = 5
+description_segments = Array[ExtResource("2_3v7b5")]([SubResource("Resource_nsbht"), SubResource("Resource_bnnle"), SubResource("Resource_28h72"), SubResource("Resource_cwnra"), SubResource("Resource_u37hb"), SubResource("Resource_xfgh3"), SubResource("Resource_gccix"), SubResource("Resource_qjcwn"), SubResource("Resource_xibjb"), SubResource("Resource_mw613"), SubResource("Resource_gqcgt")])
+action_events = Array[ExtResource("1_d0fye")]([SubResource("Resource_t3bao"), SubResource("Resource_vnk4y"), SubResource("Resource_4rnhi")])
+metadata/_custom_type_script = "uid://doysxg78oub0w"

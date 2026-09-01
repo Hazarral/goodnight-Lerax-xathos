@@ -118,7 +118,7 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
 [node name="EnemyPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=1248686686]
-custom_minimum_size = Vector2(250, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 
 [node name="EnemyCol" type="VBoxContainer" parent="Frame/Root/MidRow/EnemyPanel" unique_id=1304019750]

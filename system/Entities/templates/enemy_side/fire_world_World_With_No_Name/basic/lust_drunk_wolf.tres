@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://system/Entities/entity_template.gd" id="2_cq4w0"]
 [ext_resource type="Resource" uid="uid://blh8ubckghxsn" path="res://system/Actions/enemy actions/basic/fiery_bite.tres" id="2_otu32"]
 [ext_resource type="Resource" uid="uid://g0gfyafsh524" path="res://system/Actions/enemy actions/basic/fireball.tres" id="3_otu32"]
+[ext_resource type="Resource" uid="uid://ksdxxiw7ck7i" path="res://system/Actions/enemy actions/basic/pelvic_thrust.tres" id="4_n28hk"]
 
 [resource]
 script = ExtResource("2_cq4w0")
@@ -16,5 +17,5 @@ poison_shield = 300
 max_action_point = 4
 starting_action_point = 1
 action_point_regen_per_turn = 2
-innate_actions = Array[ExtResource("1_ixtw0")]([ExtResource("2_otu32"), ExtResource("3_otu32")])
+innate_actions = Array[ExtResource("1_ixtw0")]([ExtResource("2_otu32"), ExtResource("3_otu32"), ExtResource("4_n28hk")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
