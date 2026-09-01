@@ -4,10 +4,9 @@
 [ext_resource type="Script" uid="uid://drekl6s4imnxo" path="res://scripts/combat_ui.gd" id="2_script"]
 [ext_resource type="Resource" uid="uid://rnqvtjaoiwov" path="res://system/Entities/templates/player_side/player_the_draechen.tres" id="4_0ncfs"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="5_0ncfs"]
-[ext_resource type="Resource" uid="uid://g0gfyafsh524" path="res://system/Actions/enemy actions/fireball.tres" id="6_4d4xh"]
 [ext_resource type="Resource" uid="uid://bryq065munqlv" path="res://system/Actions/player actions/invoke_flame.tres" id="6_gftf7"]
 [ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://system/Entities/entity_template.gd" id="6_rqx7n"]
-[ext_resource type="Resource" uid="uid://chfo1o7314g3d" path="res://system/Actions/player actions/exalted_restoration.tres" id="8_nsbht"]
+[ext_resource type="Resource" uid="uid://bvla4v52rv7w4" path="res://system/Entities/templates/enemy_side/fire_world_World_With_No_Name/basic/lust_drunk_wolf.tres" id="7_nsbht"]
 [ext_resource type="PackedScene" uid="uid://bi7f7265qr116" path="res://ui/action_button.tscn" id="8_v1jbt"]
 [ext_resource type="PackedScene" uid="uid://bm0xfhl4g6ngo" path="res://ui/void_bar.tscn" id="9_bnnle"]
 
@@ -24,33 +23,6 @@ action_point_regen_per_turn = 5
 innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_gftf7")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
-[sub_resource type="Resource" id="Resource_0ncfs"]
-script = ExtResource("6_rqx7n")
-entity_name = "Enemy1"
-potency = 5
-mastery = 5
-max_hp = 20000
-fire_shield = 100
-poison_shield = 200
-ice_shield = 100
-max_action_point = 5
-starting_action_point = 2
-action_point_regen_per_turn = 2
-innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_4d4xh"), ExtResource("6_gftf7"), ExtResource("8_nsbht")])
-
-[sub_resource type="Resource" id="Resource_rqx7n"]
-script = ExtResource("6_rqx7n")
-entity_name = "Enemy2"
-mastery = 5
-max_hp = 200
-water_shield = 100
-wind_shield = 100
-physical_shield = 100
-max_action_point = 5
-starting_action_point = 5
-action_point_regen_per_turn = 1
-innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_4d4xh")])
-
 [sub_resource type="Theme" id="Theme_qbsgc"]
 
 [node name="CombatUI" type="Control" unique_id=1152202896]
@@ -63,7 +35,7 @@ grow_vertical = 2
 theme = ExtResource("1_theme")
 script = ExtResource("2_script")
 player_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("4_0ncfs"), SubResource("Resource_1482v")])
-enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([SubResource("Resource_0ncfs"), SubResource("Resource_rqx7n")])
+enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("7_nsbht"), ExtResource("7_nsbht"), ExtResource("7_nsbht")])
 
 [node name="Background" type="ColorRect" parent="." unique_id=1394668291]
 layout_mode = 1

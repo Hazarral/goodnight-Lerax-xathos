@@ -293,8 +293,8 @@ func get_crumble_splash_damage(total_damage : float, potency : int) -> float:
 
 ## VOID
 ## Player scaling
-const MAX_HP_SCALING := 0.05
-const TOTAL_MAX_SHIELD_SCALING := 0.05
+const MAX_HP_SCALING := 0.01
+const TOTAL_MAX_SHIELD_SCALING := 0.01
 const POTENCY_COEFFICIENT_SCALING := 0.5
 const POTENCY_EXPONENT_SCALING := 1.2
 const MASTERY_COEFFICIENT_SCALING := 0.5

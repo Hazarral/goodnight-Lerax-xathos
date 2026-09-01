@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="Action" format=3 uid="uid://blh8ubckghxsn"]
+
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_hjqj4"]
+[ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="2_68u7n"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/Actions/damage_action_event.gd" id="2_i8i6e"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="3_cgnf8"]
+[ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="4_vilvg"]
+[ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="5_eh1n1"]
+[ext_resource type="Script" uid="uid://b5tvpmksfnn2p" path="res://system/ui/description_segments/damage_segment.gd" id="6_6cqme"]
+[ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="7_i0oi6"]
+
+[sub_resource type="Resource" id="Resource_n74ue"]
+script = ExtResource("2_i8i6e")
+amount = 30
+potency_scaling = 1.0
+metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
+
+[sub_resource type="Resource" id="Resource_rkmf6"]
+script = ExtResource("4_vilvg")
+text = "Bites a target with fiery maw."
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_i8i6e"]
+script = ExtResource("5_eh1n1")
+metadata/_custom_type_script = "uid://d0c4l5ycbx5ue"
+
+[sub_resource type="Resource" id="Resource_vilvg"]
+script = ExtResource("4_vilvg")
+text = "Deals"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_eh1n1"]
+script = ExtResource("6_6cqme")
+base_damage = 30.0
+potency_scaling = 1.0
+metadata/_custom_type_script = "uid://b5tvpmksfnn2p"
+
+[sub_resource type="Resource" id="Resource_6cqme"]
+script = ExtResource("7_i0oi6")
+metadata/_custom_type_script = "uid://cfp2mohxm1c47"
+
+[resource]
+script = ExtResource("3_cgnf8")
+origin = 1
+action_name = "Fiery Bite"
+action_point_cost = 1
+description_segments = Array[ExtResource("2_68u7n")]([SubResource("Resource_rkmf6"), SubResource("Resource_i8i6e"), SubResource("Resource_vilvg"), SubResource("Resource_eh1n1"), SubResource("Resource_6cqme")])
+action_events = Array[ExtResource("1_hjqj4")]([SubResource("Resource_n74ue")])
+metadata/_custom_type_script = "uid://doysxg78oub0w"

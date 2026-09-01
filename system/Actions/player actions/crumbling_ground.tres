@@ -30,6 +30,7 @@ stacks = 3
 duration = 5
 target_faction = 1
 target_count = 1
+target_mode = 2
 metadata/_custom_type_script = "uid://dl0omykhmcmxj"
 
 [sub_resource type="Resource" id="Resource_7fql4"]

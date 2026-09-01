@@ -6,7 +6,7 @@ const DRAECHEN_TEMPLATE := preload("res://system/Entities/templates/player_side/
 var ally_on_field : Array[Entity]
 var enemy_on_field: Array[Entity]
 var enemy_reinforcement : Array[Entity]
-var combat_event_queue : Array[CombatEvent]
+var _combat_event_queue : Array[CombatEvent]
 
 var turn_order : Array[Entity]
 var current_turn_index := 0
@@ -22,7 +22,7 @@ func reset() -> void:
 	ally_on_field.clear()
 	enemy_on_field.clear()
 	enemy_reinforcement.clear()
-	combat_event_queue.clear()
+	_combat_event_queue.clear()
 	
 	turn_order.clear()
 	current_turn_index = 0
@@ -175,13 +175,13 @@ func end_combat() -> void:
 	reset()
 
 func register_combat_event(combat_event : CombatEvent) -> void:
-	combat_event_queue.append(combat_event)
+	_combat_event_queue.append(combat_event)
 
 func register_multi_combat_event(multi_combat_event : MultiCombatEvent) -> void:
-	combat_event_queue.append_array(multi_combat_event.data)
+	_combat_event_queue.append_array(multi_combat_event.data)
 
 func inject_combat_event(damage_event : CombatEvent) -> void:
-	combat_event_queue.push_front(damage_event)
+	_combat_event_queue.push_front(damage_event)
 
 func process_combat_event_queue() -> void:
 	if is_processing_combat_event_queue:
@@ -189,8 +189,8 @@ func process_combat_event_queue() -> void:
 	
 	is_processing_combat_event_queue = true
 	
-	while not combat_event_queue.is_empty():
-		var current_event : CombatEvent = combat_event_queue.pop_front()
+	while not _combat_event_queue.is_empty():
+		var current_event : CombatEvent = _combat_event_queue.pop_front()
 		
 		# NOTE: This may inject during resolve() but that is none of this script's business\
 		# current_event also gets ref = 0 when going out of scope

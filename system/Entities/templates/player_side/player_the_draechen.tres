@@ -11,7 +11,7 @@
 [ext_resource type="Resource" uid="uid://wcpqmkjpo5v3" path="res://system/Actions/player actions/rupture.tres" id="9_mf2d4"]
 [ext_resource type="Resource" uid="uid://br1kxfl53dhth" path="res://system/Actions/player actions/crumbling_ground.tres" id="10_tnehb"]
 [ext_resource type="Resource" uid="uid://blnmhbujyq2dn" path="res://system/Actions/player actions/blizzard.tres" id="11_6l2ey"]
-[ext_resource type="Resource" uid="uid://g0gfyafsh524" path="res://system/Actions/enemy actions/fireball.tres" id="12_fxwl2"]
+[ext_resource type="Resource" uid="uid://g0gfyafsh524" path="res://system/Actions/enemy actions/basic/fireball.tres" id="12_fxwl2"]
 [ext_resource type="Resource" uid="uid://cynf8sly8hj1p" path="res://system/Actions/player actions/heal.tres" id="13_viaak"]
 [ext_resource type="Resource" uid="uid://chfo1o7314g3d" path="res://system/Actions/player actions/exalted_restoration.tres" id="14_atlsi"]
 [ext_resource type="Resource" uid="uid://bmqs81xadc286" path="res://system/Actions/player actions/void_kiss.tres" id="15_01tdu"]
