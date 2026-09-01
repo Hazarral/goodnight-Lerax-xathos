@@ -6,7 +6,7 @@ var source : Entity
 var cooldown_remaining  : int = 0
 
 func _init(p_action : Action, p_source : Entity) -> void:
-	action = p_action
+	action = p_action.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	source = p_source
 	
 	## NOTE: THis is for the tooltip!

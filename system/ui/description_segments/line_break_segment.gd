@@ -7,5 +7,5 @@ func wants_leading_space() -> bool:
 func suppresses_following_space() -> bool:
 	return true
 
-func to_text() -> String:
+func to_text(_detailed : bool = false) -> String:
 	return "\n\n"

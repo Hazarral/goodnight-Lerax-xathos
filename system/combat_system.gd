@@ -1,9 +1,9 @@
 extends Node
 
-var draechen_player : Player
-const DRAECHEN_TEMPLATE := preload("res://Entities/templates/player_the_draechen.tres")
+var draechen_player : Draechen
+const DRAECHEN_TEMPLATE := preload("res://system/Entities/templates/player_side/player_the_draechen.tres")
 
-var player_on_field : Array[Entity]
+var ally_on_field : Array[Entity]
 var enemy_on_field: Array[Entity]
 var enemy_reinforcement : Array[Entity]
 var combat_event_queue : Array[CombatEvent]
@@ -19,7 +19,7 @@ var is_processing_combat_event_queue : bool = false
 const MAX_ALIVE_ENEMY_ON_FIELD := 5
 
 func reset() -> void:
-	player_on_field.clear()
+	ally_on_field.clear()
 	enemy_on_field.clear()
 	enemy_reinforcement.clear()
 	combat_event_queue.clear()
@@ -33,8 +33,6 @@ func reset() -> void:
 func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side_templates : Array[EntityTemplate]) -> void:
 	## 1. Ensure clean data before anything
 	reset()
-	print("player_side_templates size: ", player_side_templates.size())
-	print("enemy_side_templates size: ", enemy_side_templates.size())
 	
 	## 2. Create the entities in memory. We will ignore magnification for now
 	## NOTE: Implement magnification later
@@ -42,8 +40,8 @@ func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side
 	var enemy_side : Array[Entity] = []
 	
 	for template in player_side_templates:
-		if template == DRAECHEN_TEMPLATE:
-			draechen_player = Player.new(template)
+		if template == DRAECHEN_TEMPLATE and template is DraechenTemplate:
+			draechen_player = Draechen.new(template)
 			player_side.append(draechen_player)
 		else:
 			player_side.append(Entity.new(template))
@@ -56,9 +54,7 @@ func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side
 	
 	## 4. Turn order is finalized
 	build_turn_order()
-	print("draechen_player after init: ", draechen_player)
 	EventBus.combat_initialization_finished.emit()
-	print("Combat init finished!")
 
 func initialize_encounter(player_party : Array[Entity], enemy_side_templates : Array[EntityTemplate]) -> void:
 	## NOTE: Use this for the actual game, because player party is persistent
@@ -78,7 +74,7 @@ func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]
 	
 	for entity in player_side:
 		# NOTE: For now, player can have as many entities on the field as they want
-		draechen_player = player_side.front() as Player
+		draechen_player = player_side.front() as Draechen
 		add_player_faction(entity)
 	
 	for entity in enemy_side:
@@ -88,7 +84,7 @@ func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]
 			add_enemy_reinforcement(entity)
 
 func build_turn_order() -> void:
-	turn_order.append_array(player_on_field)
+	turn_order.append_array(ally_on_field)
 	turn_order.append_array(enemy_on_field)
 
 func add_player_faction(entity : Entity) -> void:
@@ -96,7 +92,7 @@ func add_player_faction(entity : Entity) -> void:
 		push_error("Entity %s is not player faction! Check the template list passed into initialize_combat() — this entity's template has is_player_faction=false but was routed to player_side." % entity.template.entity_name)
 		return	
 	
-	player_on_field.append(entity)
+	ally_on_field.append(entity)
 
 func add_enemy_faction(entity : Entity) -> void:
 	if entity.is_player_faction():
@@ -153,7 +149,7 @@ func on_turn_finished() -> void:
 	## NOTE: This is meant to be called by entities to report having finished their turn
 	advance_turn()
 
-func get_the_draechen() -> Player:
+func get_the_draechen() -> Draechen:
 	return draechen_player
 
 func get_current_actor() -> Entity:
@@ -204,7 +200,7 @@ func process_combat_event_queue() -> void:
 	EventBus.combat_event_queue_processing_finished.emit()
 
 func get_on_field(is_player_faction : bool) -> Array[Entity]:
-	return player_on_field if is_player_faction else enemy_on_field
+	return ally_on_field if is_player_faction else enemy_on_field
 
 func get_alive_targets(faction : Array[Entity]) -> Array[Entity]:
 	return (faction.filter(func(entity): return entity.current_state == Entity.State.ALIVE))
@@ -219,11 +215,11 @@ func get_valid_targets(faction_filter : ActionEvent.TargetFaction, state_filter 
 	var targets : Array[Entity] = []
 	match faction_filter:
 		ActionEvent.TargetFaction.PLAYER:
-			targets.append_array(player_on_field)
+			targets.append_array(ally_on_field)
 		ActionEvent.TargetFaction.ENEMY:
 			targets.append_array(enemy_on_field)
 		ActionEvent.TargetFaction.ALL:
-			targets.append_array(player_on_field)
+			targets.append_array(ally_on_field)
 			targets.append_array(enemy_on_field)
 	
 	match state_filter:

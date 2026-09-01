@@ -1,0 +1,31 @@
+[gd_resource type="Resource" script_class="DraechenTemplate" format=3 uid="uid://rnqvtjaoiwov"]
+
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="1_hadhy"]
+[ext_resource type="Resource" uid="uid://7q5a667sefg0" path="res://system/Actions/player actions/bite.tres" id="2_pm54n"]
+[ext_resource type="Resource" uid="uid://dnjqnigrx558j" path="res://system/Actions/player actions/claw.tres" id="3_ro7e5"]
+[ext_resource type="Resource" uid="uid://bryq065munqlv" path="res://system/Actions/player actions/invoke_flame.tres" id="4_s4enl"]
+[ext_resource type="Resource" uid="uid://c3h46mgt3ui30" path="res://system/Actions/player actions/flood.tres" id="5_oxgyq"]
+[ext_resource type="Resource" uid="uid://cvm62rp4foy4t" path="res://system/Actions/player actions/tornado.tres" id="6_3fsw4"]
+[ext_resource type="Resource" uid="uid://0fnsuaq1vtxn" path="res://system/Actions/player actions/miasma.tres" id="7_h0j81"]
+[ext_resource type="Resource" uid="uid://d2s8bfik1dkqt" path="res://system/Actions/player actions/lightning_arc.tres" id="8_gcco3"]
+[ext_resource type="Resource" uid="uid://wcpqmkjpo5v3" path="res://system/Actions/player actions/rupture.tres" id="9_mf2d4"]
+[ext_resource type="Resource" uid="uid://br1kxfl53dhth" path="res://system/Actions/player actions/crumbling_ground.tres" id="10_tnehb"]
+[ext_resource type="Resource" uid="uid://blnmhbujyq2dn" path="res://system/Actions/player actions/blizzard.tres" id="11_6l2ey"]
+[ext_resource type="Resource" uid="uid://g0gfyafsh524" path="res://system/Actions/enemy actions/fireball.tres" id="12_fxwl2"]
+[ext_resource type="Resource" uid="uid://cynf8sly8hj1p" path="res://system/Actions/player actions/heal.tres" id="13_viaak"]
+[ext_resource type="Resource" uid="uid://chfo1o7314g3d" path="res://system/Actions/player actions/exalted_restoration.tres" id="14_atlsi"]
+[ext_resource type="Resource" uid="uid://bmqs81xadc286" path="res://system/Actions/player actions/void_kiss.tres" id="15_01tdu"]
+[ext_resource type="Script" uid="uid://uxw4xg6ix3ti" path="res://system/Entities/draechen_template.gd" id="16_hadhy"]
+
+[resource]
+script = ExtResource("16_hadhy")
+entity_name = "The Draechen"
+is_player_faction = true
+potency = 20
+mastery = 20
+max_hp = 2000
+max_action_point = 16
+starting_action_point = 10
+action_point_regen_per_turn = 10
+innate_actions = Array[ExtResource("1_hadhy")]([ExtResource("2_pm54n"), ExtResource("3_ro7e5"), ExtResource("4_s4enl"), ExtResource("5_oxgyq"), ExtResource("6_3fsw4"), ExtResource("7_h0j81"), ExtResource("8_gcco3"), ExtResource("9_mf2d4"), ExtResource("10_tnehb"), ExtResource("11_6l2ey"), ExtResource("12_fxwl2"), ExtResource("13_viaak"), ExtResource("14_atlsi"), ExtResource("15_01tdu")])
+metadata/_custom_type_script = "uid://nf30jicvf3ri"

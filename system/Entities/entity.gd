@@ -165,14 +165,10 @@ func is_player_faction() -> bool:
 func apply_dot(dot_instance : DoTInstance) -> void:
 	active_dots[dot_instance.damage_type].add_dot_instance(dot_instance)
 
-func apply_void(stacks : int, is_void_on_player_faction : bool) -> void:
-	## NOTE: Technically is_plahyer_faction can never change, and must be opposite to this entity
-	if is_player_faction() == is_void_on_player_faction:
-		push_error("Cannot apply Void to the same faction as caster!")
-		return
-	
+func apply_void(stacks : int) -> void:
+	## NOTE: Technically is_plahyer_faction can never change, and must be opposite to this entity	
 	if not has_void():
-		void_instance = VoidInstance.new(self, stacks, is_void_on_player_faction)
+		void_instance = VoidInstance.new(self, stacks, is_player_faction())
 	else:
 		void_instance.apply_stacks(stacks)
 

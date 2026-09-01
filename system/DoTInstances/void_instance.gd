@@ -17,7 +17,7 @@ func _init(p_target : Entity, p_stacks : int, p_is_player_faction : bool) -> voi
 func escalate() -> void:
 	turns_elapsed += 1
 
-func deal_damage(the_draechen : Player) -> void:
+func deal_damage(the_draechen : Draechen) -> void:
 	var void_damage := get_current_damage(the_draechen)
 	
 	var damage_event := DamageEvent.new(
@@ -30,7 +30,7 @@ func deal_damage(the_draechen : Player) -> void:
 	CombatSystem.register_combat_event(damage_event)
 	CombatSystem.process_combat_event_queue()
 
-func get_current_damage(the_draechen : Player) -> int:
+func get_current_damage(the_draechen : Draechen) -> int:
 	var void_damage := 0
 	
 	if is_player_faction:
@@ -44,6 +44,7 @@ func get_current_damage(the_draechen : Player) -> int:
 				turns_elapsed
 			)	
 		)
+		print("Getting Void damage against player...")
 	else:
 		void_damage = ceili(
 			DamageAndDoT.get_void_damage_to_enemy(
@@ -56,6 +57,7 @@ func get_current_damage(the_draechen : Player) -> int:
 				turns_elapsed
 			)
 		)
+		print("Getting Void damage against enemy...")
 	
 	return void_damage
 

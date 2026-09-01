@@ -19,7 +19,7 @@ const TARGET_FACTION_ENEMY_PLURAL_TEMPLATE := "enemies"
 const TARGET_FACTION_ALL_SINGULAR_TEMPLATE := "entity"
 const TARGET_FACTION_ALL_PLURAL_TEMPLATE := "entities"
 
-func to_text() -> String:
+func to_text(_detailed : bool = false) -> String:
 	if target_faction == ActionEvent.TargetFaction.PLAYER:
 		return _player_faction_text()
 	

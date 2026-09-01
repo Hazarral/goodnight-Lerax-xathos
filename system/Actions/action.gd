@@ -1,6 +1,9 @@
 class_name Action
 extends Resource
 
+## What world this came from
+@export var origin : World.Origin
+
 ## Name of this action, e.g. "Fire Breath"
 @export var action_name : String
 

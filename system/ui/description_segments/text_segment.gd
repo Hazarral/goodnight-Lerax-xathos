@@ -6,7 +6,7 @@ extends DescriptionSegment
 
 const HIGHLIGHTED_TEMPLATE := "[color=%s]%s[/color]"
 
-func to_text() -> String:
+func to_text(_detailed : bool = false) -> String:
 	var sanitized_text := text.strip_edges()
 	
 	if not highlighted:

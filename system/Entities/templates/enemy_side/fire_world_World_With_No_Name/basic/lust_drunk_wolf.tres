@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="EntityTemplate" format=3 uid="uid://bvla4v52rv7w4"]
+
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="1_ixtw0"]
+[ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://system/Entities/entity_template.gd" id="2_cq4w0"]
+
+[resource]
+script = ExtResource("2_cq4w0")
+entity_name = "Lust-Drunk Wolf"
+potency = 15
+max_hp = 250
+water_shield = 100
+wind_shield = 200
+poison_shield = 300
+max_action_point = 4
+starting_action_point = 1
+action_point_regen_per_turn = 2
+metadata/_custom_type_script = "uid://nf30jicvf3ri"
