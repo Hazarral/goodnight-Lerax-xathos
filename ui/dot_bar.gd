@@ -16,13 +16,13 @@ const HEADER_TEXT_BACK := ", %d Damage, %d Attrition, %d Turn%s left"
 const BURN_STAGE_DETAIL := " (x%.1f)"
 const CURRENT_ECHO_EFFECTIVENESS_DETAIL := " (%.2f%% Echo)"
 const WIND_SHEAR_SPREAD_EFFECTIVENESS_DETAIL := " (%.2f%% Spread)"
-const WIND_SHEAR_BLAST_TARGET_COUNT_DETAIL := " (%.2f%% Blast)"
-const POISON_EXPLOSION_EFFECTIVENESS_DETAIL := " (%.2f%% Total Attrition (%d) Damage on death)"
-const SHOCK_EFFECTIVENESS_DETAIL := " (%.2f%% Shock Damage per AP)"
+const WIND_SHEAR_BLAST_DETAIL := " (%d Targets Afflicted | %.2f%% Blast)"
+const POISON_EXPLOSION_EFFECTIVENESS_DETAIL := " (%.2f%% Total Attrition | %d Damage on death)"
+const SHOCK_EFFECTIVENESS_DETAIL := " (%.2f%% | %d Shock Damage per AP spent to Health)"
 const BLEED_HEALING_REDUCTION_EFFECTIVENESS_DETAIL := " (%.2f%% Healing reduced, "
-const BLEED_ANTI_HEAL_DAMAGE_DETAIL := "%.2f%% + %d Damage on heal)"
-const CRUMBLE_SPLASH_EFFECTIVENESS_DETAIL := " (%.2f%% Shield Splash)"
-const FROSTBITE_DETAIL:= " (Prone to Shield Break)"
+const BLEED_ANTI_HEAL_DAMAGE_DETAIL := "%.2f%% Heal Amount + %d Damage on heal)"
+const CRUMBLE_SPLASH_EFFECTIVENESS_DETAIL := " (%.2f%% Shield Splash | %d Damage to non-Earth Shields)"
+const FROSTBITE_DETAIL:= " (Shield Break deals 50% (100% if Ice) Max Shield as Damage to Health)"
 
 const DETAIL_LINE_TEXT := "> %s, %.2f Base Damage, %.2f Attrition, %d Stack%s, %d Turn%s"
 
@@ -87,7 +87,10 @@ func _add_special_effect_detail_to_header(instance_array : DoTInstanceArray) -> 
 		DamageAndDoT.DoT.WIND_SHEAR:
 			var afflicted_count := DamageAndDoT.get_wind_shear_special_effect_targets(entity, entity.is_player_faction()).size() + 1
 			bonus_text = WIND_SHEAR_SPREAD_EFFECTIVENESS_DETAIL % DamageAndDoT.get_wind_shear_spread_effectiveess(highest_mastery, true)
-			bonus_text += WIND_SHEAR_BLAST_TARGET_COUNT_DETAIL % (afflicted_count * 100.0)
+			bonus_text += WIND_SHEAR_BLAST_DETAIL % [
+				afflicted_count,
+				DamageAndDoT.get_wind_shear_blast_effectiveness(highest_potency, afflicted_count, true)	
+			]
 		DamageAndDoT.DoT.POISON:
 			var total_attrition := entity.get_total_attrition()
 			bonus_text = POISON_EXPLOSION_EFFECTIVENESS_DETAIL % [
@@ -95,7 +98,11 @@ func _add_special_effect_detail_to_header(instance_array : DoTInstanceArray) -> 
 				DamageAndDoT.get_poison_attrition_explosion_damage(total_attrition, highest_mastery)
 			]
 		DamageAndDoT.DoT.SHOCK:
-			bonus_text = SHOCK_EFFECTIVENESS_DETAIL % DamageAndDoT.get_shock_damage_on_action_effectiveness(highest_potency, true)
+			var total_shock_damage := entity.active_dots[DamageAndDoT.DoT.SHOCK].calculate_total_damage()
+			bonus_text = SHOCK_EFFECTIVENESS_DETAIL % [
+				DamageAndDoT.get_shock_damage_on_action_effectiveness(highest_potency, true),
+				ceili(DamageAndDoT.get_shock_damage_on_action(total_shock_damage, highest_potency, 1))
+			]
 		DamageAndDoT.DoT.BLEED:
 			var healing_reduction_percent := DamageAndDoT.get_bleed_healing_reduction(highest_mastery, true)
 			bonus_text = BLEED_HEALING_REDUCTION_EFFECTIVENESS_DETAIL % minf(100.0, healing_reduction_percent)
@@ -104,7 +111,11 @@ func _add_special_effect_detail_to_header(instance_array : DoTInstanceArray) -> 
 				DamageAndDoT.get_bleed_anti_heal_flat_damage_bonus(highest_potency, all_stacks_count)
 			]
 		DamageAndDoT.DoT.CRUMBLE:
-			bonus_text = CRUMBLE_SPLASH_EFFECTIVENESS_DETAIL % DamageAndDoT.get_crumble_splash_effectiveness(highest_potency, true)
+			var total_crumble_damage := entity.active_dots[DamageAndDoT.DoT.CRUMBLE].calculate_total_damage()
+			bonus_text = CRUMBLE_SPLASH_EFFECTIVENESS_DETAIL % [
+				DamageAndDoT.get_crumble_splash_effectiveness(highest_potency, true),
+				ceili(DamageAndDoT.get_crumble_splash_damage(total_crumble_damage, highest_potency))
+			]
 		DamageAndDoT.DoT.FROSTBITE:
 			bonus_text = FROSTBITE_DETAIL
 	

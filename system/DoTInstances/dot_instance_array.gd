@@ -62,7 +62,9 @@ func tick_down() -> void:
 	for dot_instance in data:
 		dot_instance.tick_down()
 
-func resolve_damage(target : Entity, has_current : bool) -> void:	
+func resolve_damage(target : Entity, has_current : bool) -> void:
+	var is_current := get_dot_type() == DamageAndDoT.DoT.CURRENT
+	
 	for dot_instance in data:
 		var total_amount := ceili(dot_instance.calculate_damage())
 		
@@ -75,7 +77,7 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 		
 		CombatSystem.register_combat_event(damage_event)
 		
-		if not has_current or dot_instance.damage_type == DamageAndDoT.DamageType.WATER:
+		if not has_current or is_current:
 			continue
 		
 		var echo_damage := ceili(DamageAndDoT.get_current_echo_damage(total_amount, dot_instance.get_current_mastery()))

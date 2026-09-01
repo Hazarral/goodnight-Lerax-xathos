@@ -5,7 +5,7 @@ extends DescriptionSegment
 @export var potency_scaling : float
 @export var mastery_scaling : float
 
-const TEMPLATE := "[color=%s]%d HP[/color]"
+const TEMPLATE := "[color=%s]%d Health[/color]"
 
 var source : Entity
 
