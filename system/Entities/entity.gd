@@ -426,6 +426,7 @@ func cast_action(index : int) -> void:
 	
 	if not cast_result.success:
 		push_error("Cannot cast %s due to cooldown or AP cost!" % known_actions[index].action.action_name)
+		return
 	
 	if has_dot(DamageAndDoT.DoT.SHOCK):
 		_trigger_shock_damage_on_action(cast_result.ap_spent)
