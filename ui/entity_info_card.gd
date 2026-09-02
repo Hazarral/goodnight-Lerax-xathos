@@ -31,10 +31,10 @@ enum ShieldState {
 }
 
 const SHIELD_STATE_NAME : Dictionary[ShieldState, String] = {
-	ShieldState.NO_SHIELD : "No Shield",
-	ShieldState.FULLY_SHIELDED : "Fully Shielded",
-	ShieldState.BREACHED : "Shield Breached",
-	ShieldState.ALL_BREACHED : "All Shield Breached"
+	ShieldState.NO_SHIELD : "[No Shield]",
+	ShieldState.FULLY_SHIELDED : "[Fully Shielded]",
+	ShieldState.BREACHED : "[Shield Breached]",
+	ShieldState.ALL_BREACHED : "[All Shield Breached]"
 }
 
 const STATE_TEXT := "[%s]"

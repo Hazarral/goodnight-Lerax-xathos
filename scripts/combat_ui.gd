@@ -9,24 +9,21 @@ extends Control
 var player_side : Array[Entity]
 var enemy_side : Array[Entity]
 
-@onready var enemy_roster_header := $Frame/Root/MidRow/EnemyPanel/EnemyCol/Header
+@onready var enemy_roster_header := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/EnemyPanel/EnemyCol/Header
 const ENEMY_ROSTER_BASE_HEADER := "ENEMIES"
 const ENEMY_ROSTER_HAS_REINFORCEMENT_HEADER := "ENEMIES (REINFORCEMENT: %d)"
 
-@onready var player_roster_list := $Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll/RosterList
-@onready var enemy_roster_list := $Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll/RosterList
+@onready var player_roster_list := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/PartyPanel/PartyCol/RosterScroll/RosterList
+@onready var enemy_roster_list := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/EnemyPanel/EnemyCol/RosterScroll/RosterList
 
 ## 1. INSPECTOR
-@onready var inspector_name_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow/Name
-@onready var inspector_state_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow/State
-@onready var inspector_hp_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/HPLine
-@onready var inspector_potency_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/PotencyLine
-@onready var inspector_mastery_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/MasteryLine
-
-@onready var inspector_elemental_dot_list := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ElementalDoTList
-
-@onready var inspector_void_label := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidRow/VoidHBox/VoidDesc
-@onready var inspector_shield_grid := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid
+@onready var inspector_name_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow/Name
+@onready var inspector_state_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow/State
+@onready var inspector_hp_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/HPLine
+@onready var inspector_potency_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/PotencyLine
+@onready var inspector_mastery_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/MasteryLine
+@onready var inspector_shield_grid := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid
+@onready var inspector_elemental_dot_list := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ElementalDoTList
 
 const ENTITY_INFO_CARD_SCENE : PackedScene = preload("res://ui/entity_info_card.tscn")
 const SHIELD_CHIP_SCENE : PackedScene = preload("res://ui/shield_chip.tscn")
@@ -42,23 +39,23 @@ const INSPECTOR_MASTERY_TEXT := "Mastery: %d"
 
 var selected_card : EntityInfoCard = null
 
-@onready var void_bar := $Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidBar
+@onready var void_bar := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidBar
 
 ## 2. Action bar
-@onready var current_entity_name_label := $Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell/PortraitName
-@onready var current_entity_potency_label := $Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell/PotencyLabel
-@onready var current_entity_mastery_label := $Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell/MasteryLabel
+@onready var current_entity_name_label := $Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell/PortraitName
+@onready var current_entity_potency_label := $Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell/PotencyLabel
+@onready var current_entity_mastery_label := $Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell/MasteryLabel
 
-@onready var end_turn_button := $Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton
+@onready var end_turn_button := $Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton
 
 const CURRENT_ENTITY_POTENCY_TEXT := "Potency: %d"
 const CURRENT_ENTITY_MASTERY_TEXT := "Mastery: %d"
 
-@onready var ap_label := $Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APLabel
+@onready var ap_label := $Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APLabel
 
 const AP_TEXT := "ACTION POINTS: %d / %d (+%d / TURN)"
 
-@onready var action_list := $Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList
+@onready var action_list := $Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList
 
 const ACTION_BUTTON := preload("res://ui/action_button.tscn")
 
@@ -67,6 +64,17 @@ var is_awaiting_target : bool = false
 var valid_target_pool : Array[Entity] = []
 var pending_action_index : int = -1   # which action button is currently mid-targeting
 var pending_source : Entity = null
+
+## 4. Combat log
+@onready var combat_log_label := $Frame/Root/HBoxContainer/LogPanel/LogCol/LogScroll/LogText
+
+const COMBAT_LOG_MODE : Dictionary[int, CombatLog.DisplayMode] = {
+	0 : CombatLog.DisplayMode.BASIC,
+	1 : CombatLog.DisplayMode.ADVANCED,
+	2 : CombatLog.DisplayMode.DEVELOPER
+}
+
+var current_combat_log_mode := CombatLog.DisplayMode.BASIC
 
 func _ready() -> void:
 	EventBus.combat_initialization_finished.connect(_set_time_to_live)
@@ -262,6 +270,7 @@ func _refresh_turn_ui() -> void:
 	_refresh_active_turn_cards()
 	_set_inspector(CombatSystem.get_current_actor())
 	_update_action_bar()
+	_update_combat_log()
 
 func _on_end_turn_button_pressed() -> void:
 	CombatSystem.end_current_actor_turn()
@@ -277,3 +286,15 @@ func _clear_target_highlight() -> void:
 		card.set_targetable(false)
 	for card : EntityInfoCard in enemy_roster_list.get_children():
 		card.set_targetable(false)
+
+func _update_combat_log() -> void:
+	## We use basic for now
+	CombatLog.build_logs()
+	_set_combat_log()
+
+func _on_tab_bar_tab_changed(tab: int) -> void:
+	current_combat_log_mode = COMBAT_LOG_MODE.get(tab)
+	_set_combat_log()
+
+func _set_combat_log() -> void:
+	combat_log_label.text = CombatLog.get_log(current_combat_log_mode)

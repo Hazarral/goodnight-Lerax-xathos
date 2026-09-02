@@ -434,10 +434,30 @@ func cast_action(index : int) -> void:
 ##Combat turn stages below
 
 func _regen_shields() -> void:
+	var shield_before_regen := current_shields.duplicate()
+	var attrition_list := PackedInt64Array()
+	attrition_list.resize(DamageAndDoT.ELEMENT_COUNT)
+	
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		if max_shields[i] > 0:
 			var attrition := ceili(get_attrition(i as DamageAndDoT.DamageType))
 			current_shields[i] = maxi(0, max_shields[i] - attrition)
+			attrition_list[i] = attrition
+		else:
+			attrition_list[i] = 0
+	
+	var shield_after_regen := current_shields.duplicate()
+	var combat_log := ShieldRegenCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"A: Shield Regen",
+		max_shields,
+		attrition_list,
+		shield_before_regen,
+		shield_after_regen
+	)
+	
+	CombatLog.register(combat_log)
 
 func _resolve_crumble_splash_effect() -> void:
 	var total_damage := active_dots[DamageAndDoT.DoT.CRUMBLE].calculate_total_damage()

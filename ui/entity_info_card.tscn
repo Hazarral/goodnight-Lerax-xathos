@@ -30,7 +30,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme = ExtResource("1_8c1fr")
 theme_type_variation = &"NameLabel"
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 18
 text = "EntityName"
 
 [node name="State" type="Label" parent="MarginContainer/CardVBox/NameRow" unique_id=1878444106]
@@ -44,21 +44,21 @@ horizontal_alignment = 2
 [node name="ShieldStatusLabel" type="Label" parent="MarginContainer/CardVBox" unique_id=907113334]
 layout_mode = 2
 theme = ExtResource("1_8c1fr")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "[Shield Status]"
 
 [node name="APLabel" type="Label" parent="MarginContainer/CardVBox" unique_id=687116256]
 layout_mode = 2
 theme = ExtResource("1_8c1fr")
 theme_type_variation = &"MonoLabel"
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "> X / X AP (+X/turn)"
 
 [node name="HPLabel" type="Label" parent="MarginContainer/CardVBox" unique_id=1799555087]
 layout_mode = 2
 theme = ExtResource("1_8c1fr")
 theme_type_variation = &"MonoLabel"
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 14
 text = "> X / X HP"
 
 [node name="RuneRow" type="HBoxContainer" parent="MarginContainer/CardVBox" unique_id=1174555454]

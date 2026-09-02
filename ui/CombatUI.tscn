@@ -89,83 +89,92 @@ theme_override_font_sizes/font_size = 15
 text = "4 days, 6 hrs"
 horizontal_alignment = 1
 
-[node name="MidRow" type="HBoxContainer" parent="Frame/Root" unique_id=1641242799]
+[node name="HBoxContainer" type="HBoxContainer" parent="Frame/Root" unique_id=1641242799]
 custom_minimum_size = Vector2(0, 340)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 1
 
-[node name="PartyPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=751493100]
+[node name="VBoxContainer" type="VBoxContainer" parent="Frame/Root/HBoxContainer" unique_id=1498050149]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="EntityInfoRow" type="HBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer" unique_id=545540713]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PartyPanel" type="PanelContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow" unique_id=751493100]
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 
-[node name="PartyCol" type="VBoxContainer" parent="Frame/Root/MidRow/PartyPanel" unique_id=343256538]
+[node name="PartyCol" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/PartyPanel" unique_id=343256538]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="Header" type="Label" parent="Frame/Root/MidRow/PartyPanel/PartyCol" unique_id=1612595729]
+[node name="Header" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/PartyPanel/PartyCol" unique_id=1612595729]
 layout_mode = 2
 theme_type_variation = &"HeaderLabel"
 text = "YOUR PARTY"
 
-[node name="RosterScroll" type="ScrollContainer" parent="Frame/Root/MidRow/PartyPanel/PartyCol" unique_id=599630738]
+[node name="RosterScroll" type="ScrollContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/PartyPanel/PartyCol" unique_id=599630738]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RosterList" type="VBoxContainer" parent="Frame/Root/MidRow/PartyPanel/PartyCol/RosterScroll" unique_id=434083413]
+[node name="RosterList" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/PartyPanel/PartyCol/RosterScroll" unique_id=434083413]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="EnemyPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=1248686686]
-custom_minimum_size = Vector2(300, 0)
+[node name="EnemyPanel" type="PanelContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow" unique_id=1248686686]
+custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
 
-[node name="EnemyCol" type="VBoxContainer" parent="Frame/Root/MidRow/EnemyPanel" unique_id=1304019750]
+[node name="EnemyCol" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/EnemyPanel" unique_id=1304019750]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="Header" type="Label" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol" unique_id=1007214872]
+[node name="Header" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/EnemyPanel/EnemyCol" unique_id=1007214872]
 layout_mode = 2
 theme_type_variation = &"HeaderLabel"
 text = "ENEMIES"
 
-[node name="RosterScroll" type="ScrollContainer" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol" unique_id=517870269]
+[node name="RosterScroll" type="ScrollContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/EnemyPanel/EnemyCol" unique_id=517870269]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="RosterList" type="VBoxContainer" parent="Frame/Root/MidRow/EnemyPanel/EnemyCol/RosterScroll" unique_id=1448608430]
+[node name="RosterList" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/EnemyPanel/EnemyCol/RosterScroll" unique_id=1448608430]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="InspectorPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=1009306168]
+[node name="InspectorPanel" type="PanelContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow" unique_id=1009306168]
+custom_minimum_size = Vector2(600, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="InspectorCol" type="VBoxContainer" parent="Frame/Root/MidRow/InspectorPanel" unique_id=1443366090]
+[node name="InspectorCol" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel" unique_id=1443366090]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="Header" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol" unique_id=1095148201]
+[node name="Header" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol" unique_id=1095148201]
 layout_mode = 2
 theme_type_variation = &"HeaderLabel"
 text = "INSPECTOR"
 
-[node name="InspScroll" type="ScrollContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol" unique_id=57609054]
+[node name="InspScroll" type="ScrollContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol" unique_id=57609054]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="InspBody" type="VBoxContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll" unique_id=379258]
+[node name="InspBody" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll" unique_id=379258]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
-[node name="TitleRow" type="HBoxContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1068601400]
+[node name="TitleRow" type="HBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1068601400]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="Name" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow" unique_id=1370425191]
+[node name="Name" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow" unique_id=1370425191]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
@@ -173,7 +182,7 @@ theme_type_variation = &"NameLabel"
 theme_override_font_sizes/font_size = 25
 text = "EntityName"
 
-[node name="State" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow" unique_id=2052893267]
+[node name="State" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/TitleRow" unique_id=2052893267]
 layout_mode = 2
 size_flags_vertical = 1
 theme_type_variation = &"NameLabel"
@@ -181,100 +190,73 @@ theme_override_font_sizes/font_size = 25
 text = "[STATE]"
 horizontal_alignment = 2
 
-[node name="HPLine" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=2085227888]
+[node name="HPLine" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=2085227888]
 layout_mode = 2
 theme_type_variation = &"MonoLabelBright"
 theme_override_font_sizes/font_size = 20
 text = "HP: X / X"
 
-[node name="PotencyLine" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1413498432]
+[node name="PotencyLine" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1413498432]
 layout_mode = 2
 theme_type_variation = &"MonoLabelBright"
 theme_override_font_sizes/font_size = 20
 text = "Potency: X (+y)"
 
-[node name="MasteryLine" type="Label" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1555152114]
+[node name="MasteryLine" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1555152114]
 layout_mode = 2
 theme_type_variation = &"MonoLabelBright"
 theme_override_font_sizes/font_size = 20
 text = "Mastery: X (+y)"
 
-[node name="ShieldGrid" type="GridContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1719927465]
+[node name="ShieldGrid" type="GridContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1719927465]
 layout_mode = 2
 theme_override_constants/h_separation = 6
 theme_override_constants/v_separation = 6
 columns = 4
 
-[node name="VoidBar" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=680535464 instance=ExtResource("9_bnnle")]
+[node name="VoidBar" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=680535464 instance=ExtResource("9_bnnle")]
 layout_mode = 2
 
-[node name="ElementalDoTList" type="VBoxContainer" parent="Frame/Root/MidRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=930276820]
+[node name="ElementalDoTList" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=930276820]
 layout_mode = 2
 
-[node name="LogPanel" type="PanelContainer" parent="Frame/Root/MidRow" unique_id=305808400]
-custom_minimum_size = Vector2(500, 0)
-layout_mode = 2
-
-[node name="LogCol" type="VBoxContainer" parent="Frame/Root/MidRow/LogPanel" unique_id=503906168]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="Header" type="Label" parent="Frame/Root/MidRow/LogPanel/LogCol" unique_id=924506501]
-layout_mode = 2
-theme_type_variation = &"HeaderLabel"
-text = "COMBAT LOG"
-
-[node name="LogScroll" type="ScrollContainer" parent="Frame/Root/MidRow/LogPanel/LogCol" unique_id=1670322581]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="LogText" type="RichTextLabel" parent="Frame/Root/MidRow/LogPanel/LogCol/LogScroll" unique_id=1338062492]
-layout_mode = 2
-size_flags_horizontal = 3
-bbcode_enabled = true
-text = "[color=#d97757]— Turn 4 —[/color]
-Draechen casts [b]Fire Breath[/b] on Enemy 1.
-Fire Shield absorbs [color=#d97757]64[/color] dmg.
-Enemy 1's [b]Void[/b] escalates — [color=#ff006a]41 dmg[/color] direct to HP."
-fit_content = true
-
-[node name="ActionBar" type="PanelContainer" parent="Frame/Root" unique_id=962627189]
+[node name="ActionBar" type="PanelContainer" parent="Frame/Root/HBoxContainer/VBoxContainer" unique_id=962627189]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2
 theme_type_variation = &"RaisedPanel"
 
-[node name="ActionBarRow" type="HBoxContainer" parent="Frame/Root/ActionBar" unique_id=1053541163]
+[node name="ActionBarRow" type="HBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar" unique_id=1053541163]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="MarginContainer" type="MarginContainer" parent="Frame/Root/ActionBar/ActionBarRow" unique_id=2008118611]
+[node name="MarginContainer" type="MarginContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow" unique_id=2008118611]
 layout_mode = 2
 theme_override_constants/margin_left = 10
 theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = 10
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer" unique_id=1672440537]
+[node name="VBoxContainer" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer" unique_id=1672440537]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer" unique_id=1911302802]
+[node name="HBoxContainer" type="HBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer" unique_id=1911302802]
 layout_mode = 2
 
-[node name="PortraitBox" type="PanelContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1042154836]
+[node name="PortraitBox" type="PanelContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer" unique_id=1042154836]
 custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_type_variation = &"CardPanel"
 
-[node name="PortraitCell" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer" unique_id=439180414]
+[node name="PortraitCell" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer" unique_id=439180414]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
 theme_override_constants/separation = 4
 
-[node name="PortraitName" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=1805180956]
+[node name="PortraitName" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=1805180956]
 layout_mode = 2
 size_flags_horizontal = 0
 theme = SubResource("Theme_qbsgc")
@@ -282,68 +264,109 @@ theme_type_variation = &"NameLabel"
 theme_override_font_sizes/font_size = 20
 text = "Draechen"
 
-[node name="PotencyLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=1535197067]
+[node name="PotencyLabel" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=1535197067]
 layout_mode = 2
 size_flags_horizontal = 2
 theme_type_variation = &"NameLabel"
 theme_override_font_sizes/font_size = 15
 text = "Potency: X"
 
-[node name="MasteryLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=547243573]
+[node name="MasteryLabel" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/HBoxContainer/PortraitCell" unique_id=547243573]
 layout_mode = 2
 size_flags_horizontal = 0
 theme_type_variation = &"NameLabel"
 theme_override_font_sizes/font_size = 15
 text = "Mastery: X"
 
-[node name="EndTurnButton" type="Button" parent="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer" unique_id=1837436638]
+[node name="EndTurnButton" type="Button" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer" unique_id=1837436638]
 custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 theme = ExtResource("1_theme")
 theme_override_font_sizes/font_size = 20
 text = "End Turn"
 
-[node name="ActionScroll" type="ScrollContainer" parent="Frame/Root/ActionBar/ActionBarRow" unique_id=717535405]
+[node name="ActionScroll" type="ScrollContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow" unique_id=717535405]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll" unique_id=1496125928]
+[node name="VBoxContainer" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/ActionScroll" unique_id=1496125928]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="APBlock" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer" unique_id=2033460896]
+[node name="APBlock" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/ActionScroll/VBoxContainer" unique_id=2033460896]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="APLabel" type="Label" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock" unique_id=235915660]
+[node name="APLabel" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock" unique_id=235915660]
 layout_mode = 2
 theme_type_variation = &"HeaderLabel"
 text = "ACTION POINTS  6 / 10"
 
-[node name="APPips" type="HBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock" unique_id=1945833613]
+[node name="APPips" type="HBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock" unique_id=1945833613]
 layout_mode = 2
 theme_override_constants/separation = 3
 
-[node name="Pip1" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1801259963]
+[node name="Pip1" type="Panel" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1801259963]
 custom_minimum_size = Vector2(11, 11)
 layout_mode = 2
 theme_type_variation = &"VoidBadge"
 
-[node name="Pip2" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1977587349]
+[node name="Pip2" type="Panel" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1977587349]
 custom_minimum_size = Vector2(11, 11)
 layout_mode = 2
 theme_type_variation = &"VoidBadge"
 
-[node name="Pip3" type="Panel" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1614814622]
+[node name="Pip3" type="Panel" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/APBlock/APPips" unique_id=1614814622]
 custom_minimum_size = Vector2(11, 11)
 layout_mode = 2
 
-[node name="ActionList" type="VBoxContainer" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer" unique_id=1095021438]
+[node name="ActionList" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/ActionScroll/VBoxContainer" unique_id=1095021438]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
-[node name="BiteBtn" parent="Frame/Root/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=1563405365 instance=ExtResource("8_v1jbt")]
+[node name="BiteBtn" parent="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/ActionScroll/VBoxContainer/ActionList" unique_id=1563405365 instance=ExtResource("8_v1jbt")]
 layout_mode = 2
 
-[connection signal="pressed" from="Frame/Root/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]
+[node name="LogPanel" type="PanelContainer" parent="Frame/Root/HBoxContainer" unique_id=305808400]
+custom_minimum_size = Vector2(500, 0)
+layout_mode = 2
+
+[node name="LogCol" type="VBoxContainer" parent="Frame/Root/HBoxContainer/LogPanel" unique_id=503906168]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Header" type="Label" parent="Frame/Root/HBoxContainer/LogPanel/LogCol" unique_id=924506501]
+layout_mode = 2
+theme_type_variation = &"HeaderLabel"
+text = "COMBAT LOG"
+
+[node name="TabBar" type="TabBar" parent="Frame/Root/HBoxContainer/LogPanel/LogCol" unique_id=1341007422]
+layout_mode = 2
+current_tab = 0
+tab_count = 3
+tab_0/title = "Basic"
+tab_0/tooltip = "Basic information :3"
+tab_1/title = "Advanced"
+tab_1/tooltip = "Advanced information for advanced players"
+tab_2/title = "Developer"
+tab_2/tooltip = "Short, dense description of the parameters involved"
+
+[node name="LogScroll" type="ScrollContainer" parent="Frame/Root/HBoxContainer/LogPanel/LogCol" unique_id=1670322581]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="LogText" type="RichTextLabel" parent="Frame/Root/HBoxContainer/LogPanel/LogCol/LogScroll" unique_id=1338062492]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/default_color = Color(0.9098039, 0.8862745, 0.83137256, 1)
+theme_override_font_sizes/normal_font_size = 15
+bbcode_enabled = true
+text = "[color=#d97757]— Turn 4 —[/color]
+Draechen casts [b]Fire Breath[/b] on Enemy 1.
+Fire Shield absorbs [color=#d97757]64[/color] dmg.
+Enemy 1's [b]Void[/b] escalates — [color=#ff006a]41 dmg[/color] direct to HP."
+fit_content = true
+
+[connection signal="pressed" from="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]
+[connection signal="tab_changed" from="Frame/Root/HBoxContainer/LogPanel/LogCol/TabBar" to="." method="_on_tab_bar_tab_changed"]
