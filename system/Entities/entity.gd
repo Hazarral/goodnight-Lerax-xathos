@@ -368,8 +368,14 @@ func die() -> void:
 		end_turn()
 	
 func begin_turn() -> void:
-	## TODO: Implement the pipeline here
-	print("%s is beginning their turn!" % template.entity_name)
+	var combat_log := TurnStartCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"0: Begin Turn",
+		current_state
+	)
+	CombatLog.register(combat_log)
+	
 	if current_state == State.DEAD:
 		print("This target is dead! DoT will still tick down")
 		_resolve_dot_tick_down()
@@ -408,6 +414,13 @@ func end_turn() -> void:
 	print("%s's turn ended!" % template.entity_name)
 	recover_action_point()
 	tick_cooldowns()
+	var combat_log := TurnEndCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Final: Turn Ended"
+	)
+	CombatLog.register(combat_log)
+	
 	CombatSystem.on_turn_finished()
 	EventBus.force_refresh_turn_ui.emit()
 

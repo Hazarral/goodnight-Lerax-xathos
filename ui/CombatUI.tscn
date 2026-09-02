@@ -148,7 +148,6 @@ size_flags_horizontal = 3
 theme_override_constants/separation = 6
 
 [node name="InspectorPanel" type="PanelContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow" unique_id=1009306168]
-custom_minimum_size = Vector2(600, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
@@ -329,7 +328,7 @@ theme_override_constants/separation = 5
 layout_mode = 2
 
 [node name="LogPanel" type="PanelContainer" parent="Frame/Root/HBoxContainer" unique_id=305808400]
-custom_minimum_size = Vector2(500, 0)
+custom_minimum_size = Vector2(525, 0)
 layout_mode = 2
 
 [node name="LogCol" type="VBoxContainer" parent="Frame/Root/HBoxContainer/LogPanel" unique_id=503906168]
@@ -359,6 +358,7 @@ size_flags_vertical = 3
 [node name="LogText" type="RichTextLabel" parent="Frame/Root/HBoxContainer/LogPanel/LogCol/LogScroll" unique_id=1338062492]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_vertical = 3
 theme_override_colors/default_color = Color(0.9098039, 0.8862745, 0.83137256, 1)
 theme_override_font_sizes/normal_font_size = 15
 bbcode_enabled = true
@@ -366,7 +366,7 @@ text = "[color=#d97757]— Turn 4 —[/color]
 Draechen casts [b]Fire Breath[/b] on Enemy 1.
 Fire Shield absorbs [color=#d97757]64[/color] dmg.
 Enemy 1's [b]Void[/b] escalates — [color=#ff006a]41 dmg[/color] direct to HP."
-fit_content = true
+scroll_following = true
 
 [connection signal="pressed" from="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]
 [connection signal="tab_changed" from="Frame/Root/HBoxContainer/LogPanel/LogCol/TabBar" to="." method="_on_tab_bar_tab_changed"]

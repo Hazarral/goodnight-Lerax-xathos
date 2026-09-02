@@ -27,10 +27,25 @@ func _clear_logs() -> void:
 func build_logs() -> void:
 	## TODO: Write log logic here, build all 3 logs
 	_clear_logs()
+	var basic_is_first := true
+	var advanced_is_first := true
+	var developer_is_first := true
+	
 	for entry in _entries:
-		_basic_log += entry.render_basic() + "\n"
-		_advanced_log += entry.render_advanced() + "\n"
-		_developer_log += entry.render_developer() + "\n"
+		var basic_string := entry.render_basic()
+		if not basic_string.is_empty():
+			_basic_log += ("" if basic_is_first else "\n") + basic_string
+			basic_is_first = false
+		
+		var advanced_string := entry.render_advanced()
+		if not advanced_string.is_empty():
+			_advanced_log += ("" if advanced_is_first else "\n") + advanced_string
+			advanced_is_first = false
+		
+		var developer_string := entry.render_developer()
+		if not developer_string.is_empty():
+			_developer_log += ("" if developer_is_first else "\n") + developer_string
+			developer_is_first = false
 
 func get_log(mode : DisplayMode) -> String:
 	match mode:
