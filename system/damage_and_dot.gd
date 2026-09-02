@@ -83,6 +83,7 @@ const ICE_COLOR_HEX := "#bad3fb"
 const VOID_COLOR_HEX := "#ff1d75"
 const GENERIC_COLOR_HEX := "#ffd4cc"
 const HEALING_COLOR_HEX := "#00f0d8"
+const TURN_LABEL_COLOR_HEX := "#ebe134"
 
 ## Special effects
 const MAX_FIRE_MULTIPLIER := 3.0

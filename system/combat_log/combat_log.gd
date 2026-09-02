@@ -30,6 +30,7 @@ func build_logs() -> void:
 	var basic_is_first := true
 	var advanced_is_first := true
 	var developer_is_first := true
+	var developer_line_counter := 1
 	
 	for entry in _entries:
 		var basic_string := entry.render_basic()
@@ -44,7 +45,8 @@ func build_logs() -> void:
 		
 		var developer_string := entry.render_developer()
 		if not developer_string.is_empty():
-			_developer_log += ("" if developer_is_first else "\n") + developer_string
+			_developer_log += ("" if developer_is_first else "\n") + "[%d] " % developer_line_counter + developer_string
+			developer_line_counter += 1
 			developer_is_first = false
 
 func get_log(mode : DisplayMode) -> String:

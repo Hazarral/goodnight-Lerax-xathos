@@ -181,15 +181,20 @@ func get_attrition(damage_type : DamageAndDoT.DamageType) -> float:
 func get_damage_per_turn(damage_over_time : DamageAndDoT.DoT) -> float:
 	return active_dots[damage_over_time].calculate_total_damage()
 
-func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -> void:
+func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int, ignore_shield : bool = false) -> void:
 	if current_state == State.DEAD:
 		# NOTE: DoT will still tick later on, but not compute the damage.
 		return
-		
+	
+	if ignore_shield:
+		print("This damage ignores shield...")
+		reduce_hp(damage_type, incoming_damage, ignore_shield)
+		return
+	
 	# 1. Void Special Case
 	if damage_type == DamageAndDoT.DamageType.VOID:
 		if is_any_shield_breached() or has_no_shields():
-			reduce_hp(damage_type, incoming_damage)
+			reduce_hp(damage_type, incoming_damage, ignore_shield)
 		else:
 			shield_cascade(damage_type, incoming_damage)
 		return
@@ -201,21 +206,23 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -
 			var damage_to_shield = mini(shield_hp, incoming_damage)
 			current_shields[damage_type] -= damage_to_shield
 			
-			print("> Resonance! %s's %s shield received %d %s damage!" % [
-				template.entity_name,
-				DamageAndDoT.get_damage_type_name(damage_type), 
-				damage_to_shield,
-				DamageAndDoT.get_damage_type_name(damage_type)
-				]
+			var combat_log := ResonanceDamageToShieldCombatLogEntry.new(
+				CombatSystem.get_turn_counter(),
+				self,
+				"Resonance Element hit",
+				damage_type,
+				damage_to_shield
 			)
+			CombatLog.register(combat_log)
+			
 			var surplus = incoming_damage - damage_to_shield
 			if surplus > 0:
-				reduce_hp(damage_type, surplus)
+				reduce_hp(damage_type, surplus, ignore_shield)
 			
 			return
 		
 		# Shield is broken, matching damage goes straight to HP
-		reduce_hp(damage_type, incoming_damage)
+		reduce_hp(damage_type, incoming_damage, ignore_shield)
 		return
 			
 	# 3. Wrong Element Case (50% Penalty, hits weakest shield)
@@ -303,17 +310,21 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 	if remaining_damage > 0:
 		reduce_hp(damage_type, remaining_damage)
 
-func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int) -> void:
+func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shield : bool = false) -> void:
 	if current_state == State.DEAD:
 		return
 	
-	print("> %s received %d %s damage to HP!" % [
-		template.entity_name,
-		amount,
-		DamageAndDoT.get_damage_type_name(damage_type)
-		]
-	)
 	current_hp = maxi(0, current_hp - amount)
+	
+	var damage_to_hp_log := DamageToHPCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"reduce_hp(...)",
+		damage_type,
+		amount,
+		ignore_shield
+	)
+	CombatLog.register(damage_to_hp_log)
 	
 	if current_hp <= 0:
 		die()
@@ -371,7 +382,7 @@ func begin_turn() -> void:
 	var combat_log := TurnStartCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"0: Begin Turn",
+		"Begin Turn",
 		current_state
 	)
 	CombatLog.register(combat_log)
@@ -442,6 +453,7 @@ func cast_action(index : int) -> void:
 		return
 	
 	if has_dot(DamageAndDoT.DoT.SHOCK):
+		print("Triggering shock damage...")
 		_trigger_shock_damage_on_action(cast_result.ap_spent)
 
 ##Combat turn stages below

@@ -41,4 +41,4 @@ func cast() -> CastResult:
 	cooldown_remaining = action.cooldown
 	print("Casted %s succesfully!" % action.action_name)
 	
-	return CastResult.new(false, action.action_point_cost)
+	return CastResult.new(true, action.action_point_cost)

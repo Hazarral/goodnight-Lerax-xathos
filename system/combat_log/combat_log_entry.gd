@@ -8,7 +8,7 @@ var actor : Entity
 ## Developer only!
 var stage : String
 
-const STAGE_TEMPLATE := "[Stage %s]"
+const STAGE_TEMPLATE := "[color=%s][Stage %s, Turn %d][/color]"
 
 func _init(p_turn_number : int, p_actor : Entity, p_stage : String) -> void:
 	turn_number = p_turn_number
