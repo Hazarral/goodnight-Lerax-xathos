@@ -76,6 +76,13 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 		)
 		
 		CombatSystem.register_combat_event(damage_event)
+		var dot_tick_log_entry := DoTTickCombatLogEntry.new(
+			CombatSystem.get_turn_counter(),
+			target,
+			"DoT Tick",
+			dot_instance,
+		)
+		CombatLog.register(dot_tick_log_entry)
 		
 		if not has_current or is_current:
 			continue

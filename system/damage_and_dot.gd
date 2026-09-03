@@ -166,12 +166,14 @@ func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, ma
 		push_error("Void has special damage! Please use VoidInstance.get_void_damage(...)")
 		return 0.0
 	
-	var coefs := DOT_COEFFICIENTS[dot_type]
+	var coefs : PackedFloat32Array = DOT_COEFFICIENTS.get(dot_type)
 	var potency_coef : float = coefs[Coefficient.DAMAGE_POTENCY]
 	var mastery_coef : float = coefs[Coefficient.DAMAGE_MASTERY]
 	
 	var raw_damage : float = (base_damage + duration + (potency_coef * potency) + (mastery_coef * mastery)) * stacks
-		
+	print("potency coef = %.2f" % potency_coef)
+	print("mastery coef = %.2f" % mastery_coef)
+	
 	return raw_damage
 
 ## CALCULATE ATTRITION
@@ -180,7 +182,7 @@ func calculate_dot_attrition(dot_type : DoT, base_damage : float, potency : int,
 		push_error("Void has no Attrition!")
 		return 0.0
 	
-	var coefs := DOT_COEFFICIENTS[dot_type]
+	var coefs : PackedFloat32Array = DOT_COEFFICIENTS.get(dot_type)
 	var potency_coef : float = coefs[Coefficient.ATTRITION_POTENCY]
 	var mastery_coef : float = coefs[Coefficient.ATTRITION_MASTERY]
 	

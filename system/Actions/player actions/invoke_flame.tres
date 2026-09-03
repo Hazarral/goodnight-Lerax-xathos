@@ -15,8 +15,8 @@
 [sub_resource type="Resource" id="Resource_t76v7"]
 script = ExtResource("2_ftrrc")
 amount = 40
-potency_scaling = 0.5
-mastery_scaling = 0.2
+potency_scaling = 1.0
+mastery_scaling = 0.4
 target_faction = 1
 target_count = 1
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
@@ -48,8 +48,8 @@ metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 [sub_resource type="Resource" id="Resource_woh64"]
 script = ExtResource("7_1mnwq")
 base_damage = 40.0
-potency_scaling = 0.5
-mastery_scaling = 0.2
+potency_scaling = 1.0
+mastery_scaling = 0.4
 metadata/_custom_type_script = "uid://b5tvpmksfnn2p"
 
 [sub_resource type="Resource" id="Resource_ya2be"]

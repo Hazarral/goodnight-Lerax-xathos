@@ -10,10 +10,10 @@
 script = ExtResource("2_cq4w0")
 entity_name = "Lust-Drunk Wolf"
 potency = 15
-max_hp = 250
-water_shield = 100
-wind_shield = 200
-ice_shield = 300
+max_hp = 500
+water_shield = 200
+wind_shield = 400
+ice_shield = 600
 max_action_point = 4
 starting_action_point = 1
 action_point_regen_per_turn = 2

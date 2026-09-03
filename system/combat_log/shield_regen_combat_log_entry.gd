@@ -16,8 +16,8 @@ const DEVELOPER_SHIELD_INTACT_TEMPLATE := "> %s's [color=%s]%s Shield[/color] st
 
 ## This replaces the above 2 templates for attrition = max shield
 const BASIC_FULL_ATTRITION_TEMPLATE := "> %s's [color=%s]%s Shield[/color] failed to regenerate and stayed breached!"
-const ADVANCED_FULL_ATTRITION_TEMPLATE := "> %s's [color=%s]%s Shield[/color] failed to regenerate and stayed breached! (%d Max Shield, %d effective Attrition, %d real Attrition)"
-const DEVELOPER_FULL_ATTRITION_TEMPLATE := "> %s's [color=%s]%s Shield[/color] cannot regenerate, Max Shield = %d, Effective Attrition = %d, Real Attrition = %d, Magnification = %.2f%%"
+const ADVANCED_FULL_ATTRITION_TEMPLATE := "> %s's [color=%s]%s Shield[/color] failed to regenerate and stayed breached! ([color=%s]%d Max Shield[/color], [color=%s]%d effective Attrition[/color], [color=%s]%d real Attrition[/color])"
+const DEVELOPER_FULL_ATTRITION_TEMPLATE := "> %s's [color=%s]%s Shield[/color] cannot regenerate, Max Shield = [color=%s]%d[/color], Effective Attrition = [color=%s]%d[/color], Real Attrition = [color=%s]%d[/color], Magnification = [color=%s]%.2f%%[/color]"
 
 const DEVELOPER_NO_SHIELD_TEMPLATE := "> %s has no [color=%s]%s Shield[/color]"
 
