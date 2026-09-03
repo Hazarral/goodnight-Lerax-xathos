@@ -298,3 +298,26 @@ func _on_tab_bar_tab_changed(tab: int) -> void:
 
 func _set_combat_log() -> void:
 	combat_log_label.text = CombatLog.get_log(current_combat_log_mode)
+
+enum ExportMode {
+	RAW,
+	PARSED,
+}
+
+func _export_combat_log(mode: ExportMode) -> void:
+	var file := FileAccess.open("user://combat_log.txt", FileAccess.WRITE)
+	
+	match mode:
+		ExportMode.RAW:
+			file.store_string(combat_log_label.text)
+		ExportMode.PARSED:
+			file.store_string(combat_log_label.get_parsed_text())
+	
+	file.close()
+	print("Combat log saved to: ", ProjectSettings.globalize_path("user://combat_log.txt"))
+
+func _on_export_raw_log_pressed() -> void:
+	_export_combat_log(ExportMode.RAW)
+
+func _on_export_parsed_log_pressed() -> void:
+	_export_combat_log(ExportMode.PARSED)

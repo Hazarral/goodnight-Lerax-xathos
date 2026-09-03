@@ -33,7 +33,9 @@ func build_logs() -> void:
 	var basic_is_first := true
 	var advanced_is_first := true
 	var developer_is_first := true
-	var developer_line_counter := 1
+	
+	var advanced_entry_counter := 1
+	var developer_entry_counter := 1
 	
 	for entry in _entries:
 		var basic_string := entry.render_basic()
@@ -43,13 +45,14 @@ func build_logs() -> void:
 		
 		var advanced_string := entry.render_advanced()
 		if not advanced_string.is_empty():
-			_advanced_log += _prefix(advanced_is_first) + advanced_string
+			_advanced_log += _prefix(advanced_is_first) + ("[Entry %d] " % advanced_entry_counter) + advanced_string
+			advanced_entry_counter += 1
 			advanced_is_first = false
 		
 		var developer_string := entry.render_developer()
 		if not developer_string.is_empty():
-			_developer_log += _prefix(developer_is_first) + "[%d] " % developer_line_counter + developer_string
-			developer_line_counter += 1
+			_developer_log += _prefix(developer_is_first) + ("[Entry %d] " % developer_entry_counter) + developer_string
+			developer_entry_counter += 1
 			developer_is_first = false
 
 func get_log(mode : DisplayMode) -> String:

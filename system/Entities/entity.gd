@@ -381,7 +381,13 @@ func die() -> void:
 	
 	current_state = State.DEAD
 	current_hp = 0
-	print("Entity %s died" % template.entity_name)
+	
+	var combat_log_entry := DeathCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Death"
+	)
+	CombatLog.register(combat_log_entry)
 	
 	## Resolve poison effect here
 	if has_dot(DamageAndDoT.DoT.POISON):

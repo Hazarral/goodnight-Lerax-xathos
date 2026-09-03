@@ -196,6 +196,9 @@ func is_current_actor(entity : Entity) -> bool:
 	return entity == current_actor
 
 func end_current_actor_turn() -> void:
+	if is_combat_over():
+		return
+	
 	current_actor.end_turn()
 	EventBus.force_refresh_turn_ui.emit()
 
@@ -208,7 +211,13 @@ func is_combat_over() -> bool:
 	return false
 
 func end_combat() -> void:
-	print("COMBAT ENDED!")
+	var combat_log_entry := CombatEndedCombatLogEntry.new(
+		turn_counter,
+		null,
+		"Combat Ended"
+	)
+	CombatLog.register(combat_log_entry)
+	
 	reset()
 
 func register_combat_event(combat_event : CombatEvent) -> void:

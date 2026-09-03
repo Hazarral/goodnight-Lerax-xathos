@@ -368,5 +368,18 @@ Fire Shield absorbs [color=#d97757]64[/color] dmg.
 Enemy 1's [b]Void[/b] escalates — [color=#ff006a]41 dmg[/color] direct to HP."
 scroll_following = true
 
+[node name="HBoxContainer" type="HBoxContainer" parent="Frame/Root/HBoxContainer/LogPanel/LogCol" unique_id=1065037713]
+layout_mode = 2
+
+[node name="ExportRawLog" type="Button" parent="Frame/Root/HBoxContainer/LogPanel/LogCol/HBoxContainer" unique_id=655004288]
+layout_mode = 2
+text = "Export Raw Log"
+
+[node name="ExportParsedLog" type="Button" parent="Frame/Root/HBoxContainer/LogPanel/LogCol/HBoxContainer" unique_id=1857219920]
+layout_mode = 2
+text = "Export Parsed Log"
+
 [connection signal="pressed" from="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]
 [connection signal="tab_changed" from="Frame/Root/HBoxContainer/LogPanel/LogCol/TabBar" to="." method="_on_tab_bar_tab_changed"]
+[connection signal="pressed" from="Frame/Root/HBoxContainer/LogPanel/LogCol/HBoxContainer/ExportRawLog" to="." method="_on_export_raw_log_pressed"]
+[connection signal="pressed" from="Frame/Root/HBoxContainer/LogPanel/LogCol/HBoxContainer/ExportParsedLog" to="." method="_on_export_parsed_log_pressed"]
