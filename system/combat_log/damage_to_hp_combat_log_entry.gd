@@ -26,10 +26,8 @@ func _init(
 
 func render_basic() -> String:
 	return BASIC_TEMPLATE % [
-		actor.template.entity_name,
-		DamageAndDoT.get_damage_color_hex(damage_type),
-		amount,
-		DamageAndDoT.get_damage_type_name(damage_type)
+		actor.get_entity_name_with_suffix(),
+		DamageAndDoT.get_damage_color_hex(damage_type), amount, DamageAndDoT.get_damage_type_name(damage_type)
 	]
 
 func render_advanced() -> String:
@@ -43,12 +41,9 @@ func render_advanced() -> String:
 func render_developer() -> String:
 	var text := STAGE_TEMPLATE % [DamageAndDoT.GENERIC_COLOR_HEX, stage, turn_number] + "\n"
 	text += DEVELOPER_TEMPLATE % [
-		actor.template.entity_name,
-		DamageAndDoT.get_damage_color_hex(damage_type),
-		amount,
-		DamageAndDoT.get_damage_type_name(damage_type),
-		DamageAndDoT.GENERIC_COLOR_HEX,
-		ignore_shield
+		actor.get_entity_name_with_suffix(),
+		DamageAndDoT.get_damage_color_hex(damage_type), amount, DamageAndDoT.get_damage_type_name(damage_type),
+		DamageAndDoT.GENERIC_COLOR_HEX, ignore_shield
 	]
 	
 	return text

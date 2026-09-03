@@ -4,7 +4,7 @@ extends CombatLogEntry
 const BASIC_TEMPLATE := "> %s's turn ended"
 
 func render_basic() -> String:	
-	return BASIC_TEMPLATE % actor.template.entity_name
+	return BASIC_TEMPLATE % actor.get_entity_name_with_suffix()
 
 func render_advanced() -> String:
 	return render_basic()

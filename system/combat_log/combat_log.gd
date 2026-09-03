@@ -24,6 +24,9 @@ func _clear_logs() -> void:
 	_advanced_log = ""
 	_developer_log = ""
 
+func _prefix(is_first_condition : bool) -> String:
+	return "" if is_first_condition else "\n\n"
+
 func build_logs() -> void:
 	## TODO: Write log logic here, build all 3 logs
 	_clear_logs()
@@ -35,17 +38,17 @@ func build_logs() -> void:
 	for entry in _entries:
 		var basic_string := entry.render_basic()
 		if not basic_string.is_empty():
-			_basic_log += ("" if basic_is_first else "\n") + basic_string
+			_basic_log += _prefix(basic_is_first) + basic_string
 			basic_is_first = false
 		
 		var advanced_string := entry.render_advanced()
 		if not advanced_string.is_empty():
-			_advanced_log += ("" if advanced_is_first else "\n") + advanced_string
+			_advanced_log += _prefix(advanced_is_first) + advanced_string
 			advanced_is_first = false
 		
 		var developer_string := entry.render_developer()
 		if not developer_string.is_empty():
-			_developer_log += ("" if developer_is_first else "\n") + "[%d] " % developer_line_counter + developer_string
+			_developer_log += _prefix(developer_is_first) + "[%d] " % developer_line_counter + developer_string
 			developer_line_counter += 1
 			developer_is_first = false
 

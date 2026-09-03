@@ -18,6 +18,10 @@ var is_processing_combat_event_queue : bool = false
 
 const MAX_ALIVE_ENEMY_ON_FIELD := 5
 
+var _entity_name_counter : Dictionary[String, int] = {}
+const _ROMAN_VALUES : Array[int] = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+const _ROMAN_SYMBOLS : Array[String] = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+
 func reset() -> void:
 	ally_on_field.clear()
 	enemy_on_field.clear()
@@ -28,7 +32,36 @@ func reset() -> void:
 	current_turn_index = 0
 	turn_counter = 0
 	
+	_entity_name_counter.clear()
+	
 	is_processing_combat_event_queue = false
+
+func _register_or_increment_entity_name(entity_name : String) -> void:
+	if _entity_name_counter.has(entity_name):
+		_entity_name_counter[entity_name] += 1
+	else:
+		_entity_name_counter[entity_name] = 1
+
+func _to_roman_numeral(number : int) -> String:
+	if number <= 0:
+		push_error("Cannot convert non-positive number %d to roman numeral!" % number)
+		return str(number)
+	
+	var result := ""
+	var remaining := number
+	
+	for i in _ROMAN_VALUES.size():
+		while remaining >= _ROMAN_VALUES[i]:
+			remaining -= _ROMAN_VALUES[i]
+			result += _ROMAN_SYMBOLS[i]
+	
+	return result
+
+func get_entity_name_suffix(entity : Entity) -> String:
+	if entity.display_suffix == -1:
+		return ""
+	
+	return " (%s)" % _to_roman_numeral(entity.display_suffix)
 
 func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side_templates : Array[EntityTemplate]) -> void:
 	## 1. Ensure clean data before anything
@@ -100,6 +133,8 @@ func add_enemy_faction(entity : Entity) -> void:
 		return	
 	
 	enemy_on_field.append(entity)
+	_register_or_increment_entity_name(entity.template.entity_name)
+	entity.display_suffix = _entity_name_counter[entity.template.entity_name]
 
 func add_enemy_reinforcement(entity : Entity) -> void:
 	if entity.is_player_faction():
@@ -113,6 +148,8 @@ func add_reinforcement_to_field() -> void:
 		var entity : Entity = enemy_reinforcement.pop_front()
 		enemy_on_field.append(entity)
 		turn_order.append(entity)
+		_register_or_increment_entity_name(entity.template.entity_name)
+		entity.display_suffix = _entity_name_counter[entity.template.entity_name]
 
 func backfill_reinforcements() -> void:
 	while get_alive_targets(enemy_on_field).size() < MAX_ALIVE_ENEMY_ON_FIELD and not enemy_reinforcement.is_empty():
@@ -182,6 +219,9 @@ func register_multi_combat_event(multi_combat_event : MultiCombatEvent) -> void:
 
 func inject_combat_event(damage_event : CombatEvent) -> void:
 	_combat_event_queue.push_front(damage_event)
+	
+	## Always force call, protected by lock so this is safe
+	process_combat_event_queue()
 
 func process_combat_event_queue() -> void:
 	if is_processing_combat_event_queue:

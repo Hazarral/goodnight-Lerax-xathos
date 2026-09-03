@@ -51,18 +51,14 @@ func render_basic() -> String:
 		
 		if attrition[i] < max_shields[i]:
 			text += BASIC_TEMPLATE % [
-				actor.template.entity_name,
-				element_color,
-				damage_type_name,
-				element_color,
-				shield_after_regen[i],
-				max_shields[i]
+				actor.get_entity_name_with_suffix(),
+				element_color, damage_type_name,
+				element_color, shield_after_regen[i], max_shields[i]
 			]
 		else:
 			text += BASIC_FULL_ATTRITION_TEMPLATE % [
-				actor.template.entity_name,
-				element_color,
-				damage_type_name
+				actor.get_entity_name_with_suffix(),
+				element_color, damage_type_name
 			]
 		
 		text += "\n"
@@ -81,37 +77,26 @@ func render_advanced() -> String:
 		
 		if shield_before_regen[i] == shield_after_regen[i]:
 			text += ADVANCED_SHIELD_INTACT_TEMPLATE % [
-				actor.template.entity_name,
-				element_color,
-				damage_type_name
+				actor.get_entity_name_with_suffix(),
+				element_color, damage_type_name
 			] + "\n"
 			continue
 		
 		if attrition[i] < max_shields[i]:
 			text += ADVANCED_TEMPLATE % [
-				actor.template.entity_name,
-				element_color,
-				damage_type_name,
-				element_color,
-				shield_before_regen[i],
-				max_shields[i],
-				element_color,
-				shield_after_regen[i],
-				max_shields[i],
-				DamageAndDoT.VOID_COLOR_HEX,
-				attrition[i]
+				actor.get_entity_name_with_suffix(),
+				element_color, damage_type_name,
+				element_color, shield_before_regen[i], max_shields[i],
+				element_color, shield_after_regen[i], max_shields[i],
+				DamageAndDoT.VOID_COLOR_HEX, attrition[i]
 			]
 		else:
 			text += ADVANCED_FULL_ATTRITION_TEMPLATE % [
-				actor.template.entity_name,
-				element_color,
-				damage_type_name,
-				element_color,
-				max_shields[i],
-				DamageAndDoT.VOID_COLOR_HEX,
-				mini(max_shields[i], attrition[i]),
-				DamageAndDoT.VOID_COLOR_HEX,
-				attrition[i]
+				actor.get_entity_name_with_suffix(),
+				element_color, damage_type_name,
+				element_color, max_shields[i],
+				DamageAndDoT.VOID_COLOR_HEX, mini(max_shields[i], attrition[i]),
+				DamageAndDoT.VOID_COLOR_HEX, attrition[i]
 			]
 		
 		text += "\n"
@@ -128,53 +113,37 @@ func render_developer() -> String:
 		
 		if max_shields[i] <= 0:
 			text += DEVELOPER_NO_SHIELD_TEMPLATE % [
-				actor.template.entity_name,
-				element_color,
-				damage_type_name
+				actor.get_entity_name_with_suffix(),
+				element_color, damage_type_name
 			] + "\n"
 			continue
 		
 		if shield_before_regen[i] == shield_after_regen[i]:
 			text += DEVELOPER_SHIELD_INTACT_TEMPLATE % [
-				actor.template.entity_name,
-				element_color,
-				damage_type_name,
-				element_color,
-				max_shields[i],
-				DamageAndDoT.VOID_COLOR_HEX,
-				attrition[i]
+				actor.get_entity_name_with_suffix(),
+				element_color, damage_type_name,
+				element_color, max_shields[i],
+				DamageAndDoT.VOID_COLOR_HEX, attrition[i]
 			] + "\n"
 			continue
 		
 		if attrition[i] < max_shields[i]:
 			text += DEVELOPER_TEMPLATE % [
-				actor.template.entity_name,
-				element_color,
-				damage_type_name,
-				element_color,
-				shield_before_regen[i],
-				max_shields[i],
-				element_color,
-				shield_after_regen[i],
-				max_shields[i],
-				DamageAndDoT.VOID_COLOR_HEX,
-				attrition[i],
-				DamageAndDoT.GENERIC_COLOR_HEX,
-				magnification_percent
+				actor.get_entity_name_with_suffix(),
+				element_color, damage_type_name, 
+				element_color, shield_before_regen[i], max_shields[i],
+				element_color, shield_after_regen[i], max_shields[i],
+				DamageAndDoT.VOID_COLOR_HEX, attrition[i],
+				DamageAndDoT.GENERIC_COLOR_HEX, magnification_percent
 			]
 		else:
 			text += DEVELOPER_FULL_ATTRITION_TEMPLATE % [
-				actor.template.entity_name,
-				element_color,
-				damage_type_name,
-				element_color,
-				max_shields[i],
-				DamageAndDoT.VOID_COLOR_HEX,
-				mini(max_shields[i], attrition[i]),
-				DamageAndDoT.VOID_COLOR_HEX,
-				attrition[i],
-				DamageAndDoT.GENERIC_COLOR_HEX,
-				magnification_percent
+				actor.get_entity_name_with_suffix(),
+				element_color, damage_type_name,
+				element_color, max_shields[i],
+				DamageAndDoT.VOID_COLOR_HEX, mini(max_shields[i], attrition[i]),
+				DamageAndDoT.VOID_COLOR_HEX, attrition[i],
+				DamageAndDoT.GENERIC_COLOR_HEX, magnification_percent
 			]
 		
 		text += "\n"

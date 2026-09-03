@@ -27,6 +27,9 @@ var void_instance : VoidInstance = null
 
 var known_actions : Array[KnownAction]
 
+## This is for distinguishing entities with the exact same name based on field position
+var display_suffix : int = -1
+
 const STACKS_KEY := &"Stacks"
 const BASE_DAMAGE_KEY := &"Base damage"
 const TURNS_ELAPSED_KEY := &"Turns elapsed"
@@ -75,6 +78,9 @@ func setup_action_points() -> void:
 func setup_innate_actions() -> void:
 	for action in template.innate_actions:
 		learn_action(action)
+
+func get_entity_name_with_suffix() -> String:
+	return template.entity_name + CombatSystem.get_entity_name_suffix(self)
 
 func get_max_action_point() -> int:
 	return template.max_action_point
@@ -206,14 +212,14 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int, i
 			var damage_to_shield = mini(shield_hp, incoming_damage)
 			current_shields[damage_type] -= damage_to_shield
 			
-			var combat_log := ResonanceDamageToShieldCombatLogEntry.new(
+			var combat_log_entry := ResonanceDamageToShieldCombatLogEntry.new(
 				CombatSystem.get_turn_counter(),
 				self,
 				"Resonance Element hit",
 				damage_type,
 				damage_to_shield
 			)
-			CombatLog.register(combat_log)
+			CombatLog.register(combat_log_entry)
 			
 			var surplus = incoming_damage - damage_to_shield
 			if surplus > 0:
@@ -290,18 +296,28 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 		remaining_damage = 0
 		break
 	
-	var shield_damage_dealt : Dictionary[int, int] = {}
+	var damage_to_shield := PackedInt64Array()
+	damage_to_shield.resize(DamageAndDoT.ELEMENT_COUNT)
 	var newly_broken_indices : Array[int] = []
 	var total_shield_damage := 0
 	for idx in range(current_shields.size()):
 		var delta : int = shields_before[idx] - current_shields[idx]
+		damage_to_shield[idx] = delta
+		
 		if delta > 0:
-			shield_damage_dealt[idx] = delta
 			total_shield_damage += delta
 		if shields_before[idx] > 0 and current_shields[idx] == 0:
 			newly_broken_indices.append(idx)
 	
-	_print_sca_damage_to_shield(damage_type, shield_damage_dealt, total_shield_damage)
+	var combat_log_entry := CascadeDamageToShieldCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Shield Cascade Algorithm (SCA)",
+		damage_type,
+		total_shield_damage,
+		damage_to_shield
+	)
+	CombatLog.register(combat_log_entry)
 	# What is left will go to HP, even if it is 0
 	
 	if has_dot(DamageAndDoT.DoT.FROSTBITE) and not newly_broken_indices.is_empty():
@@ -329,35 +345,34 @@ func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shiel
 	if current_hp <= 0:
 		die()
 
-func _print_sca_damage_to_shield(incoming_damage_type : DamageAndDoT.DamageType, shield_damage : Dictionary[int, int], total_shield_damage : int) -> void:
-	print("> %s received a total of %d %s damage to shield" % [
-		template.entity_name, 
-		total_shield_damage,
-		DamageAndDoT.get_damage_type_name(incoming_damage_type)
-		]
-	)
-	
-	for i in shield_damage:
-		var damage_type := i as DamageAndDoT.DamageType
-		print(">> %s shield received %d %s damage" % [
-			DamageAndDoT.get_damage_type_name(damage_type), 
-			shield_damage[damage_type],
-			DamageAndDoT.get_damage_type_name(incoming_damage_type)
-			]
-		)
-
 func heal(amount : int) -> void:
 	if current_state == State.DEAD:
 		print("You cannot bring back the dead by healing them, my dear")
 		return
 	
-	## Normal healing short-circuit
-	if not has_dot(DamageAndDoT.DoT.BLEED):
-		current_hp = mini(get_max_hp(), current_hp + amount)
-		print("HP: %d/%d" % [current_hp, get_max_hp()])
-		return
+	var real_amount := amount
+	var hp_before_heal := current_hp
 	
-	_trigger_bleed_anti_heal_effect(amount)
+	if has_dot(DamageAndDoT.DoT.BLEED):
+		real_amount = _get_bleed_healing_reduction_amount(amount)
+	
+	# NOTE: Heal first, before rupture damage
+	current_hp = mini(get_max_hp(), current_hp + real_amount)
+	var hp_after_heal := current_hp
+	
+	if has_dot(DamageAndDoT.DoT.BLEED):
+		_trigger_bleed_rupture_damage(amount)
+	
+	var combat_log_entry := HealCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Healing",
+		amount,
+		real_amount,
+		hp_before_heal,
+		hp_after_heal
+	)
+	CombatLog.register(combat_log_entry)
 
 func die() -> void:
 	if current_state == State.DEAD:
@@ -379,13 +394,13 @@ func die() -> void:
 		end_turn()
 	
 func begin_turn() -> void:
-	var combat_log := TurnStartCombatLogEntry.new(
+	var combat_log_entry := TurnStartCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
 		"Begin Turn",
 		current_state
 	)
-	CombatLog.register(combat_log)
+	CombatLog.register(combat_log_entry)
 	
 	if current_state == State.DEAD:
 		print("This target is dead! DoT will still tick down")
@@ -425,12 +440,12 @@ func end_turn() -> void:
 	print("%s's turn ended!" % template.entity_name)
 	recover_action_point()
 	tick_cooldowns()
-	var combat_log := TurnEndCombatLogEntry.new(
+	var combat_log_entry := TurnEndCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
 		"Final: Turn Ended"
 	)
-	CombatLog.register(combat_log)
+	CombatLog.register(combat_log_entry)
 	
 	CombatSystem.on_turn_finished()
 	EventBus.force_refresh_turn_ui.emit()
@@ -472,7 +487,7 @@ func _regen_shields() -> void:
 			attrition_list[i] = 0
 	
 	var shield_after_regen := current_shields.duplicate()
-	var combat_log := ShieldRegenCombatLogEntry.new(
+	var combat_log_entry := ShieldRegenCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
 		"A: Shield Regen",
@@ -482,7 +497,7 @@ func _regen_shields() -> void:
 		shield_after_regen
 	)
 	
-	CombatLog.register(combat_log)
+	CombatLog.register(combat_log_entry)
 
 func _resolve_crumble_splash_effect() -> void:
 	var total_damage := active_dots[DamageAndDoT.DoT.CRUMBLE].calculate_total_damage()
@@ -590,16 +605,15 @@ func _trigger_frostbite_on_break(newly_broken_indices : Array[int]) -> void:
 		
 		CombatSystem.inject_combat_event(damage_event)
 
-func _trigger_bleed_anti_heal_effect(heal_amount : int) -> void:
-	## THe real elaborate healing
+func _get_bleed_healing_reduction_amount(heal_amount : int) -> int:
+	var highest_mastery := active_dots[DamageAndDoT.DoT.BLEED].get_highest_mastery()
+	var healing_reduction := DamageAndDoT.get_bleed_healing_reduction(highest_mastery)
+	return maxi(0, ceili(heal_amount * (1 - healing_reduction)))
+
+func _trigger_bleed_rupture_damage(heal_amount : int) -> void:
 	var highest_mastery := active_dots[DamageAndDoT.DoT.BLEED].get_highest_mastery()
 	var highest_potency := active_dots[DamageAndDoT.DoT.BLEED].get_highest_potency()
 	var stacks_count := active_dots[DamageAndDoT.DoT.BLEED].get_all_stacks_count()
-	var healing_reduction := DamageAndDoT.get_bleed_healing_reduction(highest_mastery)
-	var real_amount := maxi(0, ceili(heal_amount * (1 - healing_reduction)))
-	
-	# NOTE: Heal first, before damage
-	current_hp = mini(get_max_hp(), current_hp + real_amount)
 	
 	var anti_heal_damage := ceili(DamageAndDoT.get_bleed_anti_heal_damage(heal_amount, highest_mastery, highest_potency, stacks_count))
 	var damage_event := DamageEvent.new(
@@ -610,7 +624,6 @@ func _trigger_bleed_anti_heal_effect(heal_amount : int) -> void:
 		true
 	)
 	
-	# NOTE: If injected, never call process_combat_event_queue further
 	CombatSystem.inject_combat_event(damage_event)
 
 func _trigger_poison_explosion_on_death() -> void:
@@ -654,9 +667,6 @@ func _trigger_shock_damage_on_action(ap_spent : int) -> void:
 	)
 	
 	CombatSystem.inject_combat_event(damage_event)
-	
-	## NOTE: Called unconditionally. If the queue is processing, this is a no-op, else we force it to resolve immediately
-	CombatSystem.process_combat_event_queue()
 
 func _resolve_void() -> void:
 	if void_instance == null:

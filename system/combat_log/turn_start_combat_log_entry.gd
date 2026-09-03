@@ -16,9 +16,9 @@ func render_basic() -> String:
 	var text := TURN_START % [DamageAndDoT.TURN_LABEL_COLOR_HEX, turn_number] + "\n"
 	
 	if actor_state == Entity.State.ALIVE:
-		text += BASIC_ALIVE_TEMPLATE % actor.template.entity_name
+		text += BASIC_ALIVE_TEMPLATE % actor.get_entity_name_with_suffix()
 	else:
-		text += BASIC_DEAD_TEMPLATE % [actor.template.entity_name, DamageAndDoT.VOID_COLOR_HEX]
+		text += BASIC_DEAD_TEMPLATE % [actor.get_entity_name_with_suffix(), DamageAndDoT.VOID_COLOR_HEX]
 	
 	return text
 

@@ -19,12 +19,9 @@ func _init(
 
 func render_basic() -> String:
 	return BASIC_TEMPLATE % [
-		actor.template.entity_name,
-		DamageAndDoT.get_damage_color_hex(damage_type),
-		DamageAndDoT.get_damage_type_name(damage_type),
-		DamageAndDoT.get_damage_color_hex(damage_type),
-		amount,
-		DamageAndDoT.get_damage_type_name(damage_type),
+		actor.get_entity_name_with_suffix(),
+		DamageAndDoT.get_damage_color_hex(damage_type), DamageAndDoT.get_damage_type_name(damage_type),
+		DamageAndDoT.get_damage_color_hex(damage_type), amount, DamageAndDoT.get_damage_type_name(damage_type),
 	]
 
 func render_advanced() -> String:
