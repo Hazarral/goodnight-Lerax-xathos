@@ -106,8 +106,8 @@ func render_advanced() -> String:
 	return text.trim_suffix("\n")
 
 func render_developer() -> String:
-	var text := VOID_DAMAGE_PREFIX if _is_void_damage() else WRONG_DAMAGE_PREFIX
-	text += _get_developer_stage_prefix()
+	var text := _get_developer_stage_prefix()
+	text += VOID_DAMAGE_PREFIX if _is_void_damage() else WRONG_DAMAGE_PREFIX
 	if total_amount <= 0:
 		text += _get_no_shield_text()
 		return text

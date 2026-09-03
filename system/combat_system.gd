@@ -161,6 +161,12 @@ func get_next_actor() -> Entity:
 	turn_counter += 1
 	if current_turn_index == 0:
 		round_counter += 1
+		var combat_log_entry := RoundCombatLogEntry.new(
+			get_turn_counter(),
+			null,
+			"Round Start"
+		)
+		CombatLog.register(combat_log_entry)
 	
 	current_turn_index = (current_turn_index + 1) % turn_order.size()
 	
@@ -168,6 +174,9 @@ func get_next_actor() -> Entity:
 
 func get_turn_counter() -> int:
 	return turn_counter
+
+func get_round_counter() -> int:
+	return round_counter
 
 func advance_turn() -> void:
 	## NOTE: This is the official way to advance turn and get next entity in the turn order

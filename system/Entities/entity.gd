@@ -718,7 +718,7 @@ func _resolve_void() -> void:
 	
 	var the_draechen := CombatSystem.get_the_draechen()
 	var encounter_potency_and_mastery := CombatSystem.get_highest_enemy_potency_and_mastery()
-	var combat_log_entry := VoidTickCombatLogEntry.new(
+	var void_tick_log_entry := VoidTickCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
 		"Void Tick",
@@ -733,6 +733,13 @@ func _resolve_void() -> void:
 		encounter_potency_and_mastery.potency,
 		encounter_potency_and_mastery.mastery
 	)
-	CombatLog.fill_reserved_slot(pending_slot, combat_log_entry)
+	CombatLog.fill_reserved_slot(pending_slot, void_tick_log_entry)
 	
 	void_instance.escalate()
+	
+	var void_escalate_log_entry := VoidEscalateCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Void Tick"
+	)
+	CombatLog.register(void_escalate_log_entry)
