@@ -40,14 +40,11 @@ func cast() -> CastResult:
 	source.current_action_point -= action.action_point_cost
 	
 	var success := await action.cast(source)
-	print("Success status: ", success)
 	
 	if not success:
 		source.current_action_point += action.action_point_cost
-		print("Refunded AP cost for %s" % action.action_name)
 		return CastResult.new(false, 0)
 	
 	cooldown_remaining = action.cooldown
-	print("Casted %s succesfully!" % action.action_name)
 	
 	return CastResult.new(true, action.action_point_cost)

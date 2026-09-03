@@ -171,8 +171,6 @@ func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, ma
 	var mastery_coef : float = coefs[Coefficient.DAMAGE_MASTERY]
 	
 	var raw_damage : float = (base_damage + duration + (potency_coef * potency) + (mastery_coef * mastery)) * stacks
-	print("potency coef = %.2f" % potency_coef)
-	print("mastery coef = %.2f" % mastery_coef)
 	
 	return raw_damage
 

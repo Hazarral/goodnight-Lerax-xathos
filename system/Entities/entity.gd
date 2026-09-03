@@ -456,9 +456,13 @@ func begin_turn() -> void:
 
 func start_action_phase() -> void:
 	print("%s is starting action phase..." % template.entity_name)
+	if is_player_faction():
+		## NOTE: The player will control, nothing special here
+		return
+	
+	## TODO: AI goes here
 
 func end_turn() -> void:
-	print("%s's turn ended!" % template.entity_name)
 	recover_action_point()
 	tick_cooldowns()
 	var combat_log_entry := TurnEndCombatLogEntry.new(
