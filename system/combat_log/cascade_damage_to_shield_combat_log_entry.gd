@@ -8,6 +8,7 @@ var damage_to_shields : PackedInt64Array
 const WRONG_DAMAGE_PREFIX := "> Wrong ELement! "
 const VOID_DAMAGE_PREFIX := "> Void Damage! "
 
+const NO_SHIELD_DAMAGE := "> %s has no [color=%s]%s Shield[/color]!"
 const BASIC_HEADER_TEMPLATE := "%s's Shields received a total of [color=%s]%d %s Damage[/color]"
 const BASIC_SHIELD_DAMAGE_TEMPLATE := ">> [color=%s]%s Shield[/color] received [color=%s]%d %s Damage[/color]"
 
@@ -40,7 +41,16 @@ func _get_damage_multiplier() -> float:
 func _get_damage_effectiveness() -> float:
 	return 100.0 / _get_damage_multiplier()
 
+func _get_no_shield_text() -> String:
+	return NO_SHIELD_DAMAGE % [
+		actor.get_entity_name_with_suffix(),
+		DamageAndDoT.get_damage_color_hex(damage_type), DamageAndDoT.get_damage_type_name(damage_type)
+	]
+
 func render_basic() -> String:
+	if total_amount <= 0:
+		return _get_no_shield_text()
+	
 	var text := VOID_DAMAGE_PREFIX if _is_void_damage() else WRONG_DAMAGE_PREFIX
 	
 	text += BASIC_HEADER_TEMPLATE % [
@@ -66,6 +76,9 @@ func render_basic() -> String:
 	return text.trim_suffix("\n")
 
 func render_advanced() -> String:
+	if total_amount <= 0:
+		return _get_no_shield_text()
+	
 	var text := VOID_DAMAGE_PREFIX if _is_void_damage() else WRONG_DAMAGE_PREFIX
 	
 	text += ADVANCED_HEADER_TEMPLATE % [
@@ -95,6 +108,8 @@ func render_advanced() -> String:
 func render_developer() -> String:
 	var text := VOID_DAMAGE_PREFIX if _is_void_damage() else WRONG_DAMAGE_PREFIX
 	text += STAGE_TEMPLATE % [DamageAndDoT.GENERIC_COLOR_HEX, stage, turn_number] + "\n"
+	if total_amount <= 0:
+		return text + _get_no_shield_text()
 	
 	text += DEVELOPER_HEADER_TEMPLATE % [
 		actor.get_entity_name_with_suffix(),
