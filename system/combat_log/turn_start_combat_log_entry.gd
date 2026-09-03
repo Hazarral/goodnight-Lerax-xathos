@@ -26,6 +26,6 @@ func render_advanced() -> String:
 	return render_basic()
 
 func render_developer() -> String:
-	var text := STAGE_TEMPLATE % [DamageAndDoT.GENERIC_COLOR_HEX, stage, turn_number] + "\n"
+	var text := _get_developer_stage_prefix()
 	text += render_basic()
 	return text

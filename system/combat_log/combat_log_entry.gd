@@ -15,6 +15,9 @@ func _init(p_turn_number : int, p_actor : Entity, p_stage : String) -> void:
 	actor = p_actor
 	stage = p_stage
 
+func _get_developer_stage_prefix() -> String:
+	return STAGE_TEMPLATE % [DamageAndDoT.GENERIC_COLOR_HEX, stage, turn_number] + "\n"
+
 @abstract func render_basic() -> String
 @abstract func render_advanced() -> String
 @abstract func render_developer() -> String

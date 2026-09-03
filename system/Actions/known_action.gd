@@ -14,6 +14,15 @@ func _init(p_action : Action, p_source : Entity) -> void:
 		if seg is DamageSegment or seg is HealSegment:
 			seg.set_source(source)
 
+func get_action_name() -> String:
+	return action.action_name
+
+func get_action_point_cost() -> int:
+	return action.action_point_cost
+
+func get_cooldown() -> int:
+	return action.cooldown
+
 func _is_ready() -> bool:
 	return cooldown_remaining <= 0
 

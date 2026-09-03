@@ -107,7 +107,7 @@ func render_advanced() -> String:
 
 func render_developer() -> String:
 	var text := VOID_DAMAGE_PREFIX if _is_void_damage() else WRONG_DAMAGE_PREFIX
-	text += STAGE_TEMPLATE % [DamageAndDoT.GENERIC_COLOR_HEX, stage, turn_number] + "\n"
+	text += _get_developer_stage_prefix()
 	if total_amount <= 0:
 		text += _get_no_shield_text()
 		return text

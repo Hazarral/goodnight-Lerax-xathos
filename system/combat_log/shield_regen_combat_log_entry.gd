@@ -104,7 +104,7 @@ func render_advanced() -> String:
 	return text.trim_suffix("\n")
  
 func render_developer() -> String:
-	var text := STAGE_TEMPLATE % [DamageAndDoT.GENERIC_COLOR_HEX, stage, turn_number] + "\n"
+	var text := _get_developer_stage_prefix()
 	for i in range(max_shields.size()):
 		var damage_type := i as DamageAndDoT.DamageType
 		var damage_type_name := DamageAndDoT.get_damage_type_name(damage_type)

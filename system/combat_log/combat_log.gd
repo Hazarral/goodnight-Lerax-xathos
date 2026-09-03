@@ -24,6 +24,26 @@ func _clear_logs() -> void:
 	_advanced_log = ""
 	_developer_log = ""
 
+func reserve_slot() -> int:
+	_entries.append(null)
+	return _entries.size() - 1
+
+func cancel_reserved_slot(index : int) -> void:
+	if index < 0 or index >= _entries.size():
+		push_error("Cannot cancel reserved slot %d: out of bounds!" % index)
+		return
+	_entries[index] = null  # NOTE: leave as null tombstone, do not remove_at() — would shift later indices
+
+func fill_reserved_slot(index : int, entry : CombatLogEntry) -> void:
+	if index < 0 or index >= _entries.size():
+		push_error("Cannot fill reserved slot %d: out of bounds!" % index)
+		return
+	
+	if _entries[index] != null:
+		push_error("Slot %d is already filled! Overwriting %s with %s" % [index, _entries[index], entry])
+	
+	_entries[index] = entry
+
 func _prefix(is_first_condition : bool) -> String:
 	return "" if is_first_condition else "\n\n"
 
@@ -38,6 +58,10 @@ func build_logs() -> void:
 	var developer_entry_counter := 1
 	
 	for entry in _entries:
+		if entry == null:
+			## NOTE: This is either a reserved slot or a cancelled slot
+			continue
+		
 		var basic_string := entry.render_basic()
 		if not basic_string.is_empty():
 			_basic_log += _prefix(basic_is_first) + basic_string

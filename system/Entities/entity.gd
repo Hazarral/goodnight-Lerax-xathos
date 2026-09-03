@@ -467,11 +467,29 @@ func tick_cooldowns() -> void:
 		known_action.tick_cooldown()
 
 func cast_action(index : int) -> void:
-	var cast_result := await known_actions[index].cast()
+	var action_wrapper := known_actions[index]
+	
+	if not action_wrapper.is_castable():
+		push_error("Cannot cast %s due to cooldown or AP cost!" % action_wrapper.get_action_name())
+		return
+	
+	var pending_slot := CombatLog.reserve_slot()
+	var cast_result := await action_wrapper.cast()
 	
 	if not cast_result.success:
-		push_error("Cannot cast %s due to cooldown or AP cost!" % known_actions[index].action.action_name)
+		CombatLog.cancel_reserved_slot(pending_slot)
+		print("Cast cancelled by target selection.")
 		return
+	
+	var combat_log_entry := CastActionCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Cast Success",
+		known_actions[index].get_action_name(),
+		known_actions[index].get_action_point_cost(),
+		known_actions[index].get_cooldown()
+	)
+	CombatLog.fill_reserved_slot(pending_slot, combat_log_entry)
 	
 	if has_dot(DamageAndDoT.DoT.SHOCK):
 		print("Triggering shock damage...")

@@ -41,7 +41,7 @@ func render_advanced() -> String:
 	]
 
 func render_developer() -> String:
-	var text := STAGE_TEMPLATE % [DamageAndDoT.GENERIC_COLOR_HEX, stage, turn_number] + "\n"
+	var text := _get_developer_stage_prefix()
 	text += DEVELOPER_TEMPLATE % [
 		actor.get_entity_name_with_suffix(),
 		DamageAndDoT.HEALING_COLOR_HEX, real_amount,
