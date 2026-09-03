@@ -4,7 +4,7 @@ extends CombatLogEntry
 var dot_instance : DoTInstance
 
 const BASIC_TEMPLATE := "> %s is afflicted with [color=%s]%s[/color]"
-const ADVANCED_TEMPLATE := "> %s is afflicted with [color=%s]%d Stacks[/color] of [color=%s]%s[/color] for [color=%s]%d Turns[/color]"
+const ADVANCED_TEMPLATE := "> %s is afflicted with [color=%s]%d Stack%s[/color] of [color=%s]%s[/color] for [color=%s]%d Turns[/color]"
 const DEVELOPER_TEMPLATE := "> %s is afflicted with [color=%s]%s[/color], Base Damage = [color=%s]%.2f[/color], Stacks = [color=%s]%d[/color], Duration = [color=%s]%d[/color]"
 
 func _init(
@@ -29,7 +29,7 @@ func render_advanced() -> String:
 	var dot_type := DamageAndDoT.get_dot(damage_type)
 	return ADVANCED_TEMPLATE % [
 		actor.get_entity_name_with_suffix(),
-		DamageAndDoT.GENERIC_COLOR_HEX, dot_instance.stacks,
+		DamageAndDoT.GENERIC_COLOR_HEX, dot_instance.stacks, "s" if dot_instance.stacks > 1 else "",
 		DamageAndDoT.get_damage_color_hex(damage_type), DamageAndDoT.get_damage_over_time_name(dot_type),
 		DamageAndDoT.GENERIC_COLOR_HEX, dot_instance.duration
 	]

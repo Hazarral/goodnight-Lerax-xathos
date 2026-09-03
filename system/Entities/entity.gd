@@ -184,6 +184,14 @@ func apply_void(stacks : int) -> void:
 		void_instance = VoidInstance.new(self, stacks, is_player_faction())
 	else:
 		void_instance.apply_stacks(stacks)
+	
+	var combat_log_entry := VoidAfflictionCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Void Affliction",
+		stacks
+	)
+	CombatLog.register(combat_log_entry)
 
 func get_attrition(damage_type : DamageAndDoT.DamageType) -> float:
 	if not (has_shield(damage_type) and active_dots[damage_type].has_dot()):
