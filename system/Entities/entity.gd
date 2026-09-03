@@ -170,6 +170,13 @@ func is_player_faction() -> bool:
 
 func apply_dot(dot_instance : DoTInstance) -> void:
 	active_dots[dot_instance.damage_type].add_dot_instance(dot_instance)
+	var combat_log_entry := DoTAfflictionCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"DoT Affliction",
+		dot_instance
+	)
+	CombatLog.register(combat_log_entry)
 
 func apply_void(stacks : int) -> void:
 	## NOTE: Technically is_plahyer_faction can never change, and must be opposite to this entity	
