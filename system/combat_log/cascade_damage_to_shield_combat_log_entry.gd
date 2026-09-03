@@ -5,7 +5,7 @@ var damage_type : DamageAndDoT.DamageType
 var total_amount : int
 var damage_to_shields : PackedInt64Array
 
-const WRONG_DAMAGE_PREFIX := "> Wrong ELement! "
+const WRONG_DAMAGE_PREFIX := "> Wrong Element! "
 const VOID_DAMAGE_PREFIX := "> Void Damage! "
 
 const NO_SHIELD_DAMAGE := "> %s has no [color=%s]%s Shield[/color]!"

@@ -35,8 +35,6 @@ func render_developer() -> String:
 	var potency_coef : float = coefs[DamageAndDoT.Coefficient.DAMAGE_POTENCY]
 	var mastery_coef : float = coefs[DamageAndDoT.Coefficient.DAMAGE_MASTERY]
 	
-	print("%f, %f" % [potency_coef, mastery_coef])
-	
 	text += DEVELOPER_TEMPLATE % [
 		DamageAndDoT.get_damage_color_hex(damage_type), DamageAndDoT.get_damage_over_time_name(dot_type),
 		actor.get_entity_name_with_suffix(),

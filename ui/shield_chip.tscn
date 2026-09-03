@@ -29,6 +29,7 @@ bbcode_enabled = true
 text = "X / X (-y)"
 fit_content = true
 scroll_active = false
+autowrap_mode = 0
 
 [node name="ShieldBar" parent="ChipVBox" unique_id=450865572 instance=ExtResource("3_a0rye")]
 layout_mode = 2

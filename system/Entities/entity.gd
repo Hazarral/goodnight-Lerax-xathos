@@ -712,5 +712,27 @@ func _resolve_void() -> void:
 		## No Void for now
 		return
 	
+	var pending_slot := CombatLog.reserve_slot()
+	
 	void_instance.deal_damage(CombatSystem.get_the_draechen())
+	
+	var the_draechen := CombatSystem.get_the_draechen()
+	var encounter_potency_and_mastery := CombatSystem.get_highest_enemy_potency_and_mastery()
+	var combat_log_entry := VoidTickCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Void Tick",
+		get_current_void_damage(),
+		void_instance.stacks,
+		void_instance.turns_elapsed,
+		get_total_attrition(),
+		the_draechen.get_max_hp(), 
+		the_draechen.get_total_max_shield(),
+		the_draechen.get_potency(),
+		the_draechen.get_mastery(),
+		encounter_potency_and_mastery.potency,
+		encounter_potency_and_mastery.mastery
+	)
+	CombatLog.fill_reserved_slot(pending_slot, combat_log_entry)
+	
 	void_instance.escalate()

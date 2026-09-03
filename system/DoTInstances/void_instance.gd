@@ -32,9 +32,9 @@ func deal_damage(the_draechen : Draechen) -> void:
 
 func get_current_damage(the_draechen : Draechen) -> int:
 	var void_damage := 0
+	var encounter_potency_and_mastery := CombatSystem.get_highest_enemy_potency_and_mastery()
 	
 	if is_player_faction:
-		var encounter_potency_and_mastery := CombatSystem.get_highest_enemy_potency_and_mastery()
 		void_damage = ceili(
 			DamageAndDoT.get_void_damage_to_player(
 				encounter_potency_and_mastery.potency,

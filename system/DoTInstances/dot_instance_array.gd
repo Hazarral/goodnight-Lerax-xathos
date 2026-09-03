@@ -87,13 +87,23 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 		if not has_current or is_current:
 			continue
 		
-		var echo_damage := ceili(DamageAndDoT.get_current_echo_damage(total_amount, dot_instance.get_current_mastery()))
+		var echo_damage := ceili(DamageAndDoT.get_current_echo_damage(total_amount, get_highest_mastery()))
 		var echo_damage_event := DamageEvent.new(
 			dot_instance.source,
 			target,
 			dot_instance.damage_type,
 			echo_damage
 		)
+		
+		var dot_echo_log_entry := EchoDoTTickCombatLogEntry.new(
+			CombatSystem.get_turn_counter(),
+			target,
+			"Current: DoT Echo",
+			dot_instance,
+			DamageAndDoT.get_current_echo_effectiveness(get_highest_mastery()),
+			echo_damage
+		)
+		CombatLog.register(dot_echo_log_entry)
 		
 		CombatSystem.register_combat_event(echo_damage_event)
 		
