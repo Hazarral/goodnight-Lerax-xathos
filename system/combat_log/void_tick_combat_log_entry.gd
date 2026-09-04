@@ -18,8 +18,8 @@ var total_target_attrition : int
 const BASIC_TEMPLATE := "> [color=%s]The Primordial Void[/color] gnawed at %s"
 const ADVANCED_TEMPLATE := "> [color=%s]The Primordial Void[/color] gnawed at %s (%d Stack%s, %.2f%% Multiplier)"
 
-const DEVELOPER_TEMPLATE_TO_ENEMY := ">> [color=%s]The Primordial Void[/color] gnawed at %s for ([color=%s]%.2f[/color] * [color=%s]%d[/color] + [color=%s]%.2f[/color] * [color=%s]%d[/color] + [color=%s]%.2f[/color] * [color=%s]%d[/color]^[color=%s]%.1f[/color] + [color=%s]%.2f[/color] * [color=%s]%d[/color]^[color=%s]%.1f[/color] + [color=%s]%d[/color]^[color=%s]%.1f[/color]) * [color=%s]%d[/color] * [color=%s]%.2f%%[/color] = [color=%s]%d %s Damage[/color] before mitigation"
-const DEVELOPER_TEMPLATE_TO_PLAYER := ">> [color=%s]The Primordial Void[/color] gnawed at %s for ([color=%s]%d[/color] + [color=%s]%.2f[/color] * ln([color=%s]%d[/color] + 1) + [color=%s]%.2f[/color] * ln([color=%s]%d[/color] + 1) + [color=%s]%d[/color]^[color=%s]%.1f[/color]) * [color=%s]%d[/color] * [color=%s]%.2f%%[/color] = [color=%s]%d %s Damage[/color] before mitigation"
+const DEVELOPER_TEMPLATE_TO_ENEMY := "> [color=%s]The Primordial Void[/color] gnawed at %s for ([color=%s]%.2f[/color] * [color=%s]%d[/color] + [color=%s]%.2f[/color] * [color=%s]%d[/color] + [color=%s]%.2f[/color] * [color=%s]%d[/color]^[color=%s]%.1f[/color] + [color=%s]%.2f[/color] * [color=%s]%d[/color]^[color=%s]%.1f[/color] + [color=%s]%d[/color]^[color=%s]%.1f[/color]) * [color=%s]%d[/color] * [color=%s]%.2f%%[/color] = [color=%s]%d %s Damage[/color] before mitigation"
+const DEVELOPER_TEMPLATE_TO_PLAYER := "> [color=%s]The Primordial Void[/color] gnawed at %s for ([color=%s]%d[/color] + [color=%s]%.2f[/color] * ln([color=%s]%d[/color] + 1) + [color=%s]%.2f[/color] * ln([color=%s]%d[/color] + 1) + [color=%s]%d[/color]^[color=%s]%.1f[/color]) * [color=%s]%d[/color] * [color=%s]%.2f%%[/color] = [color=%s]%d %s Damage[/color] before mitigation"
 
 func _init(
 	p_turn_number : int,

@@ -5,8 +5,8 @@ var dot_instance : DoTInstance
 var effectiveness : float
 var amount : int
 
-const BASIC_TEMPLATE := ">> [color=%s]%s[/color] [color=%s]echoed[/color] on %s"
-const DEVELOPER_TEMPLATE := ">> [color=%s]%s[/color] [color=%s]echoed[/color] on %s at [color=%s]%.2f%% Effectiveness[/color]"
+const BASIC_TEMPLATE := "[ul][color=%s]%s[/color] [color=%s]echoed[/color] on %s[/ul]"
+const DEVELOPER_TEMPLATE := "[ul][color=%s]%s[/color] [color=%s]echoed[/color] on %s at [color=%s]%.2f%% Effectiveness[/color][/ul]"
 
 func _init(
 	p_turn_number : int, 

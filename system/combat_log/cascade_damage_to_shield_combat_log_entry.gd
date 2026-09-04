@@ -10,7 +10,7 @@ const VOID_DAMAGE_PREFIX := "> Void Damage! "
 
 const NO_SHIELD_DAMAGE := "> %s has no [color=%s]%s Shield[/color]!"
 const BASIC_HEADER_TEMPLATE := "%s's Shields received a total of [color=%s]%d %s Damage[/color]"
-const BASIC_SHIELD_DAMAGE_TEMPLATE := ">> [color=%s]%s Shield[/color] received [color=%s]%d %s Damage[/color]"
+const BASIC_SHIELD_DAMAGE_TEMPLATE := "[ul][color=%s]%s Shield[/color] received [color=%s]%d %s Damage[/color][/ul]"
 
 const ADVANCED_HEADER_TEMPLATE := "%s's Shields received [color=%s]%.2f%%[/color] damage for a total of [color=%s]%d %s Damage[/color]"
 
