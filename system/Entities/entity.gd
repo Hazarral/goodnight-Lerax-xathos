@@ -670,6 +670,14 @@ func _resolve_wind_shear_blast_effect() -> void:
 	CombatSystem.process_combat_event_queue()
 
 func _trigger_frostbite_on_break(idx : int) -> void:
+	var combat_log_entry := FrostbiteShatterCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Frostbite Shield Shatter",
+		idx as DamageAndDoT.DamageType
+	) 
+	CombatLog.register(combat_log_entry)
+	
 	var multiplier : float = DamageAndDoT.FROSTBITE_ICE_SHIELD_BREAK_COEFFICIENT if ((idx as DamageAndDoT.DamageType) == DamageAndDoT.DamageType.ICE) else DamageAndDoT.FROSTBITE_NON_ICE_SHIELD_BREAK_COEFFICIENT
 	var damage_event := DamageEvent.new(
 		self,
