@@ -10,6 +10,15 @@ func _init(p_caster : Entity, p_target : Entity, p_damage_type : DamageAndDoT.Da
 func tick_down() -> void:
 	duration -= 1
 	turns_elapsed += 1
+	
+	var combat_log_entry := BurnRampCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		null,
+		"Burn Ramping",
+		self
+	)
+	CombatLog.register(combat_log_entry)
+	
 	if duration <= 0:
 		expire()
 
