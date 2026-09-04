@@ -1,7 +1,7 @@
 class_name DeathCombatLogEntry
 extends CombatLogEntry
 
-const BASIC_TEMPLATE := "> %s [color=%s]died[/color]. (Taken by [color=%s]Evernight[/color])"
+const BASIC_TEMPLATE := "> %s [color=%s]died[/color]. (Taken by [color=%s]Evernight.[/color])"
 
 func render_basic() -> String:
 	return BASIC_TEMPLATE % [

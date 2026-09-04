@@ -580,6 +580,7 @@ func _resolve_wind_shear_spread_effect() -> void:
 	## NOTE: Damage Duplication is still sourced from the original sources
 	var valid_targets = DamageAndDoT.get_wind_shear_special_effect_targets(self, is_player_faction())
 	var damage_types : Array[DamageAndDoT.DamageType] = []
+	var highest_mastery := active_dots[DamageAndDoT.DoT.WIND_SHEAR].get_highest_mastery()
 	
 	for dot_instance_array in active_dots:
 		if not dot_instance_array.has_dot():
@@ -596,10 +597,7 @@ func _resolve_wind_shear_spread_effect() -> void:
 					target, 
 					instance.damage_type, 
 					ceili(
-						DamageAndDoT.get_wind_shear_spread_damage(
-							instance.calculate_damage(), 
-							instance.get_current_mastery()
-						)
+						DamageAndDoT.get_wind_shear_spread_damage(instance.calculate_damage(), highest_mastery)
 					)
 				)
 				
@@ -611,7 +609,8 @@ func _resolve_wind_shear_spread_effect() -> void:
 			self,
 			"Wind Shear Spread",
 			damage_types,
-			valid_targets
+			valid_targets,
+			DamageAndDoT.get_wind_shear_spread_effectiveess(highest_mastery)
 		)
 		CombatLog.register(combat_log_entry)
 	
@@ -644,6 +643,16 @@ func _resolve_wind_shear_blast_effect() -> void:
 		)
 		
 		CombatSystem.register_combat_event(damage_event)
+	
+	if not valid_targets.is_empty():
+		var combat_log_entry := WindShearBlastCombatLogEntry.new(
+			CombatSystem.get_turn_counter(),
+			self,
+			"Wind Shear Blast",
+			valid_targets,
+			DamageAndDoT.get_wind_shear_blast_effectiveness(highest_potency, afflicted_count)
+		)
+		CombatLog.register(combat_log_entry)
 	
 	CombatSystem.process_combat_event_queue()
 

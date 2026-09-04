@@ -3,9 +3,9 @@ extends CombatLogEntry
 
 var burn_instance : BurnInstance
 
-const BASIC_TEMPLATE := "> %s's [color=%s]Burn[/color] is now [color=%s]%.2f%% Effective[/color]"
-const ADVANCED_TEMPLATE := "> %s's [color=%s]Burn[/color] is now [color=%s]%.2f%% Effective[/color] (%d Turn%s elapsed)"
-const DEVELOPER_TEMPLATE := "> %s's [color=%s]Burn[/color] is now [color=%s]%.2f%%[/color], turns_elapsed = [color=%s]%d[/color]"
+const BASIC_TEMPLATE := "> One of %s's [color=%s]Burn[/color] is now [color=%s]%.2f%% Effective[/color]"
+const ADVANCED_TEMPLATE := "> One of %s's [color=%s]Burn[/color] is now [color=%s]%.2f%% Effective[/color] (%d Turn%s elapsed)"
+const DEVELOPER_TEMPLATE := "> One of %s's [color=%s]Burn[/color] is now [color=%s]%.2f%%[/color], turns_elapsed = [color=%s]%d[/color]"
 
 func _init(p_turn_number : int, p_actor : Entity, p_stage : String, p_burn_instance : BurnInstance) -> void:
 	turn_number = p_turn_number
