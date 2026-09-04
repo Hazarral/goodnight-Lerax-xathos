@@ -95,8 +95,9 @@ const CURRENT_ECHO_MASTERY_COEFFICIENT := 0.2
 const WIND_SHEAR_BASE_SPREAD_EFFECTIVENESS := 20.0
 const WIND_SHEAR_SPREAD_MASTERY_COEFFICIENT := 0.1
 const WIND_SHEAR_BASE_BLAST_EFFECTIVENESS := 40.0
-const WIND_SHEAR_BLAST_POTENCY_COEFFICIENT := 0.25
-const WIND_SHEAR_BLAST_ADDITIONAL_TARGET_EFFECTIVENESS := 50.0
+const WIND_SHEAR_BLAST_BASE_ADDITIONAL_TARGET_EFFECTIVENESS := 50.0
+const WIND_SHEAR_BLAST_ADDITIONAL_TARGET_POTENCY_COEFFICIENT := 0.3
+
 
 const SHOCK_BASE_DAMAGE_ON_ACTION_EFFECTIVENESS := 30.0
 const SHOCK_DAMAGE_ON_ACTION_POTENCY_COEFFICIENT := 0.25
@@ -222,7 +223,7 @@ func get_wind_shear_spread_damage(total_damage : float, mastery : int) -> float:
 	return total_damage * get_wind_shear_spread_effectiveess(mastery)
 
 func get_wind_shear_blast_effectiveness(potency : int, afflicted_count : int, use_percent : bool = false) -> float:
-	var value := (WIND_SHEAR_BASE_BLAST_EFFECTIVENESS + WIND_SHEAR_BLAST_POTENCY_COEFFICIENT * potency) + (afflicted_count - 1) * WIND_SHEAR_BLAST_ADDITIONAL_TARGET_EFFECTIVENESS
+	var value := WIND_SHEAR_BASE_BLAST_EFFECTIVENESS + (WIND_SHEAR_BLAST_BASE_ADDITIONAL_TARGET_EFFECTIVENESS + WIND_SHEAR_BLAST_ADDITIONAL_TARGET_POTENCY_COEFFICIENT * potency) * (afflicted_count)
 	if use_percent:
 		return value
 	
