@@ -123,6 +123,9 @@ func render_developer() -> String:
 	] + "\n"
 	
 	for i in range(damage_to_shields.size()):
+		if damage_to_shields[i] <= 0:
+			continue
+		
 		var shield_type := i as DamageAndDoT.DamageType
 		text += BASIC_SHIELD_DAMAGE_TEMPLATE % [
 			DamageAndDoT.get_damage_color_hex(shield_type),

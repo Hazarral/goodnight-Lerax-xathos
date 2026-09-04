@@ -6,20 +6,21 @@ var attrition : PackedInt64Array
 var shield_before_regen : PackedInt64Array
 var shield_after_regen : PackedInt64Array
 
-const BASIC_TEMPLATE := "> %s's [color=%s]%s Shield[/color] regenerated to [color=%s]%d/%d[/color]"
-const ADVANCED_TEMPLATE := "> %s's [color=%s]%s Shield[/color] regenerated from [color=%s]%d/%d[/color] to [color=%s]%d/%d[/color] ([color=%s]%d Attrition[/color])"
-const DEVELOPER_TEMPLATE := "> %s's [color=%s]%s Shield[/color]: [color=%s]%d/%d[/color] -> [color=%s]%d/%d[/color], Attrition = [color=%s]%d[/color], Magnification = [color=%s]%.2f%%[/color]"
+const HEADER_TEMPLATE := "> %s's Shields are regenerating"
+const BASIC_TEMPLATE := "\n[ul]%s's [color=%s]%s Shield[/color] regenerated to [color=%s]%d/%d[/color][/ul]"
+const ADVANCED_TEMPLATE := "\n[ul]%s's [color=%s]%s Shield[/color] regenerated from [color=%s]%d/%d[/color] to [color=%s]%d/%d[/color] ([color=%s]%d Attrition[/color])[/ul]"
+const DEVELOPER_TEMPLATE := "\n[ul]%s's [color=%s]%s Shield[/color]: [color=%s]%d/%d[/color] -> [color=%s]%d/%d[/color], Attrition = [color=%s]%d[/color], Magnification = [color=%s]%.2f%%[/color][/ul]"
 
 ## This is when shield_before_regen[i] == shield_after_regen[i]
-const ADVANCED_SHIELD_INTACT_TEMPLATE := "> %s's [color=%s]%s Shield[/color] stayed intact"
-const DEVELOPER_SHIELD_INTACT_TEMPLATE := "> %s's [color=%s]%s Shield[/color] stayed intact, Max Shield = [color=%s]%d[/color], Attrition = [color=%s]%d[/color]"
+const ADVANCED_SHIELD_INTACT_TEMPLATE := "\n[ul]%s's [color=%s]%s Shield[/color] stayed intact[/ul]"
+const DEVELOPER_SHIELD_INTACT_TEMPLATE := "\n[ul]%s's [color=%s]%s Shield[/color] stayed intact, Max Shield = [color=%s]%d[/color], Attrition = [color=%s]%d[/color][/ul]"
 
 ## This replaces the above 2 templates for attrition = max shield
-const BASIC_FULL_ATTRITION_TEMPLATE := "> %s's [color=%s]%s Shield[/color] failed to regenerate and stayed breached!"
-const ADVANCED_FULL_ATTRITION_TEMPLATE := "> %s's [color=%s]%s Shield[/color] failed to regenerate and stayed breached! ([color=%s]%d Max Shield[/color], [color=%s]%d effective Attrition[/color], [color=%s]%d real Attrition[/color])"
-const DEVELOPER_FULL_ATTRITION_TEMPLATE := "> %s's [color=%s]%s Shield[/color] cannot regenerate, Max Shield = [color=%s]%d[/color], Effective Attrition = [color=%s]%d[/color], Real Attrition = [color=%s]%d[/color], Magnification = [color=%s]%.2f%%[/color]"
+const BASIC_FULL_ATTRITION_TEMPLATE := "\n[ul]%s's [color=%s]%s Shield[/color] failed to regenerate and stayed breached![/ul]"
+const ADVANCED_FULL_ATTRITION_TEMPLATE := "\n[ul]%s's [color=%s]%s Shield[/color] failed to regenerate and stayed breached! ([color=%s]%d Max Shield[/color], [color=%s]%d effective Attrition[/color], [color=%s]%d real Attrition[/color])[/ul]"
+const DEVELOPER_FULL_ATTRITION_TEMPLATE := "\n[ul]%s's [color=%s]%s Shield[/color] cannot regenerate, Max Shield = [color=%s]%d[/color], Effective Attrition = [color=%s]%d[/color], Real Attrition = [color=%s]%d[/color], Magnification = [color=%s]%.2f%%[/color][/ul]"
 
-const DEVELOPER_NO_SHIELD_TEMPLATE := "> %s has no [color=%s]%s Shield[/color]"
+const DEVELOPER_NO_SHIELD_TEMPLATE := "\n[ul]%s has no [color=%s]%s Shield[/color][/ul]"
 
 func _init(
 	p_turn_number : int,
@@ -37,7 +38,7 @@ func _init(
 	shield_after_regen = p_shield_after_regen
 
 func render_basic() -> String:
-	var text := ""
+	var text := HEADER_TEMPLATE % actor.get_entity_name_with_suffix()
 	for i in range(max_shields.size()):
 		if max_shields[i] <= 0:
 			continue
@@ -60,13 +61,11 @@ func render_basic() -> String:
 				actor.get_entity_name_with_suffix(),
 				element_color, damage_type_name
 			]
-		
-		text += "\n"
 	
-	return text.trim_suffix("\n")
+	return text
  
 func render_advanced() -> String:
-	var text := ""
+	var text := HEADER_TEMPLATE % actor.get_entity_name_with_suffix()
 	for i in range(max_shields.size()):
 		if max_shields[i] <= 0:
 			continue
@@ -79,7 +78,7 @@ func render_advanced() -> String:
 			text += ADVANCED_SHIELD_INTACT_TEMPLATE % [
 				actor.get_entity_name_with_suffix(),
 				element_color, damage_type_name
-			] + "\n"
+			]
 			continue
 		
 		if attrition[i] < max_shields[i]:
@@ -98,13 +97,12 @@ func render_advanced() -> String:
 				DamageAndDoT.VOID_COLOR_HEX, mini(max_shields[i], attrition[i]),
 				DamageAndDoT.VOID_COLOR_HEX, attrition[i]
 			]
-		
-		text += "\n"
 	
-	return text.trim_suffix("\n")
+	return text
  
 func render_developer() -> String:
 	var text := _get_developer_stage_prefix()
+	text += HEADER_TEMPLATE % actor.get_entity_name_with_suffix()
 	for i in range(max_shields.size()):
 		var damage_type := i as DamageAndDoT.DamageType
 		var damage_type_name := DamageAndDoT.get_damage_type_name(damage_type)
@@ -115,7 +113,7 @@ func render_developer() -> String:
 			text += DEVELOPER_NO_SHIELD_TEMPLATE % [
 				actor.get_entity_name_with_suffix(),
 				element_color, damage_type_name
-			] + "\n"
+			]
 			continue
 		
 		if shield_before_regen[i] == shield_after_regen[i]:
@@ -124,7 +122,7 @@ func render_developer() -> String:
 				element_color, damage_type_name,
 				element_color, max_shields[i],
 				DamageAndDoT.VOID_COLOR_HEX, attrition[i]
-			] + "\n"
+			]
 			continue
 		
 		if attrition[i] < max_shields[i]:
@@ -145,7 +143,5 @@ func render_developer() -> String:
 				DamageAndDoT.VOID_COLOR_HEX, attrition[i],
 				DamageAndDoT.GENERIC_COLOR_HEX, magnification_percent
 			]
-		
-		text += "\n"
 	
-	return text.trim_suffix("\n")
+	return text

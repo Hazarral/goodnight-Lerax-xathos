@@ -223,18 +223,23 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int, i
 	# 2. Resonance (Direct Match) Case
 	if max_shields[damage_type] > 0:
 		var shield_hp = current_shields[damage_type]
+		
 		if shield_hp > 0:
 			var damage_to_shield = mini(shield_hp, incoming_damage)
+			var was_broken_before := false	# Obviously not broken if > 0
 			current_shields[damage_type] -= damage_to_shield
 			
-			var combat_log_entry := ResonanceDamageToShieldCombatLogEntry.new(
-				CombatSystem.get_turn_counter(),
-				self,
-				"Resonance Element hit",
-				damage_type,
-				damage_to_shield
-			)
-			CombatLog.register(combat_log_entry)
+			if damage_to_shield > 0:
+				var combat_log_entry := ResonanceDamageToShieldCombatLogEntry.new(
+					CombatSystem.get_turn_counter(),
+					self,
+					"Resonance Element hit",
+					damage_type,
+					damage_to_shield
+				)
+				CombatLog.register(combat_log_entry)
+			
+			_resolve_shield_break(damage_type, was_broken_before)
 			
 			var surplus = incoming_damage - damage_to_shield
 			if surplus > 0:
@@ -311,18 +316,17 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 		remaining_damage = 0
 		break
 	
+	var pending_slot := CombatLog.reserve_slot()
+	
 	var damage_to_shield := PackedInt64Array()
 	damage_to_shield.resize(DamageAndDoT.ELEMENT_COUNT)
-	var newly_broken_indices : Array[int] = []
 	var total_shield_damage := 0
 	for idx in range(current_shields.size()):
 		var delta : int = shields_before[idx] - current_shields[idx]
 		damage_to_shield[idx] = delta
-		
 		if delta > 0:
 			total_shield_damage += delta
-		if shields_before[idx] > 0 and current_shields[idx] == 0:
-			newly_broken_indices.append(idx)
+		_resolve_shield_break(idx, shields_before[idx] <= 0)
 	
 	var combat_log_entry := CascadeDamageToShieldCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
@@ -332,14 +336,23 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 		total_shield_damage,
 		damage_to_shield
 	)
-	CombatLog.register(combat_log_entry)
-	# What is left will go to HP, even if it is 0
-	
-	if has_dot(DamageAndDoT.DoT.FROSTBITE) and not newly_broken_indices.is_empty():
-		_trigger_frostbite_on_break(newly_broken_indices)
+	CombatLog.fill_reserved_slot(pending_slot, combat_log_entry)
 	
 	if remaining_damage > 0:
 		reduce_hp(damage_type, remaining_damage)
+
+func _resolve_shield_break(idx : int, was_broken_before : bool) -> void:
+	if not was_broken_before and current_shields[idx] == 0:
+		var shield_break_log_entry := ShieldBreakCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Shield Break",
+		idx as DamageAndDoT.DamageType
+		)
+		CombatLog.register(shield_break_log_entry)
+
+		if has_dot(DamageAndDoT.DoT.FROSTBITE):
+			_trigger_frostbite_on_break(idx)
 
 func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shield : bool = false) -> void:
 	if current_state == State.DEAD:
@@ -656,18 +669,17 @@ func _resolve_wind_shear_blast_effect() -> void:
 	
 	CombatSystem.process_combat_event_queue()
 
-func _trigger_frostbite_on_break(newly_broken_indices : Array[int]) -> void:
-	for idx in newly_broken_indices:
-		var multiplier : float = DamageAndDoT.FROSTBITE_ICE_SHIELD_BREAK_COEFFICIENT if ((idx as DamageAndDoT.DamageType) == DamageAndDoT.DamageType.ICE) else DamageAndDoT.FROSTBITE_NON_ICE_SHIELD_BREAK_COEFFICIENT
-		var damage_event := DamageEvent.new(
-			self,
-			self,
-			DamageAndDoT.DamageType.ICE,
-			ceili(multiplier * max_shields[idx]),
-			true
-		)
-		
-		CombatSystem.inject_combat_event(damage_event)
+func _trigger_frostbite_on_break(idx : int) -> void:
+	var multiplier : float = DamageAndDoT.FROSTBITE_ICE_SHIELD_BREAK_COEFFICIENT if ((idx as DamageAndDoT.DamageType) == DamageAndDoT.DamageType.ICE) else DamageAndDoT.FROSTBITE_NON_ICE_SHIELD_BREAK_COEFFICIENT
+	var damage_event := DamageEvent.new(
+		self,
+		self,
+		DamageAndDoT.DamageType.ICE,
+		ceili(multiplier * max_shields[idx]),
+		true
+	)
+	
+	CombatSystem.inject_combat_event(damage_event)
 
 func _get_bleed_healing_reduction_amount(heal_amount : int) -> int:
 	var highest_mastery := active_dots[DamageAndDoT.DoT.BLEED].get_highest_mastery()
@@ -696,6 +708,14 @@ func _trigger_poison_explosion_on_death() -> void:
 	var highest_mastery := active_dots[DamageAndDoT.DoT.POISON].get_highest_mastery()
 	var explosion_damage := ceili(DamageAndDoT.get_poison_attrition_explosion_damage(get_total_attrition(), highest_mastery))
 	
+	## NOTE: This literally doesn't care if anyone will get hit at all
+	var explosion_log_entry := PoisonExplosionCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Poison Explosion on Death"
+	)
+	CombatLog.register(explosion_log_entry)
+	
 	for entity in valid_targets:
 		var damage_event := DamageEvent.new(
 			self,
@@ -717,6 +737,15 @@ func _trigger_poison_explosion_on_death() -> void:
 			highest_hp_target = entity
 	
 	if highest_hp_target != null:
+		var transfer_log_entry := PoisonTransferCombatLogEntry.new(
+			CombatSystem.get_turn_counter(),
+			self,
+			"Poison Transfer on Death",
+			highest_hp_target,
+			active_dots[DamageAndDoT.DoT.POISON].data.duplicate(true)
+		)
+		CombatLog.register(transfer_log_entry)
+		
 		DamageAndDoT.transfer_poison_damage_over_time(self, highest_hp_target)
 
 func _trigger_shock_damage_on_action(ap_spent : int) -> void:

@@ -79,7 +79,7 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 			CombatSystem.get_turn_counter(),
 			target,
 			"DoT Tick",
-			dot_instance,
+			dot_instance.duplicate(),
 		)
 		CombatLog.register(dot_tick_log_entry)
 		
@@ -101,7 +101,7 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 			CombatSystem.get_turn_counter(),
 			target,
 			"Current: DoT Echo",
-			dot_instance,
+			dot_instance.duplicate(),
 			DamageAndDoT.get_current_echo_effectiveness(get_highest_mastery()),
 			echo_damage
 		)
