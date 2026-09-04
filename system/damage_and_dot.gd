@@ -108,6 +108,7 @@ const POISON_ATTRITION_EXPLOSION_MASTERY_COEFFICIENT := 0.2
 const BLEED_HEALING_REDUCTION_MASTERY_COEFFICIENT := 0.5
 const BLEED_BONUS_FLAT_DAMAGE_POTENCY_COEFFICIENT := 1.5
 const BLEED_BONUS_FLAT_DAMAGE_STACKS_COEFFICIENT := 10.0
+const BLEED_RUPTURE_DAMAGE_CAP_COEFFICIENT := 10.0
 
 const CRUMBLE_BASE_SPLASH := 20.0
 const CRUMBLE_SPLASH_POTENCY_COEFFICIENT := 0.1
@@ -278,8 +279,11 @@ func get_bleed_healing_reduction(mastery : int, use_percent : bool = false) -> f
 func get_bleed_anti_heal_flat_damage_bonus(potency : int, stacks : int) -> float:
 	return BLEED_BONUS_FLAT_DAMAGE_POTENCY_COEFFICIENT * potency + BLEED_BONUS_FLAT_DAMAGE_STACKS_COEFFICIENT * stacks
 
-func get_bleed_anti_heal_damage(total_healing : float, mastery : int, potency : int, stacks : int) -> float:
-	return total_healing * get_bleed_healing_reduction(mastery) + get_bleed_anti_heal_flat_damage_bonus(potency, stacks)
+func get_bleed_anti_heal_damage(total_bleed_damage : float, total_healing : float, mastery : int, potency : int, stacks : int) -> float:
+	return minf(
+		BLEED_RUPTURE_DAMAGE_CAP_COEFFICIENT * total_bleed_damage, 
+		total_healing * get_bleed_healing_reduction(mastery) + get_bleed_anti_heal_flat_damage_bonus(potency, stacks)
+	)
 
 ## CRUMBLE
 func get_crumble_splash_effectiveness(potency : int, use_percent : bool = false) -> float:

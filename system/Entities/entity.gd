@@ -657,8 +657,9 @@ func _trigger_bleed_rupture_damage(heal_amount : int) -> void:
 	var highest_mastery := active_dots[DamageAndDoT.DoT.BLEED].get_highest_mastery()
 	var highest_potency := active_dots[DamageAndDoT.DoT.BLEED].get_highest_potency()
 	var stacks_count := active_dots[DamageAndDoT.DoT.BLEED].get_all_stacks_count()
+	var total_bleed_damage := active_dots[DamageAndDoT.DoT.BLEED].calculate_total_damage()
 	
-	var anti_heal_damage := ceili(DamageAndDoT.get_bleed_anti_heal_damage(heal_amount, highest_mastery, highest_potency, stacks_count))
+	var anti_heal_damage := ceili(DamageAndDoT.get_bleed_anti_heal_damage(total_bleed_damage, heal_amount, highest_mastery, highest_potency, stacks_count))
 	var damage_event := DamageEvent.new(
 		self,
 		self,
