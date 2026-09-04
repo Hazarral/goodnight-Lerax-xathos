@@ -20,7 +20,7 @@ const WIND_SHEAR_BLAST_DETAIL := " (%d Targets Afflicted | %.2f%% Blast)"
 const POISON_EXPLOSION_EFFECTIVENESS_DETAIL := " (%.2f%% Total Attrition | %d Damage on death)"
 const SHOCK_EFFECTIVENESS_DETAIL := " (%.2f%% | %d Convulsion per AP spent)"
 const BLEED_HEALING_REDUCTION_EFFECTIVENESS_DETAIL := " (%.2f%% Healing reduced, "
-const BLEED_ANTI_HEAL_DAMAGE_DETAIL := "%.2f%% Heal Amount + %d Rupture on heal)"
+const BLEED_ANTI_HEAL_DAMAGE_DETAIL := "%.2f%% Heal Amount + %.2f Rupture on heal)"
 const CRUMBLE_SPLASH_EFFECTIVENESS_DETAIL := " (%.2f%% | %d Splash to non-Earth Shields)"
 const FROSTBITE_DETAIL:= " (Shatter 50% (100% if Ice) Max Shield as Damage to Health on Shield Break)"
 
