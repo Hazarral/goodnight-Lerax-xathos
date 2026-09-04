@@ -45,7 +45,7 @@ func fill_reserved_slot(index : int, entry : CombatLogEntry) -> void:
 	_entries[index] = entry
 
 func _prefix(is_first_condition : bool) -> String:
-	return "" if is_first_condition else "\n"
+	return "" if is_first_condition else "\n\n"
 
 func build_logs() -> void:
 	## TODO: Write log logic here, build all 3 logs

@@ -3,8 +3,8 @@ extends CombatLogEntry
 
 var dot_instance : DoTInstance
 
-const BASIC_TEMPLATE := "[ul][color=%s]%s[/color] ticked on %s[/ul]"
-const DEVELOPER_TEMPLATE := "[ul][color=%s]%s[/color] ticked on %s for ([color=%s]%.2f[/color] + [color=%s]%d[/color] + [color=%s]%.2f[/color] + [color=%s]%.2f[/color]) * [color=%s]%d[/color] = [color=%s]%d %s Damage[/color] before mitigation[/ul]"
+const BASIC_TEMPLATE := "[color=%s]> %s[/color] ticked on %s"
+const DEVELOPER_TEMPLATE := "[color=%s]> %s[/color] ticked on %s for ([color=%s]%.2f[/color] + [color=%s]%d[/color] + [color=%s]%.2f[/color] + [color=%s]%.2f[/color]) * [color=%s]%d[/color] = [color=%s]%d %s Damage[/color] before mitigation"
 
 func _init(
 	p_turn_number : int, 

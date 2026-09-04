@@ -13,7 +13,7 @@ func tick_down() -> void:
 	
 	var combat_log_entry := BurnRampCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
-		null,
+		target,
 		"Burn Ramping",
 		self
 	)

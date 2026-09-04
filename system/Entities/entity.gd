@@ -579,6 +579,7 @@ func _resolve_dot_tick_down() -> void:
 func _resolve_wind_shear_spread_effect() -> void:
 	## NOTE: Damage Duplication is still sourced from the original sources
 	var valid_targets = DamageAndDoT.get_wind_shear_special_effect_targets(self, is_player_faction())
+	var damage_types : Array[DamageAndDoT.DamageType] = []
 	
 	for dot_instance_array in active_dots:
 		if not dot_instance_array.has_dot():
@@ -587,6 +588,7 @@ func _resolve_wind_shear_spread_effect() -> void:
 		if dot_instance_array.get_dot_type() == DamageAndDoT.DoT.WIND_SHEAR:
 			continue
 		
+		damage_types.append(dot_instance_array.get_dot_type())
 		for instance in dot_instance_array.data:
 			for target in valid_targets:
 				var damage_event := DamageEvent.new(
@@ -602,6 +604,16 @@ func _resolve_wind_shear_spread_effect() -> void:
 				)
 				
 				CombatSystem.register_combat_event(damage_event)
+	
+	if not damage_types.is_empty():
+		var combat_log_entry := WindShearSpreadCombatLogEntry.new(
+			CombatSystem.get_turn_counter(),
+			self,
+			"Wind Shear Spread",
+			damage_types,
+			valid_targets
+		)
+		CombatLog.register(combat_log_entry)
 	
 	CombatSystem.process_combat_event_queue()
 

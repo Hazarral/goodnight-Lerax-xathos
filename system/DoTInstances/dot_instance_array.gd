@@ -75,7 +75,6 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 			total_amount
 		)
 		
-		CombatSystem.register_combat_event(damage_event)
 		var dot_tick_log_entry := DoTTickCombatLogEntry.new(
 			CombatSystem.get_turn_counter(),
 			target,
@@ -83,6 +82,9 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 			dot_instance,
 		)
 		CombatLog.register(dot_tick_log_entry)
+		
+		CombatSystem.register_combat_event(damage_event)
+		CombatSystem.process_combat_event_queue()	
 		
 		if not has_current or is_current:
 			continue
@@ -106,8 +108,7 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 		CombatLog.register(dot_echo_log_entry)
 		
 		CombatSystem.register_combat_event(echo_damage_event)
-		
-	CombatSystem.process_combat_event_queue()	
+		CombatSystem.process_combat_event_queue()
 
 func calculate_total_damage() -> float:
 	var total_damage : float = 0.0

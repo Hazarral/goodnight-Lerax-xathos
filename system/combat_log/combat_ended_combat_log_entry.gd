@@ -10,4 +10,6 @@ func render_advanced() -> String:
 	return render_basic()
 
 func render_developer() -> String:
-	return render_basic()
+	var text := _get_developer_stage_prefix()
+	text += render_basic()
+	return text
