@@ -7,7 +7,7 @@ var ignore_shield : bool
 
 const BASIC_TEMPLATE := "> %s received [color=%s]%d %s Damage[/color] to Health"
 
-const ADVANCED_IGNORE_SHIELD_EXTRA_TEMPLATE := "directly, ignoring all Shields"
+const ADVANCED_IGNORE_SHIELD_EXTRA_TEMPLATE := " directly, ignoring all Shields"
 
 const DEVELOPER_TEMPLATE := "> %s received [color=%s]%d %s Damage[/color] to Health, ignore_shield = [color=%s]%s[/color]"
 

@@ -234,6 +234,7 @@ func get_wind_shear_blast_damage(total_wind_shear_damage : float, potency : int,
 ## SHOCK
 func get_shock_damage_on_action_effectiveness(potency : int, use_percent : bool = false) -> float:
 	var value := SHOCK_BASE_DAMAGE_ON_ACTION_EFFECTIVENESS + SHOCK_DAMAGE_ON_ACTION_POTENCY_COEFFICIENT * potency
+	print("Shock Convulsion effectiveness = %.2f" % value)
 	if use_percent:
 		return value
 	

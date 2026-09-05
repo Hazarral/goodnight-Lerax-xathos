@@ -524,8 +524,7 @@ func cast_action(index : int) -> void:
 	CombatLog.fill_reserved_slot(pending_slot, combat_log_entry)
 	
 	if has_dot(DamageAndDoT.DoT.SHOCK):
-		print("Triggering shock damage...")
-		_trigger_shock_damage_on_action(cast_result.ap_spent)
+		_trigger_shock_damage_on_action(cast_result)
 
 ##Combat turn stages below
 
@@ -756,10 +755,10 @@ func _trigger_poison_explosion_on_death() -> void:
 		
 		DamageAndDoT.transfer_poison_damage_over_time(self, highest_hp_target)
 
-func _trigger_shock_damage_on_action(ap_spent : int) -> void:
+func _trigger_shock_damage_on_action(cast_result : CastResult) -> void:
 	var total_shock_damage := active_dots[DamageAndDoT.DoT.SHOCK].calculate_total_damage()
 	var highest_potency := active_dots[DamageAndDoT.DoT.SHOCK].get_highest_potency()
-	var shock_damage_on_action := ceili(DamageAndDoT.get_shock_damage_on_action(total_shock_damage, highest_potency, ap_spent))
+	var shock_damage_on_action := ceili(DamageAndDoT.get_shock_damage_on_action(total_shock_damage, highest_potency, cast_result.ap_spent))
 	var damage_event := DamageEvent.new(
 		self,
 		self,
@@ -767,6 +766,15 @@ func _trigger_shock_damage_on_action(ap_spent : int) -> void:
 		shock_damage_on_action,
 		true
 	)
+	
+	var combat_log_entry := ShockConvulsionCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Shock Convulsion",
+		cast_result.ap_spent,
+		DamageAndDoT.get_shock_damage_on_action_effectiveness(highest_potency)
+	)
+	CombatLog.register(combat_log_entry)
 	
 	CombatSystem.inject_combat_event(damage_event)
 
