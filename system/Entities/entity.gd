@@ -173,7 +173,7 @@ func apply_dot(dot_instance : DoTInstance) -> void:
 	var combat_log_entry := DoTAfflictionCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"DoT Affliction",
+		"Affliction: Elemental DoT Affliction",
 		dot_instance
 	)
 	CombatLog.register(combat_log_entry)
@@ -188,7 +188,7 @@ func apply_void(stacks : int) -> void:
 	var combat_log_entry := VoidAfflictionCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"Void Affliction",
+		"Affliction: Void Affliction",
 		stacks
 	)
 	CombatLog.register(combat_log_entry)
@@ -233,7 +233,7 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int, i
 				var combat_log_entry := ResonanceDamageToShieldCombatLogEntry.new(
 					CombatSystem.get_turn_counter(),
 					self,
-					"Resonance Element hit",
+					"Damage: Resonance Element hit",
 					damage_type,
 					damage_to_shield
 				)
@@ -331,7 +331,7 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 	var combat_log_entry := CascadeDamageToShieldCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"Shield Cascade Algorithm (SCA)",
+		"Damage: Shield Cascade Algorithm (SCA)",
 		damage_type,
 		total_shield_damage,
 		damage_to_shield
@@ -346,7 +346,7 @@ func _resolve_shield_break(idx : int, was_broken_before : bool) -> void:
 		var shield_break_log_entry := ShieldBreakCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"Shield Break",
+		"Damage: Shield Break",
 		idx as DamageAndDoT.DamageType
 		)
 		CombatLog.register(shield_break_log_entry)
@@ -363,7 +363,7 @@ func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shiel
 	var damage_to_hp_log := DamageToHPCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"reduce_hp(...)",
+		"Damage: reduce_hp(...)",
 		damage_type,
 		amount,
 		ignore_shield
@@ -388,9 +388,6 @@ func heal(amount : int) -> void:
 	current_hp = mini(get_max_hp(), current_hp + real_amount)
 	var hp_after_heal := current_hp
 	
-	if has_dot(DamageAndDoT.DoT.BLEED):
-		_trigger_bleed_rupture_damage(amount)
-	
 	var combat_log_entry := HealCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
@@ -401,6 +398,9 @@ func heal(amount : int) -> void:
 		hp_after_heal
 	)
 	CombatLog.register(combat_log_entry)
+	
+	if has_dot(DamageAndDoT.DoT.BLEED):
+		_trigger_bleed_rupture_damage(amount)
 
 func die() -> void:
 	if current_state == State.DEAD:
@@ -516,7 +516,7 @@ func cast_action(index : int) -> void:
 	var combat_log_entry := CastActionCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"Cast Success",
+		"F: Cast Success",
 		known_actions[index].get_action_name(),
 		known_actions[index].get_action_point_cost(),
 		known_actions[index].get_cooldown()
@@ -556,10 +556,11 @@ func _regen_shields() -> void:
 
 func _resolve_crumble_splash_effect() -> void:
 	var total_damage := active_dots[DamageAndDoT.DoT.CRUMBLE].calculate_total_damage()
+	var highest_potency := active_dots[DamageAndDoT.DoT.CRUMBLE].get_highest_potency()
 	var non_earth_shield_damage := ceili(
 		DamageAndDoT.get_crumble_splash_damage(
 			total_damage, 
-			active_dots[DamageAndDoT.DoT.CRUMBLE].get_highest_potency()
+			highest_potency
 		)
 	)
 	var multi_damage_event := MultiCombatEvent.new(self)
@@ -572,6 +573,14 @@ func _resolve_crumble_splash_effect() -> void:
 		var real_amount := mini(current_shields[idx], non_earth_shield_damage)
 		var damage_event := DamageEvent.new(self, self, idx as DamageAndDoT.DamageType, real_amount)
 		multi_damage_event.add_event(damage_event)
+	
+	var combat_log_entry := CrumbleSplashCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"B: Crumble Shield Splash (Corrosion)",
+		DamageAndDoT.get_crumble_splash_effectiveness(highest_potency)
+	)
+	CombatLog.register(combat_log_entry)
 	
 	CombatSystem.register_multi_combat_event(multi_damage_event)
 	CombatSystem.process_combat_event_queue()
@@ -619,7 +628,7 @@ func _resolve_wind_shear_spread_effect() -> void:
 		var combat_log_entry := WindShearSpreadCombatLogEntry.new(
 			CombatSystem.get_turn_counter(),
 			self,
-			"Wind Shear Spread",
+			"D: Wind Shear Spread",
 			damage_types,
 			valid_targets,
 			DamageAndDoT.get_wind_shear_spread_effectiveess(highest_mastery)
@@ -639,7 +648,6 @@ func _resolve_wind_shear_blast_effect() -> void:
 	var afflicted_count := valid_targets.size() + 1
 	
 	var entity_names := valid_targets.map(func(entity : Entity) -> String: return entity.template.entity_name)
-	print("Wind Shear Blast Targets: ", entity_names)
 	for target in valid_targets:
 		var damage_event := DamageEvent.new(
 			self,
@@ -660,7 +668,7 @@ func _resolve_wind_shear_blast_effect() -> void:
 		var combat_log_entry := WindShearBlastCombatLogEntry.new(
 			CombatSystem.get_turn_counter(),
 			self,
-			"Wind Shear Blast",
+			"D: Wind Shear Blast",
 			valid_targets,
 			DamageAndDoT.get_wind_shear_blast_effectiveness(highest_potency, afflicted_count)
 		)
@@ -672,7 +680,7 @@ func _trigger_frostbite_on_break(idx : int) -> void:
 	var combat_log_entry := FrostbiteShatterCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"Frostbite Shield Shatter",
+		"Async: Frostbite Shield Shatter",
 		idx as DamageAndDoT.DamageType
 	) 
 	CombatLog.register(combat_log_entry)
@@ -708,6 +716,15 @@ func _trigger_bleed_rupture_damage(heal_amount : int) -> void:
 		true
 	)
 	
+	var combat_log_entry := BleedRuptureCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Async: Bleed Rupture on Heal",
+		DamageAndDoT.get_bleed_healing_reduction(highest_mastery),
+		DamageAndDoT.get_bleed_anti_heal_flat_damage_bonus(highest_potency, stacks_count)
+	)
+	CombatLog.register(combat_log_entry)
+	
 	CombatSystem.inject_combat_event(damage_event)
 
 func _trigger_poison_explosion_on_death() -> void:
@@ -719,7 +736,7 @@ func _trigger_poison_explosion_on_death() -> void:
 	var explosion_log_entry := PoisonExplosionCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"Poison Explosion on Death"
+		"Async: Poison Explosion on Death"
 	)
 	CombatLog.register(explosion_log_entry)
 	
@@ -747,7 +764,7 @@ func _trigger_poison_explosion_on_death() -> void:
 		var transfer_log_entry := PoisonTransferCombatLogEntry.new(
 			CombatSystem.get_turn_counter(),
 			self,
-			"Poison Transfer on Death",
+			"Async: Poison Transfer on Death",
 			highest_hp_target,
 			active_dots[DamageAndDoT.DoT.POISON].data.duplicate(true)
 		)
@@ -770,7 +787,7 @@ func _trigger_shock_damage_on_action(cast_result : CastResult) -> void:
 	var combat_log_entry := ShockConvulsionCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"Shock Convulsion",
+		"F: Shock Convulsion",
 		cast_result.ap_spent,
 		DamageAndDoT.get_shock_damage_on_action_effectiveness(highest_potency)
 	)
@@ -792,7 +809,7 @@ func _resolve_void() -> void:
 	var void_tick_log_entry := VoidTickCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"Void Tick",
+		"E: Void Tick",
 		get_current_void_damage(),
 		void_instance.stacks,
 		void_instance.turns_elapsed,
@@ -811,6 +828,6 @@ func _resolve_void() -> void:
 	var void_escalate_log_entry := VoidEscalateCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"Void Tick"
+		"E: Void Escalation"
 	)
 	CombatLog.register(void_escalate_log_entry)
