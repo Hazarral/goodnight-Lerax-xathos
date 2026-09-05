@@ -304,9 +304,21 @@ enum ExportMode {
 	PARSED,
 }
 
+const BASIC_LOG_EXPORT := "user://basic_combat_log.txt"
+const ADVANCED_LOG_EXPORT := "user://advanced_combat_log.txt"
+const DEVELOPER_LOG_EXPORT := "user://developer_combat_log.txt"
+
 func _export_combat_log(mode: ExportMode) -> void:
-	var file := FileAccess.open("user://combat_log.txt", FileAccess.WRITE)
+	var export_path := ""
+	match current_combat_log_mode:
+		COMBAT_LOG_MODE[0]:
+			export_path = BASIC_LOG_EXPORT
+		COMBAT_LOG_MODE[1]:
+			export_path = ADVANCED_LOG_EXPORT
+		COMBAT_LOG_MODE[2]:
+			export_path = DEVELOPER_LOG_EXPORT
 	
+	var file := FileAccess.open(export_path, FileAccess.WRITE)
 	match mode:
 		ExportMode.RAW:
 			file.store_string(combat_log_label.text)
@@ -314,7 +326,7 @@ func _export_combat_log(mode: ExportMode) -> void:
 			file.store_string(combat_log_label.get_parsed_text())
 	
 	file.close()
-	print("Combat log saved to: ", ProjectSettings.globalize_path("user://combat_log.txt"))
+	print("Combat log saved to: ", ProjectSettings.globalize_path(export_path))
 
 func _on_export_raw_log_pressed() -> void:
 	_export_combat_log(ExportMode.RAW)
