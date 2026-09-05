@@ -27,6 +27,9 @@ func _init(p_source : Entity, p_target : Entity, p_damage_type : DamageAndDoT.Da
 	
 	update_cache()
 
+func duplicate() -> DoTInstance:
+	return DoTInstance.new(source, target, damage_type, base_damage, stacks, duration)
+
 func update_cache() -> void:
 	if is_instance_valid(source) and source.current_state == Entity.State.ALIVE:
 		cached_potency = source.current_potency

@@ -7,8 +7,8 @@ extends ActionEvent
 @export var potency_scaling : float
 @export var mastery_scaling : float
 
-func resolve(source : Entity) -> bool:
-	var targets : Variant = await get_targets()
+func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
+	var targets : Variant = await get_targets(source, inherited_targets)
 	if targets == null:
 		## Already cancelled!
 		print("DamageActionEvent had null targets! Cancelling...")

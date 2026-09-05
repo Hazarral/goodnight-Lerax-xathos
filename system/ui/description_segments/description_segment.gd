@@ -8,4 +8,4 @@ func suppresses_following_space() -> bool:
 	return false
 
 ## There is nothing here
-@abstract func to_text() -> String
+@abstract func to_text(detailed : bool = false) -> String

@@ -12,8 +12,8 @@
 [sub_resource type="Resource" id="Resource_e48hm"]
 script = ExtResource("2_e48hm")
 amount = 50
-potency_scaling = 0.5
-mastery_scaling = 0.5
+potency_scaling = 1.0
+mastery_scaling = 1.0
 target_faction = 2
 metadata/_custom_type_script = "uid://jdkkvelphwtm"
 
@@ -34,8 +34,8 @@ metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 [sub_resource type="Resource" id="Resource_f476e"]
 script = ExtResource("6_skjnw")
 base_healing = 50.0
-potency_scaling = 0.5
-mastery_scaling = 0.5
+potency_scaling = 1.0
+mastery_scaling = 1.0
 metadata/_custom_type_script = "uid://cfps8viah6gb1"
 
 [sub_resource type="Resource" id="Resource_46ch2"]

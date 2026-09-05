@@ -16,8 +16,8 @@
 script = ExtResource("2_1kviu")
 damage_type = 1
 amount = 20
-potency_scaling = 0.2
-mastery_scaling = 0.2
+potency_scaling = 0.4
+mastery_scaling = 0.4
 target_faction = 1
 target_count = 1
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
@@ -30,6 +30,7 @@ stacks = 3
 duration = 6
 target_faction = 1
 target_count = 1
+target_mode = 2
 metadata/_custom_type_script = "uid://dl0omykhmcmxj"
 
 [sub_resource type="Resource" id="Resource_qi1mn"]
@@ -50,8 +51,8 @@ metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 script = ExtResource("7_rpnyj")
 damage_type = 1
 base_damage = 20.0
-potency_scaling = 0.2
-mastery_scaling = 0.2
+potency_scaling = 0.4
+mastery_scaling = 0.4
 metadata/_custom_type_script = "uid://b5tvpmksfnn2p"
 
 [sub_resource type="Resource" id="Resource_gmw8y"]

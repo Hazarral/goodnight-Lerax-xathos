@@ -76,26 +76,27 @@ const FIRE_COLOR_HEX := "#eb571e"
 const WATER_COLOR_HEX := "#44a1e2"
 const WIND_COLOR_HEX := "#6da88f"
 const POISON_COLOR_HEX := "#5ed85d"
-const LIGHTNING_COLOR_HEX := "#5d3bc4"
-const PHYSICAL_COLOR_HEX := "#d6d6d6"
+const LIGHTNING_COLOR_HEX := "#8040ed"
+const PHYSICAL_COLOR_HEX := "#b8b8b8"
 const EARTH_COLOR_HEX := "#876600"
 const ICE_COLOR_HEX := "#bad3fb"
 const VOID_COLOR_HEX := "#ff1d75"
 const GENERIC_COLOR_HEX := "#ffd4cc"
 const HEALING_COLOR_HEX := "#00f0d8"
+const TURN_LABEL_COLOR_HEX := "#ebe134"
 
 ## Special effects
 const MAX_FIRE_MULTIPLIER := 3.0
 const FIRE_MULTIPLIER_STEP := 0.5
 
 const CURRENT_BASE_ECHO_EFFECTIVENESS := 20.0
-const CURRENT_ECHO_MASTERY_COEFFICIENT := 0.2
+const CURRENT_ECHO_MASTERY_COEFFICIENT := 0.25
 
 const WIND_SHEAR_BASE_SPREAD_EFFECTIVENESS := 20.0
 const WIND_SHEAR_SPREAD_MASTERY_COEFFICIENT := 0.1
 const WIND_SHEAR_BASE_BLAST_EFFECTIVENESS := 40.0
-const WIND_SHEAR_BLAST_POTENCY_COEFFICIENT := 0.25
-const WIND_SHEAR_BLAST_ADDITIONAL_TARGET_EFFECTIVENESS := 50.0
+const WIND_SHEAR_BLAST_BASE_ADDITIONAL_TARGET_EFFECTIVENESS := 50.0
+const WIND_SHEAR_BLAST_ADDITIONAL_TARGET_POTENCY_COEFFICIENT := 0.3
 
 const SHOCK_BASE_DAMAGE_ON_ACTION_EFFECTIVENESS := 30.0
 const SHOCK_DAMAGE_ON_ACTION_POTENCY_COEFFICIENT := 0.25
@@ -107,9 +108,10 @@ const POISON_ATTRITION_EXPLOSION_MASTERY_COEFFICIENT := 0.2
 const BLEED_HEALING_REDUCTION_MASTERY_COEFFICIENT := 0.5
 const BLEED_BONUS_FLAT_DAMAGE_POTENCY_COEFFICIENT := 1.5
 const BLEED_BONUS_FLAT_DAMAGE_STACKS_COEFFICIENT := 10.0
+const BLEED_RUPTURE_DAMAGE_CAP_COEFFICIENT := 10.0
 
 const CRUMBLE_BASE_SPLASH := 20.0
-const CRUMBLE_SPLASH_POTENCY_COEFFICIENT := 0.1
+const CRUMBLE_SPLASH_POTENCY_COEFFICIENT := 0.35
 
 const FROSTBITE_NON_ICE_SHIELD_BREAK_COEFFICIENT := 0.5
 const FROSTBITE_ICE_SHIELD_BREAK_COEFFICIENT := 1.0
@@ -165,12 +167,12 @@ func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, ma
 		push_error("Void has special damage! Please use VoidInstance.get_void_damage(...)")
 		return 0.0
 	
-	var coefs := DOT_COEFFICIENTS[dot_type]
+	var coefs : PackedFloat32Array = DOT_COEFFICIENTS.get(dot_type)
 	var potency_coef : float = coefs[Coefficient.DAMAGE_POTENCY]
 	var mastery_coef : float = coefs[Coefficient.DAMAGE_MASTERY]
 	
 	var raw_damage : float = (base_damage + duration + (potency_coef * potency) + (mastery_coef * mastery)) * stacks
-		
+	
 	return raw_damage
 
 ## CALCULATE ATTRITION
@@ -179,7 +181,7 @@ func calculate_dot_attrition(dot_type : DoT, base_damage : float, potency : int,
 		push_error("Void has no Attrition!")
 		return 0.0
 	
-	var coefs := DOT_COEFFICIENTS[dot_type]
+	var coefs : PackedFloat32Array = DOT_COEFFICIENTS.get(dot_type)
 	var potency_coef : float = coefs[Coefficient.ATTRITION_POTENCY]
 	var mastery_coef : float = coefs[Coefficient.ATTRITION_MASTERY]
 	
@@ -220,7 +222,7 @@ func get_wind_shear_spread_damage(total_damage : float, mastery : int) -> float:
 	return total_damage * get_wind_shear_spread_effectiveess(mastery)
 
 func get_wind_shear_blast_effectiveness(potency : int, afflicted_count : int, use_percent : bool = false) -> float:
-	var value := (WIND_SHEAR_BASE_BLAST_EFFECTIVENESS + WIND_SHEAR_BLAST_POTENCY_COEFFICIENT * potency) + (afflicted_count - 1) * WIND_SHEAR_BLAST_ADDITIONAL_TARGET_EFFECTIVENESS
+	var value := WIND_SHEAR_BASE_BLAST_EFFECTIVENESS + (WIND_SHEAR_BLAST_BASE_ADDITIONAL_TARGET_EFFECTIVENESS + WIND_SHEAR_BLAST_ADDITIONAL_TARGET_POTENCY_COEFFICIENT * potency) * (afflicted_count)
 	if use_percent:
 		return value
 	
@@ -232,6 +234,7 @@ func get_wind_shear_blast_damage(total_wind_shear_damage : float, potency : int,
 ## SHOCK
 func get_shock_damage_on_action_effectiveness(potency : int, use_percent : bool = false) -> float:
 	var value := SHOCK_BASE_DAMAGE_ON_ACTION_EFFECTIVENESS + SHOCK_DAMAGE_ON_ACTION_POTENCY_COEFFICIENT * potency
+	print("Shock Convulsion effectiveness = %.2f" % value)
 	if use_percent:
 		return value
 	
@@ -277,8 +280,11 @@ func get_bleed_healing_reduction(mastery : int, use_percent : bool = false) -> f
 func get_bleed_anti_heal_flat_damage_bonus(potency : int, stacks : int) -> float:
 	return BLEED_BONUS_FLAT_DAMAGE_POTENCY_COEFFICIENT * potency + BLEED_BONUS_FLAT_DAMAGE_STACKS_COEFFICIENT * stacks
 
-func get_bleed_anti_heal_damage(total_healing : float, mastery : int, potency : int, stacks : int) -> float:
-	return total_healing * get_bleed_healing_reduction(mastery) + get_bleed_anti_heal_flat_damage_bonus(potency, stacks)
+func get_bleed_anti_heal_damage(total_bleed_damage : float, total_healing : float, mastery : int, potency : int, stacks : int) -> float:
+	return minf(
+		BLEED_RUPTURE_DAMAGE_CAP_COEFFICIENT * total_bleed_damage, 
+		total_healing * get_bleed_healing_reduction(mastery) + get_bleed_anti_heal_flat_damage_bonus(potency, stacks)
+	)
 
 ## CRUMBLE
 func get_crumble_splash_effectiveness(potency : int, use_percent : bool = false) -> float:
@@ -293,13 +299,13 @@ func get_crumble_splash_damage(total_damage : float, potency : int) -> float:
 
 ## VOID
 ## Player scaling
-const MAX_HP_SCALING := 0.05
-const TOTAL_MAX_SHIELD_SCALING := 0.05
+const MAX_HP_SCALING := 0.01
+const TOTAL_MAX_SHIELD_SCALING := 0.01
 const POTENCY_COEFFICIENT_SCALING := 0.5
 const POTENCY_EXPONENT_SCALING := 1.2
 const MASTERY_COEFFICIENT_SCALING := 0.5
 const MASTERY_EXPONENT_SCALING := 1.2
-const TOTAL_ATTRITION_EXPONENT_SCALING := 0.7
+const TOTAL_ATTRITION_EXPONENT_SCALING := 0.5
 const ESCALATION_MULTIPLIER_BASE := 1.20
 
 ## Enemy scaling

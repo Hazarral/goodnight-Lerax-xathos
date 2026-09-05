@@ -1,12 +1,12 @@
 extends Node
 
-var draechen_player : Player
-const DRAECHEN_TEMPLATE := preload("res://Entities/templates/player_the_draechen.tres")
+var draechen_player : Draechen
+const DRAECHEN_TEMPLATE := preload("res://system/Entities/templates/player_side/player_the_draechen.tres")
 
-var player_on_field : Array[Entity]
+var ally_on_field : Array[Entity]
 var enemy_on_field: Array[Entity]
 var enemy_reinforcement : Array[Entity]
-var combat_event_queue : Array[CombatEvent]
+var _combat_event_queue : Array[CombatEvent]
 
 var turn_order : Array[Entity]
 var current_turn_index := 0
@@ -18,23 +18,54 @@ var is_processing_combat_event_queue : bool = false
 
 const MAX_ALIVE_ENEMY_ON_FIELD := 5
 
+var _entity_name_counter : Dictionary[String, int] = {}
+const _ROMAN_VALUES : Array[int] = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+const _ROMAN_SYMBOLS : Array[String] = ["M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"]
+
 func reset() -> void:
-	player_on_field.clear()
+	ally_on_field.clear()
 	enemy_on_field.clear()
 	enemy_reinforcement.clear()
-	combat_event_queue.clear()
+	_combat_event_queue.clear()
 	
 	turn_order.clear()
 	current_turn_index = 0
 	turn_counter = 0
 	
+	_entity_name_counter.clear()
+	
 	is_processing_combat_event_queue = false
+
+func _register_or_increment_entity_name(entity_name : String) -> void:
+	if _entity_name_counter.has(entity_name):
+		_entity_name_counter[entity_name] += 1
+	else:
+		_entity_name_counter[entity_name] = 1
+
+func _to_roman_numeral(number : int) -> String:
+	if number <= 0:
+		push_error("Cannot convert non-positive number %d to roman numeral!" % number)
+		return str(number)
+	
+	var result := ""
+	var remaining := number
+	
+	for i in _ROMAN_VALUES.size():
+		while remaining >= _ROMAN_VALUES[i]:
+			remaining -= _ROMAN_VALUES[i]
+			result += _ROMAN_SYMBOLS[i]
+	
+	return result
+
+func get_entity_name_suffix(entity : Entity) -> String:
+	if entity.display_suffix == -1:
+		return ""
+	
+	return " (%s)" % _to_roman_numeral(entity.display_suffix)
 
 func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side_templates : Array[EntityTemplate]) -> void:
 	## 1. Ensure clean data before anything
 	reset()
-	print("player_side_templates size: ", player_side_templates.size())
-	print("enemy_side_templates size: ", enemy_side_templates.size())
 	
 	## 2. Create the entities in memory. We will ignore magnification for now
 	## NOTE: Implement magnification later
@@ -42,8 +73,8 @@ func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side
 	var enemy_side : Array[Entity] = []
 	
 	for template in player_side_templates:
-		if template == DRAECHEN_TEMPLATE:
-			draechen_player = Player.new(template)
+		if template == DRAECHEN_TEMPLATE and template is DraechenTemplate:
+			draechen_player = Draechen.new(template)
 			player_side.append(draechen_player)
 		else:
 			player_side.append(Entity.new(template))
@@ -56,9 +87,7 @@ func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side
 	
 	## 4. Turn order is finalized
 	build_turn_order()
-	print("draechen_player after init: ", draechen_player)
 	EventBus.combat_initialization_finished.emit()
-	print("Combat init finished!")
 
 func initialize_encounter(player_party : Array[Entity], enemy_side_templates : Array[EntityTemplate]) -> void:
 	## NOTE: Use this for the actual game, because player party is persistent
@@ -78,7 +107,7 @@ func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]
 	
 	for entity in player_side:
 		# NOTE: For now, player can have as many entities on the field as they want
-		draechen_player = player_side.front() as Player
+		draechen_player = player_side.front() as Draechen
 		add_player_faction(entity)
 	
 	for entity in enemy_side:
@@ -88,7 +117,7 @@ func initialize_factions(player_side : Array[Entity], enemy_side : Array[Entity]
 			add_enemy_reinforcement(entity)
 
 func build_turn_order() -> void:
-	turn_order.append_array(player_on_field)
+	turn_order.append_array(ally_on_field)
 	turn_order.append_array(enemy_on_field)
 
 func add_player_faction(entity : Entity) -> void:
@@ -96,7 +125,7 @@ func add_player_faction(entity : Entity) -> void:
 		push_error("Entity %s is not player faction! Check the template list passed into initialize_combat() — this entity's template has is_player_faction=false but was routed to player_side." % entity.template.entity_name)
 		return	
 	
-	player_on_field.append(entity)
+	ally_on_field.append(entity)
 
 func add_enemy_faction(entity : Entity) -> void:
 	if entity.is_player_faction():
@@ -104,6 +133,8 @@ func add_enemy_faction(entity : Entity) -> void:
 		return	
 	
 	enemy_on_field.append(entity)
+	_register_or_increment_entity_name(entity.template.entity_name)
+	entity.display_suffix = _entity_name_counter[entity.template.entity_name]
 
 func add_enemy_reinforcement(entity : Entity) -> void:
 	if entity.is_player_faction():
@@ -117,6 +148,8 @@ func add_reinforcement_to_field() -> void:
 		var entity : Entity = enemy_reinforcement.pop_front()
 		enemy_on_field.append(entity)
 		turn_order.append(entity)
+		_register_or_increment_entity_name(entity.template.entity_name)
+		entity.display_suffix = _entity_name_counter[entity.template.entity_name]
 
 func backfill_reinforcements() -> void:
 	while get_alive_targets(enemy_on_field).size() < MAX_ALIVE_ENEMY_ON_FIELD and not enemy_reinforcement.is_empty():
@@ -128,6 +161,12 @@ func get_next_actor() -> Entity:
 	turn_counter += 1
 	if current_turn_index == 0:
 		round_counter += 1
+		var combat_log_entry := RoundCombatLogEntry.new(
+			get_turn_counter(),
+			null,
+			"Round Start"
+		)
+		CombatLog.register(combat_log_entry)
 	
 	current_turn_index = (current_turn_index + 1) % turn_order.size()
 	
@@ -135,6 +174,9 @@ func get_next_actor() -> Entity:
 
 func get_turn_counter() -> int:
 	return turn_counter
+
+func get_round_counter() -> int:
+	return round_counter
 
 func advance_turn() -> void:
 	## NOTE: This is the official way to advance turn and get next entity in the turn order
@@ -153,7 +195,7 @@ func on_turn_finished() -> void:
 	## NOTE: This is meant to be called by entities to report having finished their turn
 	advance_turn()
 
-func get_the_draechen() -> Player:
+func get_the_draechen() -> Draechen:
 	return draechen_player
 
 func get_current_actor() -> Entity:
@@ -163,6 +205,9 @@ func is_current_actor(entity : Entity) -> bool:
 	return entity == current_actor
 
 func end_current_actor_turn() -> void:
+	if is_combat_over():
+		return
+	
 	current_actor.end_turn()
 	EventBus.force_refresh_turn_ui.emit()
 
@@ -175,17 +220,26 @@ func is_combat_over() -> bool:
 	return false
 
 func end_combat() -> void:
-	print("COMBAT ENDED!")
+	var combat_log_entry := CombatEndedCombatLogEntry.new(
+		turn_counter,
+		null,
+		"Combat Ended"
+	)
+	CombatLog.register(combat_log_entry)
+	
 	reset()
 
 func register_combat_event(combat_event : CombatEvent) -> void:
-	combat_event_queue.append(combat_event)
+	_combat_event_queue.append(combat_event)
 
 func register_multi_combat_event(multi_combat_event : MultiCombatEvent) -> void:
-	combat_event_queue.append_array(multi_combat_event.data)
+	_combat_event_queue.append_array(multi_combat_event.data)
 
 func inject_combat_event(damage_event : CombatEvent) -> void:
-	combat_event_queue.push_front(damage_event)
+	_combat_event_queue.push_front(damage_event)
+	
+	## Always force call, protected by lock so this is safe
+	process_combat_event_queue()
 
 func process_combat_event_queue() -> void:
 	if is_processing_combat_event_queue:
@@ -193,8 +247,8 @@ func process_combat_event_queue() -> void:
 	
 	is_processing_combat_event_queue = true
 	
-	while not combat_event_queue.is_empty():
-		var current_event : CombatEvent = combat_event_queue.pop_front()
+	while not _combat_event_queue.is_empty():
+		var current_event : CombatEvent = _combat_event_queue.pop_front()
 		
 		# NOTE: This may inject during resolve() but that is none of this script's business\
 		# current_event also gets ref = 0 when going out of scope
@@ -204,7 +258,7 @@ func process_combat_event_queue() -> void:
 	EventBus.combat_event_queue_processing_finished.emit()
 
 func get_on_field(is_player_faction : bool) -> Array[Entity]:
-	return player_on_field if is_player_faction else enemy_on_field
+	return ally_on_field if is_player_faction else enemy_on_field
 
 func get_alive_targets(faction : Array[Entity]) -> Array[Entity]:
 	return (faction.filter(func(entity): return entity.current_state == Entity.State.ALIVE))
@@ -219,11 +273,11 @@ func get_valid_targets(faction_filter : ActionEvent.TargetFaction, state_filter 
 	var targets : Array[Entity] = []
 	match faction_filter:
 		ActionEvent.TargetFaction.PLAYER:
-			targets.append_array(player_on_field)
+			targets.append_array(ally_on_field)
 		ActionEvent.TargetFaction.ENEMY:
 			targets.append_array(enemy_on_field)
 		ActionEvent.TargetFaction.ALL:
-			targets.append_array(player_on_field)
+			targets.append_array(ally_on_field)
 			targets.append_array(enemy_on_field)
 	
 	match state_filter:

@@ -5,7 +5,7 @@ extends DescriptionSegment
 
 const TEMPlATE := "[color=%s]%d Stack%s[/color] of"
 
-func to_text() -> String:
+func to_text(_detailed : bool = false) -> String:
 	return TEMPlATE % [
 		DamageAndDoT.GENERIC_COLOR_HEX,
 		value,

@@ -31,10 +31,10 @@ enum ShieldState {
 }
 
 const SHIELD_STATE_NAME : Dictionary[ShieldState, String] = {
-	ShieldState.NO_SHIELD : "No Shield",
-	ShieldState.FULLY_SHIELDED : "Fully Shielded",
-	ShieldState.BREACHED : "Shield Breached",
-	ShieldState.ALL_BREACHED : "All Shield Breached"
+	ShieldState.NO_SHIELD : "[No Shield]",
+	ShieldState.FULLY_SHIELDED : "[Fully Shielded]",
+	ShieldState.BREACHED : "[Shield Breached]",
+	ShieldState.ALL_BREACHED : "[All Shield Breached]"
 }
 
 const STATE_TEXT := "[%s]"
@@ -103,7 +103,7 @@ func render() -> void:
 		push_error("No entity found for render! Please call setup(entity) first")
 		return
 	
-	name_label.text = entity.template.entity_name
+	name_label.text = entity.get_entity_name_with_suffix()
 	state_label.text = STATE_TEXT % _get_entity_state_name() 
 	shield_status_label.text = SHIELD_STATE_TEXT % SHIELD_STATE_NAME.get(get_shield_state())
 	

@@ -75,12 +75,21 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 			total_amount
 		)
 		
+		var dot_tick_log_entry := DoTTickCombatLogEntry.new(
+			CombatSystem.get_turn_counter(),
+			target,
+			"C: Natural DoT Tick",
+			dot_instance.duplicate(),
+		)
+		CombatLog.register(dot_tick_log_entry)
+		
 		CombatSystem.register_combat_event(damage_event)
+		CombatSystem.process_combat_event_queue()	
 		
 		if not has_current or is_current:
 			continue
 		
-		var echo_damage := ceili(DamageAndDoT.get_current_echo_damage(total_amount, dot_instance.get_current_mastery()))
+		var echo_damage := ceili(DamageAndDoT.get_current_echo_damage(total_amount, get_highest_mastery()))
 		var echo_damage_event := DamageEvent.new(
 			dot_instance.source,
 			target,
@@ -88,9 +97,18 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 			echo_damage
 		)
 		
-		CombatSystem.register_combat_event(echo_damage_event)
+		var dot_echo_log_entry := EchoDoTTickCombatLogEntry.new(
+			CombatSystem.get_turn_counter(),
+			target,
+			"C: Current DoT Echo",
+			dot_instance.duplicate(),
+			DamageAndDoT.get_current_echo_effectiveness(get_highest_mastery()),
+			echo_damage
+		)
+		CombatLog.register(dot_echo_log_entry)
 		
-	CombatSystem.process_combat_event_queue()	
+		CombatSystem.register_combat_event(echo_damage_event)
+		CombatSystem.process_combat_event_queue()
 
 func calculate_total_damage() -> float:
 	var total_damage : float = 0.0

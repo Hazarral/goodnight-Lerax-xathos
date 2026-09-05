@@ -6,13 +6,22 @@ var source : Entity
 var cooldown_remaining  : int = 0
 
 func _init(p_action : Action, p_source : Entity) -> void:
-	action = p_action
+	action = p_action.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
 	source = p_source
 	
 	## NOTE: THis is for the tooltip!
 	for seg in action.description_segments:
 		if seg is DamageSegment or seg is HealSegment:
 			seg.set_source(source)
+
+func get_action_name() -> String:
+	return action.action_name
+
+func get_action_point_cost() -> int:
+	return action.action_point_cost
+
+func get_cooldown() -> int:
+	return action.cooldown
 
 func _is_ready() -> bool:
 	return cooldown_remaining <= 0
@@ -31,14 +40,11 @@ func cast() -> CastResult:
 	source.current_action_point -= action.action_point_cost
 	
 	var success := await action.cast(source)
-	print("Success status: ", success)
 	
 	if not success:
 		source.current_action_point += action.action_point_cost
-		print("Refunded AP cost for %s" % action.action_name)
 		return CastResult.new(false, 0)
 	
 	cooldown_remaining = action.cooldown
-	print("Casted %s succesfully!" % action.action_name)
 	
-	return CastResult.new(false, action.action_point_cost)
+	return CastResult.new(true, action.action_point_cost)

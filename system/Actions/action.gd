@@ -1,6 +1,9 @@
 class_name Action
 extends Resource
 
+## What world this came from
+@export var origin : World.Origin
+
 ## Name of this action, e.g. "Fire Breath"
 @export var action_name : String
 
@@ -17,16 +20,12 @@ extends Resource
 @export var action_events : Array[ActionEvent]
 
 func cast(source : Entity) -> bool:	
-	var counter : int = 0
-	
+	var last_targets : Array[Entity] = []
 	for action_event in action_events:
-		var dynamic_event: Variant = action_event
-		var success : bool = await dynamic_event.resolve(source)
-		print("ActionEvent index %d success status: %s" % [counter, success])
+		var dynamic_event : Variant = action_event
+		var success : bool = await dynamic_event.resolve(source, last_targets)
 		if not success:
 			return false
-		
-		print("%s: ActionEvent index %d succeeded" % [action_name, counter])
-		counter += 1
+		last_targets = action_event.get_last_resolved_targets()
 	
 	return true

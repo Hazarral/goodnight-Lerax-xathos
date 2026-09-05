@@ -6,12 +6,12 @@ extends ActionEvent
 @export var stacks : int
 @export var duration : int
 
-func resolve(source : Entity) -> bool:
+func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 	if damage_type == DamageAndDoT.DamageType.VOID:
 		push_error("ApplyDoTActionEvent cannot apply Void. Please use ApplyVoidActionEvent")
 		return false
 	
-	var targets : Variant = await get_targets()
+	var targets : Variant = await get_targets(source, inherited_targets)
 	if targets == null:
 		## Already cancelled!
 		return false
