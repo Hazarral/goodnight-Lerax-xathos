@@ -16,11 +16,12 @@ var _developer_log : String = ""
 var _null_count := 0			## Umbrella for all null
 var _active_reservations:= 0	## For explicit registration/cancellation
 const NULL_THRESHOLD := 0.5
+const MAXIMUM_NULL_ENTRIES := 100
 
 func register(entry : CombatLogEntry) -> void:
 	_entries.append(entry)
 	
-	if _null_count >= ceili(_entries.size() * NULL_THRESHOLD) and _active_reservations == 0:
+	if _null_count >= mini(ceili(_entries.size() * NULL_THRESHOLD), MAXIMUM_NULL_ENTRIES) and _active_reservations == 0:
 		_clear_null_entries()
 
 func set_mode(display_mode : DisplayMode) -> void:
