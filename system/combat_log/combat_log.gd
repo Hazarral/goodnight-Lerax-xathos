@@ -67,38 +67,37 @@ func _clear_null_entries() -> void:
 	_entries.resize(write_ptr)
 	_null_count = 0
 
-func _prefix(is_first_condition : bool) -> String:
-	return "" if is_first_condition else "\n\n"
-
 func build_logs() -> void:
 	## TODO: Write log logic here, build all 3 logs
 	_clear_logs()
-	var basic_is_first := true
-	var advanced_is_first := true
-	var developer_is_first := true
+	
+	var basic_arr := PackedStringArray()
+	var advanced_arr := PackedStringArray()
+	var developer_arr := PackedStringArray()
 	
 	var developer_entry_counter := 1
 	
 	for entry in _entries:
 		if entry == null:
-			## NOTE: This is either a reserved slot or a cancelled slot
 			continue
 		
 		var basic_string := entry.render_basic()
 		if not basic_string.is_empty():
-			_basic_log += _prefix(basic_is_first) + basic_string
-			basic_is_first = false
+			basic_arr.append(basic_string)
 		
 		var advanced_string := entry.render_advanced()
 		if not advanced_string.is_empty():
-			_advanced_log += _prefix(advanced_is_first) + advanced_string
-			advanced_is_first = false
+			advanced_arr.append(advanced_string)
 		
 		var developer_string := entry.render_developer()
 		if not developer_string.is_empty():
-			_developer_log += _prefix(developer_is_first) + ("[Entry %d] " % developer_entry_counter) + developer_string
+			developer_arr.append(("[Entry %d] " % developer_entry_counter) + developer_string)
 			developer_entry_counter += 1
-			developer_is_first = false
+	
+	# Join them all in a single efficient C++ operation under the hood
+	_basic_log = "\n\n".join(basic_arr)
+	_advanced_log = "\n\n".join(advanced_arr)
+	_developer_log = "\n\n".join(developer_arr)
 
 func get_log(mode : DisplayMode) -> String:
 	match mode:
