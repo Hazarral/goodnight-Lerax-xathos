@@ -359,6 +359,7 @@ size_flags_vertical = 3
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
+focus_mode = 2
 theme_override_colors/default_color = Color(0.9098039, 0.8862745, 0.83137256, 1)
 theme_override_font_sizes/normal_font_size = 15
 bbcode_enabled = true
@@ -367,6 +368,7 @@ Draechen casts [b]Fire Breath[/b] on Enemy 1.
 Fire Shield absorbs [color=#d97757]64[/color] dmg.
 Enemy 1's [b]Void[/b] escalates — [color=#ff006a]41 dmg[/color] direct to HP."
 scroll_following = true
+selection_enabled = true
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Frame/Root/HBoxContainer/LogPanel/LogCol" unique_id=1065037713]
 layout_mode = 2
