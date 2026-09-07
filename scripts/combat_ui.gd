@@ -231,10 +231,6 @@ func _populate_action_list(entity : Entity) -> void:
 		_add_action_button(entity, i)
 
 func _add_action_button(entity : Entity, index : int) -> void:
-	var known_action : KnownAction = entity.known_actions[index]
-	var action : Action = known_action.action
-	
-	## NOTE: Styling below is subject to change, and should use some ActionButton in the future
 	var btn := ACTION_BUTTON.instantiate()
 	action_list.add_child(btn)
 	btn.setup(entity, index)

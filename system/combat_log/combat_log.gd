@@ -13,8 +13,15 @@ var _basic_log : String = ""
 var _advanced_log : String = ""
 var _developer_log : String = ""
 
+var _null_count := 0			## Umbrella for all null
+var _active_reservations:= 0	## For explicit registration/cancellation
+const NULL_THRESHOLD := 0.5
+
 func register(entry : CombatLogEntry) -> void:
 	_entries.append(entry)
+	
+	if _null_count >= ceili(_entries.size() * NULL_THRESHOLD) and _active_reservations == 0:
+		_clear_null_entries()
 
 func set_mode(display_mode : DisplayMode) -> void:
 	_mode = display_mode
@@ -26,6 +33,8 @@ func _clear_logs() -> void:
 
 func reserve_slot() -> int:
 	_entries.append(null)
+	_null_count += 1
+	_active_reservations += 1
 	return _entries.size() - 1
 
 func cancel_reserved_slot(index : int) -> void:
@@ -33,6 +42,7 @@ func cancel_reserved_slot(index : int) -> void:
 		push_error("Cannot cancel reserved slot %d: out of bounds!" % index)
 		return
 	_entries[index] = null  # NOTE: leave as null tombstone, do not remove_at() — would shift later indices
+	_active_reservations -= 1
 
 func fill_reserved_slot(index : int, entry : CombatLogEntry) -> void:
 	if index < 0 or index >= _entries.size():
@@ -43,6 +53,18 @@ func fill_reserved_slot(index : int, entry : CombatLogEntry) -> void:
 		push_error("Slot %d is already filled! Overwriting %s with %s" % [index, _entries[index], entry])
 	
 	_entries[index] = entry
+	_null_count -= 1
+	_active_reservations -= 1
+
+func _clear_null_entries() -> void:
+	var write_ptr := 0
+	for i in range(_entries.size()):
+		if _entries[i] != null:
+			_entries[write_ptr] = _entries[i]
+			write_ptr += 1
+	
+	_entries.resize(write_ptr)
+	_null_count = 0
 
 func _prefix(is_first_condition : bool) -> String:
 	return "" if is_first_condition else "\n\n"

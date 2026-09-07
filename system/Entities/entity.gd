@@ -647,7 +647,6 @@ func _resolve_wind_shear_blast_effect() -> void:
 	## +1 due to "self" being filtered
 	var afflicted_count := valid_targets.size() + 1
 	
-	var entity_names := valid_targets.map(func(entity : Entity) -> String: return entity.template.entity_name)
 	for target in valid_targets:
 		var damage_event := DamageEvent.new(
 			self,

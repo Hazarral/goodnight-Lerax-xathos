@@ -41,8 +41,8 @@ func setup_shields() -> void:
 	max_shields.resize(DamageAndDoT.ELEMENT_COUNT)
 	current_shields.resize(DamageAndDoT.ELEMENT_COUNT)
 	
-	var base_points := shield_points / DamageAndDoT.ELEMENT_COUNT
-	var remainder := shield_points % DamageAndDoT.ELEMENT_COUNT
+	var base_points : int = shield_points / DamageAndDoT.ELEMENT_COUNT
+	var remainder : int = shield_points % DamageAndDoT.ELEMENT_COUNT
 	
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		var points_for_element := base_points + (1 if i < remainder else 0)
