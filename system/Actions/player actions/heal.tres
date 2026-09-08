@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://cynf8sly8hj1p"]
 
-[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_apa6y"]
-[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="2_apa6y"]
-[ext_resource type="Script" uid="uid://jdkkvelphwtm" path="res://system/Actions/heal_action_event.gd" id="2_e48hm"]
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_apa6y"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="2_apa6y"]
+[ext_resource type="Script" uid="uid://jdkkvelphwtm" path="res://system/actions/heal_action_event.gd" id="2_e48hm"]
 [ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="3_ugxad"]
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="4_lhef7"]
 [ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="5_hsaua"]

@@ -1,9 +1,9 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://blh8ubckghxsn"]
 
-[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_hjqj4"]
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_hjqj4"]
 [ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="2_68u7n"]
-[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/Actions/damage_action_event.gd" id="2_i8i6e"]
-[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="3_cgnf8"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_i8i6e"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="3_cgnf8"]
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="4_vilvg"]
 [ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="5_eh1n1"]
 [ext_resource type="Script" uid="uid://b5tvpmksfnn2p" path="res://system/ui/description_segments/damage_segment.gd" id="6_6cqme"]

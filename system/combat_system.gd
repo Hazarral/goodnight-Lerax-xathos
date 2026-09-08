@@ -1,7 +1,7 @@
 extends Node
 
 var draechen_player : Draechen
-const DRAECHEN_TEMPLATE := preload("res://system/Entities/templates/player_side/player_the_draechen.tres")
+const DRAECHEN_TEMPLATE := preload("res://system/entities/templates/player_side/player_the_draechen.tres")
 
 var ally_on_field : Array[Entity]
 var enemy_on_field: Array[Entity]

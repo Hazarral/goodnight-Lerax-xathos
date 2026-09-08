@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://g0gfyafsh524"]
 
-[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/Actions/action_event.gd" id="1_annsb"]
-[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/Actions/damage_action_event.gd" id="2_qr8yx"]
-[ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/Actions/apply_dot_action_event.gd" id="3_upj74"]
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_annsb"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_qr8yx"]
+[ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/actions/apply_dot_action_event.gd" id="3_upj74"]
 [ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="4_ea6cg"]
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="5_fu0l8"]
 [ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="6_v67w8"]
@@ -10,7 +10,7 @@
 [ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="8_qvh58"]
 [ext_resource type="Script" uid="uid://c2vel0thkoyid" path="res://system/ui/description_segments/comma_segment.gd" id="9_0m4g2"]
 [ext_resource type="Script" uid="uid://boalnkb0mp4cw" path="res://system/ui/description_segments/dot_segment.gd" id="10_oeuru"]
-[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="11_75vsp"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="11_75vsp"]
 
 [sub_resource type="Resource" id="Resource_577f5"]
 script = ExtResource("2_qr8yx")

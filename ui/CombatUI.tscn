@@ -2,11 +2,11 @@
 
 [ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_theme"]
 [ext_resource type="Script" uid="uid://drekl6s4imnxo" path="res://scripts/combat_ui.gd" id="2_script"]
-[ext_resource type="Resource" uid="uid://rnqvtjaoiwov" path="res://system/Entities/templates/player_side/player_the_draechen.tres" id="4_0ncfs"]
-[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/Actions/action.gd" id="5_0ncfs"]
-[ext_resource type="Resource" uid="uid://bryq065munqlv" path="res://system/Actions/player actions/invoke_flame.tres" id="6_gftf7"]
-[ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://system/Entities/entity_template.gd" id="6_rqx7n"]
-[ext_resource type="Resource" uid="uid://bvla4v52rv7w4" path="res://system/Entities/templates/enemy_side/fire_world_World_With_No_Name/basic/lust_drunk_wolf.tres" id="7_nsbht"]
+[ext_resource type="Resource" uid="uid://rnqvtjaoiwov" path="res://system/entities/templates/player_side/player_the_draechen.tres" id="4_0ncfs"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="5_0ncfs"]
+[ext_resource type="Resource" uid="uid://bryq065munqlv" path="res://system/actions/player actions/invoke_flame.tres" id="6_gftf7"]
+[ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://system/entities/entity_template.gd" id="6_rqx7n"]
+[ext_resource type="Resource" uid="uid://bvla4v52rv7w4" path="res://system/entities/templates/enemy_side/fire_world_World_With_No_Name/basic/lust_drunk_wolf.tres" id="7_nsbht"]
 [ext_resource type="PackedScene" uid="uid://bi7f7265qr116" path="res://ui/action_button.tscn" id="8_v1jbt"]
 [ext_resource type="PackedScene" uid="uid://bm0xfhl4g6ngo" path="res://ui/void_bar.tscn" id="9_bnnle"]
 
