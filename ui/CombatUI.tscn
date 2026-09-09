@@ -219,6 +219,9 @@ layout_mode = 2
 [node name="ElementalDoTList" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=930276820]
 layout_mode = 2
 
+[node name="StatusEffectList" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1663441655]
+layout_mode = 2
+
 [node name="ActionBar" type="PanelContainer" parent="Frame/Root/HBoxContainer/VBoxContainer" unique_id=962627189]
 custom_minimum_size = Vector2(0, 200)
 layout_mode = 2

@@ -5,6 +5,7 @@
 [ext_resource type="Resource" uid="uid://blh8ubckghxsn" path="res://system/actions/enemy actions/basic/fiery_bite.tres" id="2_otu32"]
 [ext_resource type="Resource" uid="uid://g0gfyafsh524" path="res://system/actions/enemy actions/basic/fireball.tres" id="3_otu32"]
 [ext_resource type="Resource" uid="uid://ksdxxiw7ck7i" path="res://system/actions/enemy actions/basic/pelvic_thrust.tres" id="4_n28hk"]
+[ext_resource type="Resource" uid="uid://b0tab5j13xooy" path="res://system/actions/enemy actions/basic/seek_the_void.tres" id="5_8fxwe"]
 
 [resource]
 script = ExtResource("2_cq4w0")
@@ -17,5 +18,5 @@ ice_shield = 600
 max_action_point = 4
 starting_action_point = 1
 action_point_regen_per_turn = 2
-innate_actions = Array[ExtResource("1_ixtw0")]([ExtResource("2_otu32"), ExtResource("3_otu32"), ExtResource("4_n28hk")])
+innate_actions = Array[ExtResource("1_ixtw0")]([ExtResource("2_otu32"), ExtResource("3_otu32"), ExtResource("4_n28hk"), ExtResource("5_8fxwe")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"

@@ -67,11 +67,14 @@ static func compare_priority(a : HookBinding, b : HookBinding) -> bool:
 ## Statuses that resolve at the close of a turn if not
 ## consumed/interrupted earlier (e.g. Void Charged applying
 ## its stored Void stack if never cancelled).
-const VOID_CHARGED_TURN_END := 100
 
 ## --- PRE_SHIELD_REGEN / POST_SHIELD_REGEN ---
 ## Anything modifying Attrition calculation or shield regen cap
 ## before it's applied, or reacting to the post-regen shield state.
+
+## --- POST_SHIELD_BREAK ---
+## After any shield break
+const VOID_CHARGED_POST_SHIELD_BREAK := 100
 
 ## --- PRE_CRUMBLE_CORROSION / POST_CRUMBLE_CORROSION ---
 ## Hooks around Crumble's shield-splash damage (Stage B).
@@ -143,3 +146,7 @@ const VOID_CHARGED_POST_DAMAGE_TO_HP_TAKEN := 100
 ## Brackets an entity's state transition to DEAD. Poison
 ## Explosion/Transfer are typically registered as reactions
 ## to POST_DEATH rather than being POST_DEATH itself.
+
+## --- STATUS_EFFECT_TICK_DOWN ---
+## Something which happens when any effect ticks down
+const VOID_CHARGED_STATUS_EFFECT_TICK_DOWN := 100

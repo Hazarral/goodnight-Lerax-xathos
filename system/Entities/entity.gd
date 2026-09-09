@@ -27,6 +27,8 @@ var void_instance : VoidInstance = null
 
 var known_actions : Array[KnownAction]
 
+var status_effect_manager := StatusEffectManager.new()
+
 ## This is for distinguishing entities with the exact same name based on field position
 var display_suffix : int = -1
 
@@ -464,7 +466,10 @@ func begin_turn() -> void:
 	## Stage F: Tick down on all DoT
 	_resolve_dot_tick_down()
 	
-	## Stage F: Actions
+	## Stage G: Status Effect tick down
+	_resolve_status_effect_tick_down()
+	
+	## Stage H: Actions
 	start_action_phase()
 
 func start_action_phase() -> void:
@@ -516,7 +521,7 @@ func cast_action(index : int) -> void:
 	var combat_log_entry := CastActionCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"F: Cast Success",
+		"H: Cast Success",
 		known_actions[index].get_action_name(),
 		known_actions[index].get_action_point_cost(),
 		known_actions[index].get_cooldown()
@@ -786,7 +791,7 @@ func _trigger_shock_damage_on_action(cast_result : CastResult) -> void:
 	var combat_log_entry := ShockConvulsionCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"F: Shock Convulsion",
+		"H: Shock Convulsion",
 		cast_result.ap_spent,
 		DamageAndDoT.get_shock_damage_on_action_effectiveness(highest_potency)
 	)
@@ -830,3 +835,20 @@ func _resolve_void() -> void:
 		"E: Void Escalation"
 	)
 	CombatLog.register(void_escalate_log_entry)
+
+func apply_status_effect(effect : StatusEffect, caster : Entity) -> void:
+	var instance := effect.duplicate(true)
+	instance.caster = caster
+	instance.owner = self
+	status_effect_manager.apply_status_effect(instance)
+	
+	print("Applied %s to %s" % [instance.get_effect_name(), get_entity_name_with_suffix()])
+
+func remove_status_effect(effect : StatusEffect) -> void:
+	status_effect_manager.remove_status_effect(effect)
+
+func get_status_effects_display_info() -> Array[StatusEffectDisplayInfo]:
+	return status_effect_manager.get_status_effects_display_info()
+
+func _resolve_status_effect_tick_down() -> void:
+	status_effect_manager.tick_down()

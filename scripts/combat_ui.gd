@@ -24,10 +24,12 @@ const ENEMY_ROSTER_HAS_REINFORCEMENT_HEADER := "ENEMIES (REINFORCEMENT: %d)"
 @onready var inspector_mastery_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/MasteryLine
 @onready var inspector_shield_grid := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid
 @onready var inspector_elemental_dot_list := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ElementalDoTList
+@onready var inspector_status_effect_list := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/StatusEffectList
 
 const ENTITY_INFO_CARD_SCENE : PackedScene = preload("res://ui/entity_info_card.tscn")
 const SHIELD_CHIP_SCENE : PackedScene = preload("res://ui/shield_chip.tscn")
 const DOT_BAR_SCENE : PackedScene = preload("res://ui/dot_bar.tscn")
+const STATUS_EFFECT_BAR_SCENE : PackedScene = preload("res://ui/status_effect_bar.tscn")
 
 const INSPECTOR_STATE_TEXT := "[%s]"
 const STATE_ALIVE_TEXT := "ALIVE"
@@ -164,7 +166,8 @@ func _clear_selected_card() -> void:
 func _set_inspector(entity : Entity) -> void:
 	clear_children([
 		inspector_shield_grid, 
-		inspector_elemental_dot_list
+		inspector_elemental_dot_list,
+		inspector_status_effect_list
 	])
 	
 	inspector_name_label.text = entity.template.entity_name
@@ -202,6 +205,13 @@ func _set_inspector(entity : Entity) -> void:
 	if entity.has_void():
 		void_bar.setup(entity)
 		void_bar.render()
+	
+	var status_effect_display_info := entity.get_status_effects_display_info()
+	for display_info in status_effect_display_info:
+		var status_bar := STATUS_EFFECT_BAR_SCENE.instantiate()
+		inspector_status_effect_list.add_child(status_bar)
+		status_bar.setup(display_info)
+		status_bar.render()
 
 func _add_roster_for_faction(is_player_faction : bool) -> void:
 	_add_roster(CombatSystem.get_on_field(is_player_faction), is_player_faction)

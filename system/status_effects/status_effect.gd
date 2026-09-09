@@ -1,7 +1,8 @@
 @abstract class_name StatusEffect
-extends RefCounted
+extends Resource
 
-var owner : Entity
+var owner : Entity       # who the effect lives on — ticks, gets cleansed, shows in their status bar
+var source : Entity      # who caused/casts it — Potency/Mastery source, authority for resolution
 var stacks : int
 var is_permanent : bool
 
@@ -13,7 +14,9 @@ var duration : int
 ## at runtime by the hook manager or anything else.
 var registered_checkpoints : Array[StatusEffectPriorityList.CheckpointType] = []
 
-@abstract func register_hooks(manager : StatusEffectHookManager) -> void
+@abstract func register_hooks(manager : StatusEffectManager) -> void
+@abstract func get_description() -> String
+@abstract func get_effect_name() -> String
 
 func tick_down() -> void:
 	if is_permanent:
