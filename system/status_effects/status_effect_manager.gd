@@ -37,7 +37,7 @@ func remove_effect_hooks(effect: StatusEffect) -> void:
 			if arr[i].source_effect == effect:
 				arr.remove_at(i)
 
-func _execute_effect_hooks(type: StatusEffectPriorityList.CheckpointType, context : CheckpointContext) -> void:
+func execute_effect_hooks(type: StatusEffectPriorityList.CheckpointType, context : CheckpointContext) -> void:
 	for hook : HookBinding in _hooks[type]:
 		hook.execute.call(context)
 
