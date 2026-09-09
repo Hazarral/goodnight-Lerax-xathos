@@ -2,6 +2,7 @@ class_name DoTInstanceArray
 extends RefCounted
 
 var data : Array[DoTInstance]
+var _pending_removals : Array[DoTInstance] = []
 
 func _init(dot_instance : DoTInstance = null) -> void:
 	if dot_instance:
@@ -27,7 +28,7 @@ func add_dot_instance(dot_instance : DoTInstance) -> void:
 	dot_instance.expired.connect(remove_dot_instance)
 
 func remove_dot_instance(dot_instance : DoTInstance) -> void:
-	data.erase(dot_instance)
+	_pending_removals.append(dot_instance)
 
 func clear_all_instances() -> void:
 	data.clear()
@@ -61,6 +62,14 @@ func get_highest_mastery() -> int:
 func tick_down() -> void:
 	for dot_instance in data:
 		dot_instance.tick_down()
+	
+	if _pending_removals.is_empty():
+		return
+	
+	for dot in _pending_removals:
+		data.erase(dot)
+	
+	_pending_removals.clear()
 
 func resolve_damage(target : Entity, has_current : bool) -> void:
 	var is_current := get_dot_type() == DamageAndDoT.DoT.CURRENT

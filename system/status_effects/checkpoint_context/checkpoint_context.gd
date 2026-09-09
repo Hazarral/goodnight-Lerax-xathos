@@ -1,4 +1,4 @@
 @abstract class_name CheckpointContext 
 extends RefCounted
 
-var checkpoint_type : StatusEffectPriorityList.CheckpointType
+# Literally nothing here. It is purely a structural tag.

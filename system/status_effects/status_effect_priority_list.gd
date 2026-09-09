@@ -5,6 +5,7 @@ enum CheckpointType {
 	TURN_START,
 	PRE_SHIELD_REGEN,
 	POST_SHIELD_REGEN,
+	POST_SHIELD_BREAK,
 	PRE_CRUMBLE_CORROSION,
 	POST_CRUMBLE_CORROSION,
 	PRE_DOT_TICK,
@@ -40,7 +41,8 @@ enum CheckpointType {
 	POST_HEAL,
 	PRE_DEATH,
 	POST_DEATH,
-	TURN_END
+	TURN_END,
+	STATUS_EFFECT_TICK_DOWN
 }
 
 static func compare_priority(a : HookBinding, b : HookBinding) -> bool:

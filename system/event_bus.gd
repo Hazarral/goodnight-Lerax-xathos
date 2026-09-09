@@ -27,3 +27,7 @@ signal combat_event_queue_processing_finished()
 ## When a status effect expires
 @warning_ignore("unused_signal")
 signal status_expired(status_effect : StatusEffect)
+
+## When a status effect is removed forcibly or cleansed
+@warning_ignore("unused_signal")
+signal status_purged(status_effect : StatusEffect)
