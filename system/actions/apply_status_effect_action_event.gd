@@ -12,6 +12,7 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 	
 	for entity : Entity in targets:
 		for effect in status_effects:
-			entity.apply_status_effect(effect, source)
+			var attach_to := source if effect.attaches_to_caster() else entity
+			attach_to.apply_status_effect(effect, source, entity)
 	
 	return true

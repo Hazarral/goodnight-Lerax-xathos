@@ -352,7 +352,10 @@ func _resolve_shield_break(idx : int, was_broken_before : bool) -> void:
 		idx as DamageAndDoT.DamageType
 		)
 		CombatLog.register(shield_break_log_entry)
-
+		
+		var post_shield_break_context := ShieldBreakContext.new(self, idx as DamageAndDoT.DamageType)
+		status_effect_manager.execute_effect_hooks(StatusEffectPriorityList.CheckpointType.POST_SHIELD_BREAK, post_shield_break_context)
+		
 		if has_dot(DamageAndDoT.DoT.FROSTBITE):
 			_trigger_frostbite_on_break(idx)
 
@@ -371,6 +374,9 @@ func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shiel
 		ignore_shield
 	)
 	CombatLog.register(damage_to_hp_log)
+	
+	var post_damage_to_hp_context := DamageToHPContext.new(self, amount, ignore_shield)
+	status_effect_manager.execute_effect_hooks(StatusEffectPriorityList.CheckpointType.POST_DAMAGE_TO_HP_TAKEN, post_damage_to_hp_context)
 	
 	if current_hp <= 0:
 		die()
@@ -437,6 +443,12 @@ func begin_turn() -> void:
 		current_state
 	)
 	CombatLog.register(combat_log_entry)
+	
+	var turn_start_context := TurnStartContext.new(self)
+	status_effect_manager.execute_effect_hooks(
+		StatusEffectPriorityList.CheckpointType.TURN_START, 
+		turn_start_context
+	)
 	
 	if current_state == State.DEAD:
 		print("This target is dead! DoT will still tick down")
@@ -836,10 +848,11 @@ func _resolve_void() -> void:
 	)
 	CombatLog.register(void_escalate_log_entry)
 
-func apply_status_effect(effect : StatusEffect, caster : Entity) -> void:
+func apply_status_effect(effect : StatusEffect, caster : Entity, chosen_target : Entity) -> void:
 	var instance := effect.duplicate(true)
-	instance.caster = caster
-	instance.owner = self
+	instance.owner = self          # self is now correctly whoever get_attachment_entity picked
+	instance.source = caster
+	instance.on_applied(chosen_target, caster)
 	status_effect_manager.apply_status_effect(instance)
 	
 	print("Applied %s to %s" % [instance.get_effect_name(), get_entity_name_with_suffix()])
@@ -851,4 +864,4 @@ func get_status_effects_display_info() -> Array[StatusEffectDisplayInfo]:
 	return status_effect_manager.get_status_effects_display_info()
 
 func _resolve_status_effect_tick_down() -> void:
-	status_effect_manager.tick_down()
+	status_effect_manager.tick_down(self)

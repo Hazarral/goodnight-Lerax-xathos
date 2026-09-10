@@ -45,14 +45,31 @@ func get_description() -> String:
 func get_effect_name() -> String:
 	return NAME
 
-func _interrupt(_context : DamageToHPContext) -> void:
+func get_default_duration() -> int:
+	return DEFAULT_DURATION
+
+func _interrupt(_context : CheckpointContext) -> void:
 	_interrupted = true
 
-func _apply_void(context : StatusEffectTickDownContext) -> void:
+func _apply_void(context : PreStatusEffectTickDownContext) -> void:
 	if context.status_effect != self:
+		return
+	
+	if context.remaining_duration > 1:
 		return
 	
 	if _interrupted:
 		return
 	
 	prechosen_target.apply_void(VOID_STACKS)
+
+# StatusEffect base
+func on_applied(target : Entity, _caster : Entity) -> void:
+	prechosen_target = target
+
+# A bit unintuitive, but it's how it works
+func attaches_to_caster() -> bool:
+	return true
+
+func _expire() -> void:	
+	EventBus.status_expired.emit(self)

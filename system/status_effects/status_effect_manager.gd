@@ -2,7 +2,7 @@ class_name StatusEffectManager
 extends RefCounted
 
 var effects : Array[StatusEffect] = []
-var _pending_removals : Array[DoTInstance] = []
+var _pending_removals : Array[StatusEffect] = []
 
 ## Array is actually Array[HookBinding]
 var _hooks : Dictionary[StatusEffectPriorityList.CheckpointType, Array] = {}
@@ -11,7 +11,7 @@ func _init() -> void:
 	for checkpoint in StatusEffectPriorityList.CheckpointType.values():
 		_hooks[checkpoint] = [] as Array[HookBinding]
 	
-	EventBus.status_expired.connect(remove_effect_hooks)
+	EventBus.status_expired.connect(remove_status_effect)
 
 func get_status_effects_display_info() -> Array[StatusEffectDisplayInfo]:
 	var arr : Array[StatusEffectDisplayInfo] = []
@@ -42,17 +42,20 @@ func execute_effect_hooks(type: StatusEffectPriorityList.CheckpointType, context
 		hook.execute.call(context)
 
 func apply_status_effect(effect : StatusEffect) -> void:
-	if not effects.has(effect):
-		effects.append(effect)
-		effect.register_hooks(self)
+	var existing := _find_matching_effect(effect)
+	if existing:
+		if not existing.is_permanent:
+			existing.duration = existing.get_default_duration()
 		return
 	
-	if not effect.is_permanent:
-		## Refresh
-		effect.duration = effect.DEFAULT_DURATION
+	effects.append(effect)
+	effect.register_hooks(self)
 
-func tick_down() -> void:
+func tick_down(entity : Entity) -> void:
 	for effect in effects:
+		var status_effect_tick_down_context := PreStatusEffectTickDownContext.new(entity, effect, effect.duration)
+		execute_effect_hooks(StatusEffectPriorityList.CheckpointType.STATUS_EFFECT_TICK_DOWN, status_effect_tick_down_context)
+		
 		effect.tick_down()
 	
 	if _pending_removals.is_empty():
@@ -62,6 +65,12 @@ func tick_down() -> void:
 		effects.erase(effect)
 	
 	_pending_removals.clear()
+
+func _find_matching_effect(effect : StatusEffect) -> StatusEffect:
+	for e in effects:
+		if e.owner == effect.owner and e.get_script() == effect.get_script():
+			return e
+	return null
 
 func remove_status_effect(effect : StatusEffect) -> void:
 	remove_effect_hooks(effect)
