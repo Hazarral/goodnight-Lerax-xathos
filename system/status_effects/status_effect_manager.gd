@@ -54,7 +54,7 @@ func apply_status_effect(effect : StatusEffect) -> void:
 func tick_down(entity : Entity) -> void:
 	for effect in effects:
 		var status_effect_tick_down_context := PreStatusEffectTickDownContext.new(entity, effect, effect.duration)
-		execute_effect_hooks(StatusEffectPriorityList.CheckpointType.STATUS_EFFECT_TICK_DOWN, status_effect_tick_down_context)
+		execute_effect_hooks(StatusEffectPriorityList.CheckpointType.PRE_STATUS_EFFECT_TICK_DOWN, status_effect_tick_down_context)
 		
 		effect.tick_down()
 	

@@ -14,7 +14,7 @@ func _init(p_duration : int = DEFAULT_DURATION) -> void:
 	registered_checkpoints = [
 		StatusEffectPriorityList.CheckpointType.POST_DAMAGE_TO_HP_TAKEN,
 		StatusEffectPriorityList.CheckpointType.POST_SHIELD_BREAK,
-		StatusEffectPriorityList.CheckpointType.STATUS_EFFECT_TICK_DOWN
+		StatusEffectPriorityList.CheckpointType.PRE_STATUS_EFFECT_TICK_DOWN
 	]
 	
 	duration = p_duration
@@ -32,7 +32,7 @@ func register_hooks(manager : StatusEffectManager) -> void:
 	
 	manager.register_hook(
 		registered_checkpoints[2],
-		HookBinding.new(self, StatusEffectPriorityList.VOID_CHARGED_STATUS_EFFECT_TICK_DOWN, _apply_void)
+		HookBinding.new(self, StatusEffectPriorityList.VOID_CHARGED_PRE_STATUS_EFFECT_TICK_DOWN, _apply_void)
 	)
 
 func get_description() -> String:
@@ -49,6 +49,9 @@ func get_default_duration() -> int:
 	return DEFAULT_DURATION
 
 func _interrupt(_context : CheckpointContext) -> void:
+	if _interrupted:
+		return
+	
 	_interrupted = true
 
 func _apply_void(context : PreStatusEffectTickDownContext) -> void:

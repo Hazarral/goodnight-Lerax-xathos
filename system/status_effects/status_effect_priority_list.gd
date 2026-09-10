@@ -42,7 +42,7 @@ enum CheckpointType {
 	PRE_DEATH,
 	POST_DEATH,
 	TURN_END,
-	STATUS_EFFECT_TICK_DOWN
+	PRE_STATUS_EFFECT_TICK_DOWN
 }
 
 static func compare_priority(a : HookBinding, b : HookBinding) -> bool:
@@ -147,6 +147,6 @@ const VOID_CHARGED_POST_DAMAGE_TO_HP_TAKEN := 100
 ## Explosion/Transfer are typically registered as reactions
 ## to POST_DEATH rather than being POST_DEATH itself.
 
-## --- STATUS_EFFECT_TICK_DOWN ---
+## --- PRE_STATUS_EFFECT_TICK_DOWN ---
 ## Something which happens when any effect ticks down
-const VOID_CHARGED_STATUS_EFFECT_TICK_DOWN := 100
+const VOID_CHARGED_PRE_STATUS_EFFECT_TICK_DOWN := 100
