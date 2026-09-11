@@ -14,14 +14,14 @@ func to_text(detailed : bool = false) -> String:
 	
 	if detailed:
 		return DETAILED_TEMPLATE % [
-			DamageAndDoT.GENERIC_COLOR_HEX, stacks, "s" if stacks > 1 else "",
+			DamageAndDoT.GENERIC_COLOR_HEX, stacks, "s" if stacks != 1 else "",
 			damage_color, DamageAndDoT.get_damage_over_time_name(damage_over_time_type),
 			damage_color, ceili(base_damage),
 			DamageAndDoT.GENERIC_COLOR_HEX, duration
 		]
 	
 	return SIMPLE_TEMPLATE % [
-		DamageAndDoT.GENERIC_COLOR_HEX, stacks, "s" if stacks > 1 else "",
+		DamageAndDoT.GENERIC_COLOR_HEX, stacks, "s" if stacks != 1 else "",
 		damage_color, DamageAndDoT.get_damage_over_time_name(damage_over_time_type),
 		damage_color, base_damage,
 		DamageAndDoT.GENERIC_COLOR_HEX, duration

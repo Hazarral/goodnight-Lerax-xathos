@@ -1,0 +1,56 @@
+[gd_resource type="Resource" script_class="Action" format=3 uid="uid://dnjqnigrx558j"]
+
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_mguh3"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_4mp8l"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="2_gqg50"]
+[ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="3_wkplx"]
+[ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="4_05338"]
+[ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="5_yedow"]
+[ext_resource type="Script" uid="uid://b5tvpmksfnn2p" path="res://system/ui/description_segments/damage_segment.gd" id="6_132d4"]
+[ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="7_eunbx"]
+
+[sub_resource type="Resource" id="Resource_4mp8l"]
+script = ExtResource("2_4mp8l")
+damage_type = 8
+amount = 20
+potency_scaling = 0.6
+mastery_scaling = 0.6
+target_faction = 1
+target_count = 1
+metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
+
+[sub_resource type="Resource" id="Resource_q6v30"]
+script = ExtResource("4_05338")
+text = "The Draechen swings his claws, opening Void rifts for a brief moment."
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_w284u"]
+script = ExtResource("5_yedow")
+metadata/_custom_type_script = "uid://d0c4l5ycbx5ue"
+
+[sub_resource type="Resource" id="Resource_rultl"]
+script = ExtResource("4_05338")
+text = "Deals"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_f476e"]
+script = ExtResource("6_132d4")
+damage_type = 8
+base_damage = 20.0
+potency_scaling = 0.6
+mastery_scaling = 0.6
+metadata/_custom_type_script = "uid://b5tvpmksfnn2p"
+
+[sub_resource type="Resource" id="Resource_46ch2"]
+script = ExtResource("7_eunbx")
+target_count = 1
+target_faction = 1
+metadata/_custom_type_script = "uid://cfp2mohxm1c47"
+
+[resource]
+script = ExtResource("2_gqg50")
+action_name = "Claw"
+action_point_cost = 3
+description_segments = Array[ExtResource("3_wkplx")]([SubResource("Resource_q6v30"), SubResource("Resource_w284u"), SubResource("Resource_rultl"), SubResource("Resource_f476e"), SubResource("Resource_46ch2")])
+action_events = Array[ExtResource("1_mguh3")]([SubResource("Resource_4mp8l")])
+metadata/_custom_type_script = "uid://doysxg78oub0w"

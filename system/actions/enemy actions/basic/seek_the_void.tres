@@ -1,0 +1,48 @@
+[gd_resource type="Resource" script_class="Action" format=3 uid="uid://b0tab5j13xooy"]
+
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_0ya42"]
+[ext_resource type="Script" uid="uid://b5etb2vg83gh1" path="res://system/actions/apply_status_effect_action_event.gd" id="2_bp6ab"]
+[ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="2_mg5nd"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="3_pmi45"]
+[ext_resource type="Script" uid="uid://x3uk4u3duw0u" path="res://system/status_effects/status_effect.gd" id="3_wxt3q"]
+[ext_resource type="Script" uid="uid://c2vmk8gyswkqx" path="res://system/status_effects/instances/enemies/void_charged.gd" id="4_wxt3q"]
+[ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="5_b4mj5"]
+[ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="6_k8f7o"]
+
+[sub_resource type="Resource" id="Resource_i7wfq"]
+script = ExtResource("4_wxt3q")
+metadata/_custom_type_script = "uid://c2vmk8gyswkqx"
+
+[sub_resource type="Resource" id="Resource_0ehkf"]
+script = ExtResource("2_bp6ab")
+status_effects = Array[ExtResource("3_wxt3q")]([SubResource("Resource_i7wfq")])
+metadata/_custom_type_script = "uid://b5etb2vg83gh1"
+
+[sub_resource type="Resource" id="Resource_bdkja"]
+script = ExtResource("5_b4mj5")
+text = "Concentrates to seek the Void, channeling a fragment of his power to rot the target."
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_wxt3q"]
+script = ExtResource("6_k8f7o")
+metadata/_custom_type_script = "uid://d0c4l5ycbx5ue"
+
+[sub_resource type="Resource" id="Resource_b4mj5"]
+script = ExtResource("5_b4mj5")
+text = "Enters"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_k8f7o"]
+script = ExtResource("5_b4mj5")
+highlighted = true
+text = "Void-Charged"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[resource]
+script = ExtResource("3_pmi45")
+action_name = "Seek the Void"
+action_point_cost = 4
+cooldown = 4
+description_segments = Array[ExtResource("2_mg5nd")]([SubResource("Resource_bdkja"), SubResource("Resource_wxt3q"), SubResource("Resource_b4mj5"), SubResource("Resource_k8f7o")])
+action_events = Array[ExtResource("1_0ya42")]([SubResource("Resource_0ehkf")])
+metadata/_custom_type_script = "uid://doysxg78oub0w"

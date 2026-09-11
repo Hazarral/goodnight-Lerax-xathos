@@ -25,7 +25,7 @@ func render_advanced() -> String:
 		actor.get_entity_name_with_suffix(),
 		DamageAndDoT.FIRE_COLOR_HEX,
 		DamageAndDoT.FIRE_COLOR_HEX, burn_instance.get_burn_multiplier() * 100.0,
-		burn_instance.turns_elapsed, "s" if burn_instance.turns_elapsed > 1 else ""
+		burn_instance.turns_elapsed, "s" if burn_instance.turns_elapsed != 1 else ""
 	]
 
 func render_developer() -> String:

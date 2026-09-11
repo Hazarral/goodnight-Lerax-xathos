@@ -31,10 +31,10 @@ func to_text(detailed : bool = false) -> String:
 		return DETAILED_TEMPLATE % [
 			DamageAndDoT.VOID_COLOR_HEX,               # 1. %s
 			stacks,                                    # 2. %d
-			"s" if stacks > 1 else "",                 # 3. %s
+			"s" if stacks != 1 else "",                 # 3. %s
 			DamageAndDoT.GENERIC_COLOR_HEX,            # 4. %s
 			stacks,                                    # 5. %d
-			"s" if stacks > 1 else "",                 # 6. %s
+			"s" if stacks != 1 else "",                 # 6. %s
 			hp_term,                                   # 7. %.2f (HP term value)
 			DamageAndDoT.MAX_HP_SCALING,               # 8. %.2f (HP coefficient)
 			shield_term,                               # 9. %.2f (Shield term value)
@@ -54,5 +54,5 @@ func to_text(detailed : bool = false) -> String:
 	return SIMPLE_TEMPLATE % [
 		DamageAndDoT.VOID_COLOR_HEX,
 		stacks,
-		"s" if stacks > 1 else ""
+		"s" if stacks != 1 else ""
 	]

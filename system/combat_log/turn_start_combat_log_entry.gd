@@ -3,7 +3,7 @@ extends CombatLogEntry
 
 var actor_state : Entity.State
 
-const TURN_START := "\n[color=%s]- Turn %d -[/color]\n"
+const TURN_START := "[color=%s]- Turn %d -[/color]\n"
 
 const BASIC_ALIVE_TEMPLATE := "> %s's turn started"
 const BASIC_DEAD_TEMPLATE := "> %s is [color=%s]dead[/color]"

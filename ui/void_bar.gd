@@ -25,7 +25,7 @@ func render() -> void:
 	
 	stacks_label.text = VOID_STACKS_TEXT % [
 		void_stacks,
-		"s" if void_stacks > 1 else ""
+		"s" if void_stacks != 1 else ""
 	]
 	
 	description_label.text = DESCRIPTION_TEXT % [
