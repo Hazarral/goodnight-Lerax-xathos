@@ -502,6 +502,9 @@ func end_turn() -> void:
 	)
 	CombatLog.register(combat_log_entry)
 	
+	var turn_end_context := TurnEndContext.new(self)
+	status_effect_manager.execute_effect_hooks(StatusEffectPriorityList.CheckpointType.TURN_END, turn_end_context)
+	
 	CombatSystem.on_turn_finished()
 	EventBus.force_refresh_turn_ui.emit()
 

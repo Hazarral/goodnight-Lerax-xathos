@@ -67,6 +67,7 @@ static func compare_priority(a : HookBinding, b : HookBinding) -> bool:
 ## Statuses that resolve at the close of a turn if not
 ## consumed/interrupted earlier (e.g. Void Charged applying
 ## its stored Void stack if never cancelled).
+const ASHEN_FLAME_TURN_END := 100
 
 ## --- PRE_SHIELD_REGEN / POST_SHIELD_REGEN ---
 ## Anything modifying Attrition calculation or shield regen cap

@@ -29,6 +29,7 @@ func get_status_effects_display_info() -> Array[StatusEffectDisplayInfo]:
 
 func register_hook(type: StatusEffectPriorityList.CheckpointType, binding: HookBinding) -> void:
 	_hooks[type].append(binding)
+	_hooks[type].sort_custom(StatusEffectPriorityList.compare_priority)
 
 func remove_effect_hooks(effect: StatusEffect) -> void:
 	for checkpoint in effect.registered_checkpoints:

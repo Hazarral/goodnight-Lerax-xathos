@@ -1,0 +1,35 @@
+[gd_resource type="Resource" script_class="Action" format=3 uid="uid://k2ra83djv2ai"]
+
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_vmo07"]
+[ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="2_hj8px"]
+[ext_resource type="Script" uid="uid://b5etb2vg83gh1" path="res://system/actions/apply_status_effect_action_event.gd" id="2_jnf5m"]
+[ext_resource type="Script" uid="uid://x3uk4u3duw0u" path="res://system/status_effects/status_effect.gd" id="3_6t233"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="3_gkwm7"]
+[ext_resource type="Script" uid="uid://dvlu88pftqn5t" path="res://system/status_effects/instances/allies/ashen_flame.gd" id="4_v25he"]
+[ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="6_r7nb3"]
+
+[sub_resource type="Resource" id="Resource_jnf5m"]
+script = ExtResource("4_v25he")
+metadata/_custom_type_script = "uid://dvlu88pftqn5t"
+
+[sub_resource type="Resource" id="Resource_uswrw"]
+script = ExtResource("2_jnf5m")
+status_effects = Array[ExtResource("3_6t233")]([SubResource("Resource_jnf5m")])
+target_state = 2
+target_faction = 2
+target_count = 1
+metadata/_custom_type_script = "uid://b5etb2vg83gh1"
+
+[sub_resource type="Resource" id="Resource_6t233"]
+script = ExtResource("6_r7nb3")
+text = "The Ashen Flame test."
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[resource]
+script = ExtResource("3_gkwm7")
+origin = 1
+action_name = "Ashen Flame Demo"
+cooldown = 2
+description_segments = Array[ExtResource("2_hj8px")]([SubResource("Resource_6t233")])
+action_events = Array[ExtResource("1_vmo07")]([SubResource("Resource_uswrw")])
+metadata/_custom_type_script = "uid://doysxg78oub0w"
