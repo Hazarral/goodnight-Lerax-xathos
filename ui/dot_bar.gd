@@ -10,7 +10,7 @@ var dot_instance_array : DoTInstanceArray
 
 const HEADER_TEXT_FRONT := "[color=%s]%s[/color]"
 const SHIELD_PRESENT_TEXT_PART := " -> [color=%s]%s Shield[/color]"
-const HEADER_TEXT_BACK := ", %d Damage, %d Attrition, %d Turn%s left"
+const HEADER_TEXT_BACK := ", %d Damage, %d Attrition, %d Turn%s left, %d Instance%s"
 
 ## DoT Specific details
 const BURN_STAGE_DETAIL := " (x%.1f)"
@@ -46,11 +46,14 @@ func render() -> void:
 		]
 	
 	var highest_duration := dot_instance_array.get_highest_duration()
+	var instance_count := dot_instance_array.get_instance_count()
 	dot_header.text += HEADER_TEXT_BACK % [
 		ceili(dot_instance_array.calculate_total_damage()),
 		ceili(dot_instance_array.calculate_total_attrition()),
 		highest_duration,
-		"s" if highest_duration != 1 else ""
+		"s" if highest_duration != 1 else "",
+		instance_count,
+		"s" if instance_count != 1 else ""
 	]
 	
 	_add_special_effect_detail_to_header(dot_instance_array)

@@ -58,7 +58,7 @@ func render_advanced() -> String:
 	return ADVANCED_TEMPLATE % [
 		DamageAndDoT.VOID_COLOR_HEX,
 		actor.get_entity_name_with_suffix(),
-		stacks, "s" if stacks > 1 else "",
+		stacks, "s" if stacks != 1 else "",
 		pow(DamageAndDoT.ESCALATION_MULTIPLIER_BASE, turns_elapsed) * 100.0
 	]
 

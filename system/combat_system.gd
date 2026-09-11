@@ -220,14 +220,14 @@ func is_combat_over() -> bool:
 	return false
 
 func end_combat() -> void:
+	var current_turn_counter := turn_counter
+	reset()
 	var combat_log_entry := CombatEndedCombatLogEntry.new(
-		turn_counter,
+		current_turn_counter,
 		null,
 		"Combat Ended"
 	)
 	CombatLog.register(combat_log_entry)
-	
-	reset()
 
 func register_combat_event(combat_event : CombatEvent) -> void:
 	_combat_event_queue.append(combat_event)
@@ -247,7 +247,7 @@ func process_combat_event_queue() -> void:
 	
 	is_processing_combat_event_queue = true
 	
-	while not _combat_event_queue.is_empty():
+	while not _combat_event_queue.is_empty() and not is_combat_over():
 		var current_event : CombatEvent = _combat_event_queue.pop_front()
 		
 		# NOTE: This may inject during resolve() but that is none of this script's business\

@@ -25,7 +25,7 @@ func render_basic() -> String:
 func render_advanced() -> String:
 	return ADVANCED_TEMPLATE % [
 		actor.get_entity_name_with_suffix(),
-		DamageAndDoT.VOID_COLOR_HEX, stacks, "s" if stacks > 1 else "",
+		DamageAndDoT.VOID_COLOR_HEX, stacks, "s" if stacks != 1 else "",
 		DamageAndDoT.VOID_COLOR_HEX, DamageAndDoT.get_damage_over_time_name(DamageAndDoT.DoT.VOID)
 	]
 

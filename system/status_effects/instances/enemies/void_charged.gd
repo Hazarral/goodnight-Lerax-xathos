@@ -38,7 +38,7 @@ func register_hooks(manager : StatusEffectManager) -> void:
 func get_description() -> String:
 	return DESCRIPTION % [
 		VOID_STACKS,
-		"s" if VOID_STACKS > 1 else "",
+		"s" if VOID_STACKS != 1 else "",
 		prechosen_target.get_entity_name_with_suffix() 
 	]
 

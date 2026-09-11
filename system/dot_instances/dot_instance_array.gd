@@ -15,6 +15,9 @@ func get_dot_type() -> DamageAndDoT.DoT:
 	## NOTE: Will crash if used on empty data
 	return data.front().damage_type
 
+func get_instance_count() -> int:
+	return data.size()
+
 func add_dot_instance(dot_instance : DoTInstance) -> void:	
 	if dot_instance.damage_type == DamageAndDoT.DamageType.VOID:
 		push_error("Void is not a valid DoTInstance, use VoidInstance instead")

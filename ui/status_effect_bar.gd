@@ -22,7 +22,7 @@ func render() -> void:
 	else:
 		duration_label.text = FINITE_DURATION_TEXT % [
 			display_info.duration,
-			"s" if display_info.duration > 1 else ""
+			"s" if display_info.duration != 1 else ""
 		]
 	
 	description_label.text = display_info.description
