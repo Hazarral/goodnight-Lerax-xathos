@@ -7,6 +7,8 @@ var _pending_removals : Array[DoTInstance] = []
 func _init(dot_instance : DoTInstance = null) -> void:
 	if dot_instance:
 		add_dot_instance(dot_instance)
+	
+	EventBus.dot_instance_expired.connect(remove_dot_instance)
 
 func has_dot() -> bool:
 	return not data.is_empty()
@@ -28,7 +30,6 @@ func add_dot_instance(dot_instance : DoTInstance) -> void:
 		return
 		
 	data.append(dot_instance)
-	dot_instance.expired.connect(remove_dot_instance)
 
 func remove_dot_instance(dot_instance : DoTInstance) -> void:
 	_pending_removals.append(dot_instance)

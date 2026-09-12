@@ -11,8 +11,6 @@ var source : Entity
 var cached_potency : int
 var cached_mastery : int
 
-signal expired(dot_instance : DoTInstance)
-
 func _init(p_source : Entity, p_target : Entity, p_damage_type : DamageAndDoT.DamageType, p_base_damage : float, p_stacks : int, p_duration : int) -> void:
 	if p_damage_type == DamageAndDoT.DamageType.VOID:
 		push_error("Void is not a valid DoTInstance, use VoidInstance instead")
@@ -49,7 +47,7 @@ func tick_down() -> void:
 		expire()
 
 func expire() -> void:
-	expired.emit(self)
+	EventBus.dot_instance_expired.emit(self)
 
 func calculate_damage() -> float:
 	return DamageAndDoT.calculate_dot_damage(

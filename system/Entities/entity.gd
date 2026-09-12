@@ -28,6 +28,7 @@ var void_instance : VoidInstance = null
 var known_actions : Array[KnownAction]
 
 var status_effect_manager := StatusEffectManager.new()
+var buff_and_debuff_manager := BuffAndDebuffManager.new()
 
 ## This is for distinguishing entities with the exact same name based on field position
 var display_suffix : int = -1
@@ -868,3 +869,13 @@ func get_status_effects_display_info() -> Array[StatusEffectDisplayInfo]:
 
 func _resolve_status_effect_tick_down() -> void:
 	status_effect_manager.tick_down(self)
+
+func _recompute_all_stats() -> void:
+	## TODO: Add recomputation here
+	pass
+
+func apply_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
+	buff_and_debuff_manager.add_buff_and_debuff(buff_and_debuff)
+
+func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
+	buff_and_debuff_manager.remove_buff_and_debuff(buff_and_debuff)

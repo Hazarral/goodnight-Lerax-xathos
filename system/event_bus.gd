@@ -1,5 +1,9 @@
 extends Node
 
+## Emitted when a DoT instance expires
+@warning_ignore("unused_signal")
+signal dot_instance_expired(dot_instance : DoTInstance)
+
 ## Emitted by the action event itself to seek a single target
 @warning_ignore("unused_signal")
 signal target_requested(
@@ -31,3 +35,7 @@ signal status_expired(status_effect : StatusEffect)
 ## When a status effect is removed forcibly or cleansed
 @warning_ignore("unused_signal")
 signal status_purged(status_effect : StatusEffect)
+
+## When a "buff and debuff" effect expires
+@warning_ignore("unused_signal")
+signal buff_and_debuff_expired(buff_and_debuff : BuffAndDebuff)
