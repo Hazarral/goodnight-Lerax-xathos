@@ -34,7 +34,7 @@ And so, you set off to chase Lerax-xathos die Traumpest, crossing paths with 8 w
 - World With No Name (Fire): The God of Fire and Ash slumbers, the world plummeted into Eternal Fire, and The tragic God of Lust and Flesh seeks to spread eternal bliss.
 - Vasseon (Water): The Rain falls upon the world, granting wishes as it mutates the physical form of its receivers, and the strange Prophets are chosen by The Rain to seek the center of this blessing.
 - The Meadows Out of Time (Wind): The demon Remeny Maelstrom has expanded his theatrical stage upon the whole realm, putting everyone behind a mask, all to slay and defile him, The Ravenous Storm.
-- EAX-7228: A technocratic world like any other under The Rena Corporation. The artificial sun has been snuffed out, a relentless magnetic storm in the land where machine and flesh have long merged.
+- EAX-7228 (Lightning): A technocratic world like any other under The Rena Corporation. The artificial sun has been snuffed out, a relentless magnetic storm in the land where machine and flesh have long merged.
 - Sia (Poison): the exalted forests have withered as the air reeks of The Heraticans and gluttonous fungi, seeking to breed more spores to all life, a reminiscence of an endlessly sprouting pre-Void era.
 - Denos En (Physical): The favorite beast of Depths, B'urlyth, has gone feral. It swarms the world with its spawns, with strange mating rituals and breed more armies to assimilate all that are different in search of a bloody hivemind of unity. 
 - Grierfard (Earth): The infinite caverns and tunnels have collapsed as Mother Earth herself is in torment by her nightmares. The soil is your nemesis, Darkness, Havador, is your ally, as the white sun on the surface now turns all to ashes.
