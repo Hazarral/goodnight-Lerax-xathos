@@ -9,7 +9,7 @@ func add_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 	all_buffs_and_debuffs.erase(buff_and_debuff)
 
-func compute_health(base : int) -> float:
+func compute_health(base : float) -> float:
 	var additive_sum := 0.0
 	var additive_multiplicative_sum := 0.0
 	for buff_and_debuff in all_buffs_and_debuffs:
@@ -23,27 +23,21 @@ func compute_health(base : int) -> float:
 		
 	return result
 
-func compute_all_shields(base : PackedInt64Array) -> PackedInt64Array:
-	var result := PackedInt64Array()
-	result.resize(base.size())
+func compute_shield(index : int, base : float) -> float:
+	var additive_sum := 0.0
+	var additive_multiplicative_sum := 0.0
+	for buff_and_debuff in all_buffs_and_debuffs:
+		additive_sum += buff_and_debuff.shields_additive[index]
+		additive_multiplicative_sum += buff_and_debuff.shields_additive_multiplicative[index]
 	
-	for damage_type in base.size():
-		var additive_sum := 0.0
-		var additive_multiplicative_sum := 0.0
-		for buff_and_debuff in all_buffs_and_debuffs:
-			additive_sum += buff_and_debuff.shields_additive[damage_type]
-			additive_multiplicative_sum += buff_and_debuff.shields_additive_multiplicative[damage_type]
-		
-		var shield_value := (base[damage_type] + additive_sum) * (1.0 + additive_multiplicative_sum)
-		
-		for buff_and_debuff in all_buffs_and_debuffs:
-			shield_value *= (1.0 + buff_and_debuff.shields_true_multiplicative[damage_type])
-		
-		result[damage_type] = ceili(shield_value)
+	var result := (base + additive_sum) * (1.0 + additive_multiplicative_sum)
 	
+	for buff_and_debuff in all_buffs_and_debuffs:
+		result *= (1.0 + buff_and_debuff.shields_true_multiplicative[index])
+		
 	return result
 
-func compute_potency(base : int) -> float:
+func compute_potency(base : float) -> float:
 	var additive_sum := 0.0
 	var additive_multiplicative_sum := 0.0
 	for buff_and_debuff in all_buffs_and_debuffs:
@@ -57,7 +51,7 @@ func compute_potency(base : int) -> float:
 		
 	return result
 
-func compute_mastery(base : int) -> float:
+func compute_mastery(base : float) -> float:
 	var additive_sum := 0.0
 	var additive_multiplicative_sum := 0.0
 	for buff_and_debuff in all_buffs_and_debuffs:
@@ -71,14 +65,14 @@ func compute_mastery(base : int) -> float:
 		
 	return result
 
-func compute_final_damage_dealt(raw_damage_dealt : int) -> float:
+func compute_final_damage_dealt(raw_damage_dealt : float) -> float:
 	var result : float = raw_damage_dealt
 	for buff_and_debuff in all_buffs_and_debuffs:
 		result *= (1.0 + buff_and_debuff.final_damage_dealt_true_multiplicative)
 	
 	return result
 
-func compute_final_damage_received(raw_damage_received : int) -> float:
+func compute_final_damage_received(raw_damage_received : float) -> float:
 	var result : float = raw_damage_received
 	for buff_and_debuff in all_buffs_and_debuffs:
 		result *= (1.0 + buff_and_debuff.final_damage_received_true_multiplicative)

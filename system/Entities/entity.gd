@@ -52,17 +52,29 @@ func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> voi
 	
 	current_state = State.ALIVE
 
+func _get_base_max_hp() -> float:
+	return template.max_hp * magnification
+
 func get_max_hp() -> int:
-	return floori(template.max_hp * magnification)
+	return ceili(buff_and_debuff_manager.compute_health(_get_base_max_hp()))
+
+func _get_base_max_shield(i : int) -> float:
+	return max_shields[i] * magnification
 
 func get_max_shield(i : int) -> int:
-	return floori(max_shields[i] * magnification)
+	return ceili(buff_and_debuff_manager.compute_shield(i, _get_base_max_shield(i)))
+
+func _get_base_potency() -> float:
+	return template.potency * magnification
 
 func get_potency() -> int:
-	return floori(template.potency * magnification)
+	return ceili(buff_and_debuff_manager.compute_potency(_get_base_potency()))
+
+func _get_base_mastery() -> int:
+	return floori(template.mastery * magnification)
 
 func get_mastery() -> int:
-	return floori(template.mastery * magnification)
+	return ceili(buff_and_debuff_manager.compute_mastery(_get_base_mastery()))
 
 func setup_shields() -> void:
 	max_shields = template.get_packed_shields()
@@ -870,12 +882,33 @@ func get_status_effects_display_info() -> Array[StatusEffectDisplayInfo]:
 func _resolve_status_effect_tick_down() -> void:
 	status_effect_manager.tick_down(self)
 
-func _recompute_all_stats() -> void:
-	## TODO: Add recomputation here
-	pass
+func _recompute_all_stats_preserving_percent(hp_percent: float, shield_percents: PackedFloat32Array) -> void:
+	current_hp = ceili(hp_percent * get_max_hp())
+	current_potency = get_potency()
+	current_mastery = get_mastery()
+	for i in range(DamageAndDoT.ELEMENT_COUNT):
+		current_shields[i] = ceili(shield_percents[i] * get_max_shield(i))
 
 func apply_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
+	var old_max_hp := get_max_hp()
+	var hp_percent := float(current_hp) / old_max_hp if old_max_hp > 0 else 0.0
+	var shield_percents := PackedFloat32Array()
+	shield_percents.resize(DamageAndDoT.ELEMENT_COUNT)
+	for i in DamageAndDoT.ELEMENT_COUNT:
+		var old_max := get_max_shield(i)
+		shield_percents[i] = float(current_shields[i]) / old_max if old_max > 0 else 0.0
+	
 	buff_and_debuff_manager.add_buff_and_debuff(buff_and_debuff)
+	_recompute_all_stats_preserving_percent(hp_percent, shield_percents)
 
 func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
+	var old_max_hp := get_max_hp()
+	var hp_percent := float(current_hp) / old_max_hp if old_max_hp > 0 else 0.0
+	var shield_percents := PackedFloat32Array()
+	shield_percents.resize(DamageAndDoT.ELEMENT_COUNT)
+	for i in DamageAndDoT.ELEMENT_COUNT:
+		var old_max := get_max_shield(i)
+		shield_percents[i] = float(current_shields[i]) / old_max if old_max > 0 else 0.0
+	
 	buff_and_debuff_manager.remove_buff_and_debuff(buff_and_debuff)
+	_recompute_all_stats_preserving_percent(hp_percent, shield_percents)
