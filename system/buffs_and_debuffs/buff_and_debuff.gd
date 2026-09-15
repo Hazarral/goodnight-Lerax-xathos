@@ -61,8 +61,8 @@ func set_mastery_buff_and_debuff(additive : float, additive_multiplicative : flo
 	mastery_true_multiplicative = true_multiplicative
 
 func set_final_damage_dealt_and_received_buff_and_debuff(damage_dealt_multiplicative : float, damage_received_multiplicative : float) -> void:
-	final_damage_dealt_multiplicative = damage_dealt_multiplicative
-	final_damage_received_multiplicative = damage_received_multiplicative
+	final_damage_dealt_true_multiplicative = damage_dealt_multiplicative
+	final_damage_received_true_multiplicative = damage_received_multiplicative
 
 func tick_down() -> void:
 	if is_permanent:
