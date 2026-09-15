@@ -33,9 +33,19 @@ var buff_and_debuff_manager := BuffAndDebuffManager.new()
 ## This is for distinguishing entities with the exact same name based on field position
 var display_suffix : int = -1
 
-const STACKS_KEY := &"Stacks"
-const BASE_DAMAGE_KEY := &"Base damage"
-const TURNS_ELAPSED_KEY := &"Turns elapsed"
+enum ShieldState {
+	NO_SHIELD,		## No shield at all, all max == 0
+	FULLY_SHIELDED, ## All active shields are not broken
+	BREACHED,		## At least 1 active shield is breached
+	ALL_BREACHED	## All active shields are breached
+}
+
+const SHIELD_STATE_NAME : Dictionary[ShieldState, String] = {
+	ShieldState.NO_SHIELD : "[No Shield]",
+	ShieldState.FULLY_SHIELDED : "[Fully Shielded]",
+	ShieldState.BREACHED : "[Shield Breached]",
+	ShieldState.ALL_BREACHED : "[All Shield Breached]"
+}
 
 ## Template will be duplicated
 func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> void:
@@ -105,6 +115,21 @@ func get_action_point_regen_per_turn() -> int:
 
 func recover_action_point() -> void:
 	current_action_point = mini(current_action_point + template.action_point_regen_per_turn, template.max_action_point)
+
+func get_shield_state() -> ShieldState:
+	if has_no_shields():
+		return ShieldState.NO_SHIELD
+	
+	if are_all_shields_breached():
+		return ShieldState.ALL_BREACHED
+	
+	if is_any_shield_breached():
+		return ShieldState.BREACHED
+	
+	return ShieldState.FULLY_SHIELDED
+
+func get_shield_state_name() -> String:
+	return SHIELD_STATE_NAME.get(get_shield_state())
 
 func has_shield(damage_type : DamageAndDoT.DamageType) -> bool:
 	if damage_type == DamageAndDoT.DamageType.VOID:

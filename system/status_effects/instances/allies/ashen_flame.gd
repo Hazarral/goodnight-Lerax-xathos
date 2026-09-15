@@ -5,7 +5,7 @@ const BURN_BASE_DAMAGE := 100.0
 const BURN_STACKS := 1
 const BURN_DURATION := 5
 
-const DESCRIPTION := "The Ashen Flame of the God of Fire and Ash. After any entity's turn ends, inflicts Burn on all enemies."
+const DESCRIPTION := "The Ashen Flame of the God of Fire and Ash. After any entity ends their turn, inflicts Burn on all enemies."
 const NAME := "Ashen Flame"
 
 func _init() -> void:
