@@ -39,3 +39,7 @@ signal status_purged(status_effect : StatusEffect)
 ## When a "buff and debuff" effect expires
 @warning_ignore("unused_signal")
 signal buff_and_debuff_expired(buff_and_debuff : BuffAndDebuff)
+
+## When the CombatLog finishes updating so the CombatUI can render the combat log
+@warning_ignore("unused_signal")
+signal log_updated()

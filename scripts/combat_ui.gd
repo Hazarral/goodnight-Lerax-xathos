@@ -70,18 +70,13 @@ var pending_source : Entity = null
 ## 4. Combat log
 @onready var combat_log_label := $Frame/Root/HBoxContainer/LogPanel/LogCol/LogScroll/LogText
 
-const COMBAT_LOG_MODE : Dictionary[int, CombatLog.DisplayMode] = {
-	0 : CombatLog.DisplayMode.BASIC,
-	1 : CombatLog.DisplayMode.ADVANCED,
-	2 : CombatLog.DisplayMode.DEVELOPER
-}
-
 var current_combat_log_mode := CombatLog.DisplayMode.BASIC
 
 func _ready() -> void:
 	EventBus.combat_initialization_finished.connect(_set_time_to_live)
 	EventBus.target_requested.connect(_on_target_requested)
 	EventBus.force_refresh_turn_ui.connect(_refresh_turn_ui)
+	EventBus.log_updated.connect(_set_combat_log)
 	
 	_combat_mockup()
 	_refresh_turn_ui()
@@ -224,6 +219,7 @@ func _add_roster(faction : Array[Entity], is_player_faction : bool) -> void:
 		roster_list.add_child(entity_card)
 		entity_card.setup(entity, is_player_faction)
 		entity_card.render()
+		CombatLog.register_entity(entity, entity_card)
 
 func _update_enemy_roster_header() -> void:
 	var reinforcement_count := CombatSystem.get_enemy_reinforcement_count()
@@ -266,10 +262,10 @@ func _refresh_active_turn_cards() -> void:
 	var current_entity := CombatSystem.get_current_actor()
 	for card : EntityInfoCard in player_roster_list.get_children():
 		card.set_active_turn(card.entity == current_entity)
-		card.render()
+		#card.render()
 	for card : EntityInfoCard in enemy_roster_list.get_children():
 		card.set_active_turn(card.entity == current_entity)
-		card.render()
+		#card.render()
 
 func _refresh_turn_ui() -> void:
 	_clear_selected_card()
@@ -278,8 +274,13 @@ func _refresh_turn_ui() -> void:
 	_update_action_bar()
 	_update_combat_log()
 
+func _update_end_turn_button() -> void:
+	var opacity := 0.5 if CombatLog.is_log_playing() else 1.0
+	end_turn_button.modulate.a = opacity
+
 func _on_end_turn_button_pressed() -> void:
-	CombatSystem.end_current_actor_turn()
+	if not CombatLog.is_log_playing():
+		CombatSystem.end_current_actor_turn()
 
 func _highlight_targetable_cards(targets : Array[Entity]) -> void:
 	for card : EntityInfoCard in player_roster_list.get_children():
@@ -295,11 +296,10 @@ func _clear_target_highlight() -> void:
 
 func _update_combat_log() -> void:
 	## We use basic for now
-	CombatLog.build_logs()
-	_set_combat_log()
+	CombatLog.play_logs()
 
 func _on_tab_bar_tab_changed(tab: int) -> void:
-	current_combat_log_mode = COMBAT_LOG_MODE.get(tab)
+	current_combat_log_mode = tab as CombatLog.DisplayMode
 	_set_combat_log()
 
 func _set_combat_log() -> void:
@@ -317,11 +317,11 @@ const DEVELOPER_LOG_EXPORT := "user://developer_combat_log.txt"
 func _export_combat_log(mode: ExportMode) -> void:
 	var export_path := ""
 	match current_combat_log_mode:
-		COMBAT_LOG_MODE[0]:
+		CombatLog.DisplayMode.BASIC:
 			export_path = BASIC_LOG_EXPORT
-		COMBAT_LOG_MODE[1]:
+		CombatLog.DisplayMode.ADVANCED:
 			export_path = ADVANCED_LOG_EXPORT
-		COMBAT_LOG_MODE[2]:
+		CombatLog.DisplayMode.DEVELOPER:
 			export_path = DEVELOPER_LOG_EXPORT
 	
 	var file := FileAccess.open(export_path, FileAccess.WRITE)

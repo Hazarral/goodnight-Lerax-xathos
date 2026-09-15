@@ -376,12 +376,16 @@ func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shiel
 	if current_state == State.DEAD:
 		return
 	
+	var current_hp_before := current_hp
 	current_hp = maxi(0, current_hp - amount)
+	var current_hp_after := current_hp
 	
 	var damage_to_hp_log := DamageToHPCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
 		"Damage: reduce_hp(...)",
+		current_hp_before,
+		current_hp_after,
 		damage_type,
 		amount,
 		ignore_shield

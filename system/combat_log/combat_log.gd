@@ -1,9 +1,9 @@
 extends Node
 
 enum DisplayMode {
-	BASIC,		## Simple succinct combat log
-	ADVANCED,	## Advanced combat log showing exactly what happened to shields and HP and so on
-	DEVELOPER	## Advanced scaling math and debug info
+	BASIC = 0,		## Simple succinct combat log
+	ADVANCED = 1,	## Advanced combat log showing exactly what happened to shields and HP and so on
+	DEVELOPER = 2	## Advanced scaling math and debug info
 }
 
 var _entries : Array[CombatLogEntry]
@@ -17,6 +17,13 @@ var _null_count := 0			## Umbrella for all null
 var _active_reservations:= 0	## For explicit registration/cancellation
 const NULL_THRESHOLD := 0.5
 const MAXIMUM_NULL_ENTRIES := 100
+
+const ENTRY_LINE_DELIMITER := "\n\n"
+
+var _playback_cursor := 0
+var _is_playing := false
+
+var entity_info_card_registry : Dictionary[Entity, EntityInfoCard] = {}
 
 func register(entry : CombatLogEntry) -> void:
 	_entries.append(entry)
@@ -68,37 +75,59 @@ func _clear_null_entries() -> void:
 	_entries.resize(write_ptr)
 	_null_count = 0
 
-func build_logs() -> void:
-	## TODO: Write log logic here, build all 3 logs
+func play_logs() -> void:
+	if _is_playing:
+		return
+	
+	_is_playing = true
+
 	_clear_logs()
-	
-	var basic_arr := PackedStringArray()
-	var advanced_arr := PackedStringArray()
-	var developer_arr := PackedStringArray()
-	
 	var developer_entry_counter := 1
+	var index := 0 
 	
-	for entry in _entries:
+	while index < _entries.size():
+		var entry := _entries[index]
+		
 		if entry == null:
+			index += 1
 			continue
 		
-		var basic_string := entry.render_basic()
+		var basic_string = entry.render_basic()
 		if not basic_string.is_empty():
-			basic_arr.append(basic_string)
+			_basic_log += basic_string + ENTRY_LINE_DELIMITER
 		
 		var advanced_string := entry.render_advanced()
 		if not advanced_string.is_empty():
-			advanced_arr.append(advanced_string)
+			_advanced_log += advanced_string + ENTRY_LINE_DELIMITER
 		
 		var developer_string := entry.render_developer()
 		if not developer_string.is_empty():
-			developer_arr.append(("[Entry %d] " % developer_entry_counter) + developer_string)
+			_developer_log += ("[Entry %d] " % developer_entry_counter) + developer_string + ENTRY_LINE_DELIMITER
 			developer_entry_counter += 1
+		
+		## THis is old history, don't play back, be instant
+		if index < _playback_cursor:
+			index += 1
+			continue # Instantly move to the next iteration. No waits, no tweens.
+		
+		## Update Entity card or any visuals here
+		entry.execute_visuals()
+		
+		## Tell the Combat UI to actually render the log again
+		EventBus.log_updated.emit()
+		
+		_playback_cursor = index + 1
+		
+		## The mandatory delay
+		await get_tree().create_timer(GlobalSettings.ui_playback_delay).timeout
+		
+		index += 1
 	
-	# Join them all in a single efficient C++ operation under the hood
-	_basic_log = "\n\n".join(basic_arr)
-	_advanced_log = "\n\n".join(advanced_arr)
-	_developer_log = "\n\n".join(developer_arr)
+	EventBus.log_updated.emit()
+	_is_playing = false
+
+func is_log_playing() -> bool:
+	return _is_playing
 
 func get_log(mode : DisplayMode) -> String:
 	match mode:
@@ -110,3 +139,9 @@ func get_log(mode : DisplayMode) -> String:
 			return _developer_log
 		_:
 			return ""	
+
+func register_entity(entity : Entity, entity_info_card : EntityInfoCard) -> void:
+	entity_info_card_registry[entity] = entity_info_card
+
+func _exit_tree() -> void:
+	entity_info_card_registry.clear()
