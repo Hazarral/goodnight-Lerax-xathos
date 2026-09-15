@@ -3,9 +3,12 @@ extends CombatLogEntry
 
 var current_hp_before : int
 var current_hp_after : int
+
 var damage_type : DamageAndDoT.DamageType
 var amount : int
 var ignore_shield : bool
+
+var shield_state : EntityInfoCard.ShieldState
 
 const BASIC_TEMPLATE := "> %s received [color=%s]%d %s Damage[/color] to Health"
 
@@ -29,6 +32,8 @@ func _init(
 	damage_type = p_damage_type
 	amount = p_amount
 	ignore_shield = p_ignore_shield
+	
+	shield_state = EntityInfoCard.get_shield_state(actor)
 
 func render_basic() -> String:
 	return BASIC_TEMPLATE % [
@@ -59,4 +64,4 @@ func execute_visuals() -> void:
 		var card := CombatLog.entity_info_card_registry[actor]
 		var tween_time := GlobalSettings.ui_playback_delay
 
-		card.tween_hp(current_hp_after, tween_time)
+		card.tween_hp(current_hp_after, shield_state, tween_time)

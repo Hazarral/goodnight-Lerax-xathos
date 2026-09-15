@@ -114,7 +114,7 @@ func render() -> void:
 	
 	name_label.text = entity.get_entity_name_with_suffix()
 	state_label.text = STATE_TEXT % _get_entity_state_name() 
-	shield_status_label.text = SHIELD_STATE_TEXT % SHIELD_STATE_NAME.get(get_shield_state())
+	shield_status_label.text = SHIELD_STATE_TEXT % SHIELD_STATE_NAME.get(get_shield_state(entity))
 	
 	ap_label.visible = show_ap
 	ap_label.text = AP_TEXT % [
@@ -130,14 +130,14 @@ func render() -> void:
 	
 	_set_display_hp(entity.current_hp)
 
-func get_shield_state() -> ShieldState:
-	if entity.has_no_shields():
+static func get_shield_state(p_entity : Entity) -> ShieldState:
+	if p_entity.has_no_shields():
 		return ShieldState.NO_SHIELD
 	
-	if entity.are_all_shields_breached():
+	if p_entity.are_all_shields_breached():
 		return ShieldState.ALL_BREACHED
 	
-	if entity.is_any_shield_breached():
+	if p_entity.is_any_shield_breached():
 		return ShieldState.BREACHED
 	
 	return ShieldState.FULLY_SHIELDED
@@ -152,7 +152,7 @@ func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		card_pressed.emit(self)
 
-func tween_hp(target_hp : int, duration: float) -> void:
+func tween_hp(target_hp : int, shield_state : ShieldState, duration: float) -> void:
 	# If the user dragged the speed slider to instant
 	if duration <= 0.0:
 		_set_display_hp(target_hp)
@@ -168,7 +168,7 @@ func tween_hp(target_hp : int, duration: float) -> void:
 	
 	await tween.finished
 	
-	shield_status_label.text = SHIELD_STATE_TEXT % SHIELD_STATE_NAME.get(get_shield_state())
+	shield_status_label.text = SHIELD_STATE_TEXT % SHIELD_STATE_NAME.get(shield_state)
 	
 	ap_label.visible = show_ap
 	ap_label.text = AP_TEXT % [
