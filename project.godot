@@ -25,6 +25,7 @@ InputManager="*uid://dbjcvh3p6w342"
 World="*uid://bub4rv24oh3v4"
 CombatLog="*uid://qu3tsj1nbs1w"
 StatusEffectPriorityList="*uid://d3ewotmc2bces"
+GlobalSettings="*uid://b7gfv4pgs8kti"
 
 [display]
 

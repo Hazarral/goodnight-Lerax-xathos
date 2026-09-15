@@ -20,9 +20,6 @@ const MAXIMUM_NULL_ENTRIES := 100
 
 func register(entry : CombatLogEntry) -> void:
 	_entries.append(entry)
-	
-	if _null_count >= mini(ceili(_entries.size() * NULL_THRESHOLD), MAXIMUM_NULL_ENTRIES) and _active_reservations == 0:
-		_clear_null_entries()
 
 func set_mode(display_mode : DisplayMode) -> void:
 	_mode = display_mode
@@ -33,9 +30,13 @@ func _clear_logs() -> void:
 	_developer_log = ""
 
 func reserve_slot() -> int:
+	if _null_count >= mini(ceili(_entries.size() * NULL_THRESHOLD), MAXIMUM_NULL_ENTRIES) and _active_reservations == 0:
+		_clear_null_entries()
+	
 	_entries.append(null)
 	_null_count += 1
 	_active_reservations += 1
+	
 	return _entries.size() - 1
 
 func cancel_reserved_slot(index : int) -> void:
