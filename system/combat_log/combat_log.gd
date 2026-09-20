@@ -13,8 +13,9 @@ var _basic_log : String = ""
 var _advanced_log : String = ""
 var _developer_log : String = ""
 
-var _null_count := 0			## Umbrella for all null
-var _active_reservations:= 0	## For explicit registration/cancellation
+var _cleanup_pending := false
+var _null_count := 0								## Umbrella for all null
+var _pending_slots : Dictionary[int, bool] = {}		## For explicit registration/cancellation
 const NULL_THRESHOLD := 0.5
 const MAXIMUM_NULL_ENTRIES := 100
 
@@ -24,6 +25,22 @@ var _playback_cursor := 0
 var _is_playing := false
 
 var entity_info_card_registry : Dictionary[Entity, EntityInfoCard] = {}
+
+func reset():
+	## WARNING: do not use this during playback. This is a hard reset
+	_clear_logs()
+	_entries.clear()
+	
+	if not _pending_slots.is_empty():
+		push_error("Leaked reservations at indices: %s" % str(_pending_slots.keys()))
+	_pending_slots.clear()
+	_cleanup_pending = false
+	_null_count = 0
+	
+	_playback_cursor = 0
+	_is_playing = false
+	
+	entity_info_card_registry.clear()
 
 func register(entry : CombatLogEntry) -> void:
 	_entries.append(entry)
@@ -37,21 +54,15 @@ func _clear_logs() -> void:
 	_developer_log = ""
 
 func reserve_slot() -> int:
-	if _null_count >= mini(ceili(_entries.size() * NULL_THRESHOLD), MAXIMUM_NULL_ENTRIES) and _active_reservations == 0:
-		_clear_null_entries()
+	if _should_clear_nulls():
+		_try_clear_null_entries()
 	
 	_entries.append(null)
 	_null_count += 1
-	_active_reservations += 1
+	var index = _entries.size() - 1
+	_pending_slots[index] = true
 	
-	return _entries.size() - 1
-
-func cancel_reserved_slot(index : int) -> void:
-	if index < 0 or index >= _entries.size():
-		push_error("Cannot cancel reserved slot %d: out of bounds!" % index)
-		return
-	_entries[index] = null  # NOTE: leave as null tombstone, do not remove_at() — would shift later indices
-	_active_reservations -= 1
+	return index
 
 func fill_reserved_slot(index : int, entry : CombatLogEntry) -> void:
 	if index < 0 or index >= _entries.size():
@@ -59,28 +70,66 @@ func fill_reserved_slot(index : int, entry : CombatLogEntry) -> void:
 		return
 	
 	if _entries[index] != null:
-		push_error("Slot %d is already filled! Overwriting %s with %s" % [index, _entries[index], entry])
+		push_error("Slot %d is already filled!" % index)
+		return
+	
+	if not _pending_slots.erase(index):
+		push_error("Slot %d is not a pending reservation!" % index)
+		return
 	
 	_entries[index] = entry
 	_null_count -= 1
-	_active_reservations -= 1
+	
+	if _cleanup_pending and _pending_slots.is_empty() and not _is_playing:
+		_clear_null_entries()
+
+func cancel_reserved_slot(index : int) -> void:
+	if index < 0 or index >= _entries.size():
+		push_error("Cannot cancel reserved slot %d: out of bounds!" % index)
+		return
+	
+	if not _pending_slots.erase(index):
+		push_error("Slot %d is not a pending reservation!" % index)
+		return
+	
+	_entries[index] = null  # NOTE: leave as null tombstone, do not remove_at() — would shift later indices
+	
+	if _cleanup_pending and _pending_slots.is_empty() and not _is_playing:
+		_clear_null_entries()
+
+func _should_clear_nulls() -> bool:
+	return _null_count >= mini(ceili(_entries.size() * NULL_THRESHOLD), MAXIMUM_NULL_ENTRIES)
+
+func _try_clear_null_entries() -> void:
+	if not _pending_slots.is_empty() or _is_playing:
+		_cleanup_pending = true
+		return
+	_clear_null_entries()
 
 func _clear_null_entries() -> void:
 	var write_ptr := 0
+	var new_playback_cursor := 0
 	for i in range(_entries.size()):
 		if _entries[i] != null:
+			## The actual cleaning by shifting
 			_entries[write_ptr] = _entries[i]
 			write_ptr += 1
+			if i < _playback_cursor:
+				## The cursor will now be non-null
+				new_playback_cursor += 1
 	
 	_entries.resize(write_ptr)
+	_playback_cursor = new_playback_cursor
 	_null_count = 0
+	_cleanup_pending = false
 
 func play_logs() -> void:
 	if _is_playing:
 		return
 	
 	_is_playing = true
-
+	
+	## We will work on non-null index, because it cannot be shifted around easily
 	_clear_logs()
 	var developer_entry_counter := 1
 	var index := 0 
@@ -105,7 +154,7 @@ func play_logs() -> void:
 			_developer_log += ("[Entry %d] " % developer_entry_counter) + developer_string + ENTRY_LINE_DELIMITER
 			developer_entry_counter += 1
 		
-		## THis is old history, don't play back, be instant
+		## This is old history, don't play back, be instant
 		if index < _playback_cursor:
 			index += 1
 			continue # Instantly move to the next iteration. No waits, no tweens.
@@ -125,6 +174,8 @@ func play_logs() -> void:
 	
 	EventBus.log_updated.emit()
 	_is_playing = false
+	if _cleanup_pending and _pending_slots.is_empty():
+		_clear_null_entries()
 
 func is_log_playing() -> bool:
 	return _is_playing
