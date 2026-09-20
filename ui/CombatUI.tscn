@@ -10,6 +10,7 @@
 [ext_resource type="Resource" uid="uid://bvla4v52rv7w4" path="res://system/entities/templates/enemy_side/fire_world_World_With_No_Name/basic/lust_drunk_wolf.tres" id="7_nsbht"]
 [ext_resource type="PackedScene" uid="uid://bi7f7265qr116" path="res://ui/action_button.tscn" id="8_v1jbt"]
 [ext_resource type="PackedScene" uid="uid://bm0xfhl4g6ngo" path="res://ui/void_bar.tscn" id="9_bnnle"]
+[ext_resource type="PackedScene" uid="uid://ct0jge8exhfgf" path="res://ui/buff_and_debuff_bar.tscn" id="10_lmode"]
 
 [sub_resource type="Resource" id="Resource_1482v"]
 script = ExtResource("6_rqx7n")
@@ -221,6 +222,9 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="StatusEffectList" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1663441655]
+layout_mode = 2
+
+[node name="BuffAndDebuffBar" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=743208292 instance=ExtResource("10_lmode")]
 layout_mode = 2
 
 [node name="ActionBar" type="PanelContainer" parent="Frame/Root/HBoxContainer/VBoxContainer" unique_id=962627189]

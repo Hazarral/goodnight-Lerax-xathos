@@ -16,7 +16,7 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 	
 	var multi_damage_event := MultiCombatEvent.new(source)
 	var final_amount := ceili(amount + potency_scaling * source.get_potency() + mastery_scaling * source.get_mastery())
-	for entity in targets:
+	for entity : Entity in targets:
 		var damage_event := DamageEvent.new(source, entity, damage_type, final_amount, ignore_shield)
 		multi_damage_event.add_event(damage_event)
 	

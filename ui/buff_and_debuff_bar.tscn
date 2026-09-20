@@ -1,0 +1,67 @@
+[gd_scene format=3 uid="uid://ct0jge8exhfgf"]
+
+[ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_wv2a5"]
+[ext_resource type="Script" uid="uid://dx54g0xhm6aqm" path="res://ui/buff_and_debuff_bar.gd" id="2_wv2a5"]
+
+[sub_resource type="Theme" id="Theme_w3m0f"]
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_45ljs"]
+color = Color(1, 0.11372549, 0.45882353, 0.40784314)
+
+[node name="BuffAndDebuffBar" type="PanelContainer" unique_id=743208292]
+custom_minimum_size = Vector2(400, 0)
+theme = ExtResource("1_wv2a5")
+script = ExtResource("2_wv2a5")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=584057140]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=1334843793]
+layout_mode = 2
+
+[node name="BuffsAndDebuffs" type="RichTextLabel" parent="VBoxContainer/HBoxContainer" unique_id=2128686153]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+theme_type_variation = &"VoidLabel"
+theme_override_colors/default_color = Color(0.9098039, 0.8862745, 0.83137256, 1)
+theme_override_font_sizes/normal_font_size = 15
+bbcode_enabled = true
+text = "Buffs and Debuffs"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="DropdownButton" type="Button" parent="VBoxContainer/HBoxContainer" unique_id=1902363916]
+layout_mode = 2
+theme = SubResource("Theme_w3m0f")
+text = "▼"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer" unique_id=511478200]
+layout_mode = 2
+theme = ExtResource("1_wv2a5")
+theme_override_styles/separator = SubResource("StyleBoxLine_45ljs")
+
+[node name="SummaryDescription" type="RichTextLabel" parent="VBoxContainer" unique_id=2091918818]
+layout_mode = 2
+theme_override_colors/default_color = Color(0.9098039, 0.8862745, 0.83137256, 1)
+theme_override_font_sizes/normal_font_size = 15
+bbcode_enabled = true
+text = "Health: +X, +Y%, xZ
+Shields: 
+> Fire: +X, +Y%, xZ
+> Water: +X, +Y%, xZ
+> Wind: +X, +Y%, xZ
+> Poison: +X, +Y%, xZ
+> Lightning: +X, +Y%, xZ
+> Physical: +X, +Y%, xZ
+> Earth: +X, +Y%, xZ
+> Ice: +X, +Y%, xZ
+Potency: +X, +Y%, xZ
+Mastery: +X, +Y%, xZ
+Final Damage Dealt/Received: xX / xY"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[connection signal="pressed" from="VBoxContainer/HBoxContainer/DropdownButton" to="." method="_on_dropdown_button_pressed"]

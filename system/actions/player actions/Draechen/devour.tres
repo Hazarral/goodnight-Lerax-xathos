@@ -1,0 +1,75 @@
+[gd_resource type="Resource" script_class="Action" format=3 uid="uid://dubpe57kpm1o1"]
+
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_k332s"]
+[ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="2_2crdj"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_eliuv"]
+[ext_resource type="Script" uid="uid://cs47mymn2ir7n" path="res://system/buffs_and_debuffs/buff_and_debuff.gd" id="3_fmiak"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="3_oqjj0"]
+[ext_resource type="Script" uid="uid://cf6kdelbuccca" path="res://system/actions/apply_buff_and_debuff_action_event.gd" id="4_hiyvb"]
+[ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="6_6hb6h"]
+[ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="7_8ix4o"]
+[ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="8_fmiak"]
+[ext_resource type="Script" uid="uid://b5tvpmksfnn2p" path="res://system/ui/description_segments/damage_segment.gd" id="8_hiyvb"]
+
+[sub_resource type="Resource" id="Resource_eliuv"]
+script = ExtResource("2_eliuv")
+damage_type = 8
+amount = 1
+target_state = 2
+target_faction = 1
+metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
+
+[sub_resource type="Resource" id="Resource_hiyvb"]
+script = ExtResource("3_fmiak")
+duration = 2
+health_additive = 100.0
+health_additive_multiplicative = 0.5
+health_true_multiplicative = 0.2
+shields_additive = PackedFloat32Array(100, 100, 100, 100, 100, 100, 100, 100)
+shields_additive_multiplicative = null
+shields_true_multiplicative = PackedFloat32Array(0.5, 0, 0, 0, 0, 0, 0, 0)
+potency_additive = 10.0
+potency_true_multiplicative = 1.0
+mastery_additive = -5.0
+mastery_true_multiplicative = 2.0
+metadata/_custom_type_script = "uid://cs47mymn2ir7n"
+
+[sub_resource type="Resource" id="Resource_fmiak"]
+script = ExtResource("4_hiyvb")
+buff_and_debuff = SubResource("Resource_hiyvb")
+target_mode = 1
+metadata/_custom_type_script = "uid://cf6kdelbuccca"
+
+[sub_resource type="Resource" id="Resource_d0gfr"]
+script = ExtResource("6_6hb6h")
+text = "Demo for buff/debuff to self"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_pibrd"]
+script = ExtResource("7_8ix4o")
+metadata/_custom_type_script = "uid://d0c4l5ycbx5ue"
+
+[sub_resource type="Resource" id="Resource_6hb6h"]
+script = ExtResource("6_6hb6h")
+text = "Bites"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_1fe6c"]
+script = ExtResource("8_hiyvb")
+damage_type = 8
+base_damage = 1.0
+metadata/_custom_type_script = "uid://b5tvpmksfnn2p"
+
+[sub_resource type="Resource" id="Resource_8ix4o"]
+script = ExtResource("8_fmiak")
+target_state = 2
+target_faction = 1
+metadata/_custom_type_script = "uid://cfp2mohxm1c47"
+
+[resource]
+script = ExtResource("3_oqjj0")
+action_name = "Devour"
+action_point_cost = 1
+description_segments = Array[ExtResource("2_2crdj")]([SubResource("Resource_d0gfr"), SubResource("Resource_pibrd"), SubResource("Resource_6hb6h"), SubResource("Resource_1fe6c"), SubResource("Resource_8ix4o")])
+action_events = Array[ExtResource("1_k332s")]([SubResource("Resource_eliuv"), SubResource("Resource_fmiak")])
+metadata/_custom_type_script = "uid://doysxg78oub0w"

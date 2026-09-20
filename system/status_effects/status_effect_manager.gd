@@ -13,19 +13,8 @@ func _init() -> void:
 	
 	EventBus.status_expired.connect(remove_status_effect)
 
-func get_status_effects_display_info() -> Array[StatusEffectDisplayInfo]:
-	var arr : Array[StatusEffectDisplayInfo] = []
-	for effect in effects:
-		arr.append(
-			StatusEffectDisplayInfo.new(
-				effect.get_effect_name(), 
-				effect.get_description(), 
-				effect.duration, 
-				effect.is_permanent
-			)
-		)
-	
-	return arr
+func get_status_effects() -> Array[StatusEffect]:
+	return effects
 
 func register_hook(type: StatusEffectPriorityList.CheckpointType, binding: HookBinding) -> void:
 	_hooks[type].append(binding)

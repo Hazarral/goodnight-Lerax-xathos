@@ -25,6 +25,7 @@ const ENEMY_ROSTER_HAS_REINFORCEMENT_HEADER := "ENEMIES (REINFORCEMENT: %d)"
 @onready var inspector_shield_grid := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid
 @onready var inspector_elemental_dot_list := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ElementalDoTList
 @onready var inspector_status_effect_list := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/StatusEffectList
+@onready var inspector_buff_and_debuff_bar := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/BuffAndDebuffBar
 
 const ENTITY_INFO_CARD_SCENE : PackedScene = preload("res://ui/entity_info_card.tscn")
 const SHIELD_CHIP_SCENE : PackedScene = preload("res://ui/shield_chip.tscn")
@@ -201,12 +202,15 @@ func _set_inspector(entity : Entity) -> void:
 		void_bar.setup(entity)
 		void_bar.render()
 	
-	var status_effect_display_info := entity.get_status_effects_display_info()
-	for display_info in status_effect_display_info:
+	var status_effects := entity.get_status_effects()
+	for status_effect in status_effects:
 		var status_bar := STATUS_EFFECT_BAR_SCENE.instantiate()
 		inspector_status_effect_list.add_child(status_bar)
-		status_bar.setup(display_info)
+		status_bar.setup(status_effect)
 		status_bar.render()
+	
+	inspector_buff_and_debuff_bar.setup(entity)
+	inspector_buff_and_debuff_bar.render()
 
 func _add_roster_for_faction(is_player_faction : bool) -> void:
 	_add_roster(CombatSystem.get_on_field(is_player_faction), is_player_faction)

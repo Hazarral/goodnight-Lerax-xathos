@@ -905,8 +905,8 @@ func apply_status_effect(effect : StatusEffect, caster : Entity, chosen_target :
 func remove_status_effect(effect : StatusEffect) -> void:
 	status_effect_manager.remove_status_effect(effect)
 
-func get_status_effects_display_info() -> Array[StatusEffectDisplayInfo]:
-	return status_effect_manager.get_status_effects_display_info()
+func get_status_effects() -> Array[StatusEffect]:
+	return status_effect_manager.get_status_effects().duplicate(true)
 
 func _resolve_status_effect_tick_down() -> void:
 	status_effect_manager.tick_down(self)
@@ -941,3 +941,6 @@ func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 	
 	buff_and_debuff_manager.remove_buff_and_debuff(buff_and_debuff)
 	_recompute_all_stats_preserving_percent(hp_percent, shield_percents)
+
+func get_buff_and_debuff_summary() -> BuffAndDebuffSummary:
+	return buff_and_debuff_manager.get_summary()
