@@ -47,6 +47,8 @@ const SHIELD_STATE_NAME : Dictionary[ShieldState, String] = {
 	ShieldState.ALL_BREACHED : "[All Shield Breached]"
 }
 
+const EPSILON := 1e-4
+
 ## Template will be duplicated
 func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> void:
 	template = base_template
@@ -66,25 +68,25 @@ func _get_base_max_hp() -> float:
 	return template.max_hp * magnification
 
 func get_max_hp() -> int:
-	return ceili(buff_and_debuff_manager.compute_health(_get_base_max_hp()))
+	return ceili(buff_and_debuff_manager.compute_health(_get_base_max_hp()) - EPSILON)
 
 func _get_base_max_shield(i : int) -> float:
 	return max_shields[i] * magnification
 
 func get_max_shield(i : int) -> int:
-	return ceili(buff_and_debuff_manager.compute_shield(i, _get_base_max_shield(i)))
+	return ceili(buff_and_debuff_manager.compute_shield(i, _get_base_max_shield(i)) - EPSILON)
 
 func _get_base_potency() -> float:
 	return template.potency * magnification
 
 func get_potency() -> int:
-	return ceili(buff_and_debuff_manager.compute_potency(_get_base_potency()))
+	return ceili(buff_and_debuff_manager.compute_potency(_get_base_potency()) - EPSILON)
 
 func _get_base_mastery() -> int:
 	return floori(template.mastery * magnification)
 
 func get_mastery() -> int:
-	return ceili(buff_and_debuff_manager.compute_mastery(_get_base_mastery()))
+	return ceili(buff_and_debuff_manager.compute_mastery(_get_base_mastery()) - EPSILON)
 
 func setup_shields() -> void:
 	max_shields = template.get_packed_shields()
@@ -203,7 +205,7 @@ func get_total_attrition() -> int:
 		
 		result += dot_instance_array.calculate_total_attrition()
 	
-	return ceili(result)
+	return ceili(result - EPSILON)
 
 func is_player_faction() -> bool:
 	return template.is_player_faction
@@ -401,6 +403,9 @@ func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shiel
 	if current_state == State.DEAD:
 		return
 	
+	# Reduce damage exactly once here
+	amount = ceili(amount * get_final_damage_received_true_multiplicative() - EPSILON)
+	
 	var current_hp_before := current_hp
 	current_hp = maxi(0, current_hp - amount)
 	var current_hp_after := current_hp
@@ -597,7 +602,7 @@ func _regen_shields() -> void:
 	
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		if max_shields[i] > 0:
-			var attrition := ceili(get_attrition(i as DamageAndDoT.DamageType))
+			var attrition := ceili(get_attrition(i as DamageAndDoT.DamageType) - EPSILON)
 			current_shields[i] = maxi(0, max_shields[i] - attrition)
 			attrition_list[i] = attrition
 		else:
@@ -944,3 +949,9 @@ func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 
 func get_buff_and_debuff_summary() -> BuffAndDebuffSummary:
 	return buff_and_debuff_manager.get_summary()
+
+func get_final_damage_dealt_true_multiplicative() -> float:
+	return buff_and_debuff_manager.compute_final_damage_dealt_multiplier()
+
+func get_final_damage_received_true_multiplicative() -> float:
+	return buff_and_debuff_manager.compute_final_damage_received_multiplier()

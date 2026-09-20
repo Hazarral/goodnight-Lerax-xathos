@@ -26,16 +26,14 @@ func compute_health(base : float) -> float:
 func compute_shield(index : int, base : float) -> float:
 	var additive_sum := 0.0
 	var additive_multiplicative_sum := 0.0
-	for buff_and_debuff in all_buffs_and_debuffs:
-		additive_sum += buff_and_debuff.shields_additive[index]
-		additive_multiplicative_sum += buff_and_debuff.shields_additive_multiplicative[index]
-	
-	var result := (base + additive_sum) * (1.0 + additive_multiplicative_sum)
+	var true_multiplicative_product := 1.0
 	
 	for buff_and_debuff in all_buffs_and_debuffs:
-		result *= (1.0 + buff_and_debuff.shields_true_multiplicative[index])
-		
-	return result
+		additive_sum += buff_and_debuff.get_shield_additive(index)
+		additive_multiplicative_sum += buff_and_debuff.get_shield_additive_multiplicative(index)
+		true_multiplicative_product *= (1.0 + buff_and_debuff.get_shield_true_multiplicative(index))
+	
+	return (base + additive_sum) * (1.0 + additive_multiplicative_sum) * true_multiplicative_product
 
 func compute_potency(base : float) -> float:
 	var additive_sum := 0.0
@@ -65,15 +63,15 @@ func compute_mastery(base : float) -> float:
 		
 	return result
 
-func compute_final_damage_dealt(raw_damage_dealt : float) -> float:
-	var result : float = raw_damage_dealt
+func compute_final_damage_dealt_multiplier() -> float:
+	var result : float = 1.0
 	for buff_and_debuff in all_buffs_and_debuffs:
 		result *= (1.0 + buff_and_debuff.final_damage_dealt_true_multiplicative)
 	
 	return result
 
-func compute_final_damage_received(raw_damage_received : float) -> float:
-	var result : float = raw_damage_received
+func compute_final_damage_received_multiplier() -> float:
+	var result : float = 1.0
 	for buff_and_debuff in all_buffs_and_debuffs:
 		result *= (1.0 + buff_and_debuff.final_damage_received_true_multiplicative)
 	
@@ -167,14 +165,13 @@ func get_summary() -> BuffAndDebuffSummary:
 		health_additive_multiplicative += buff_and_debuff.health_additive_multiplicative
 		health_true_multiplicative *= (1.0 + buff_and_debuff.health_true_multiplicative)
 		
-		for i in buff_and_debuff.shields_additive.size():
-			shields_additive[i] += buff_and_debuff.shields_additive[i]
-		
-		for i in buff_and_debuff.shields_additive_multiplicative.size():
-			shields_additive_multiplicative[i] += buff_and_debuff.shields_additive_multiplicative[i]
-		
-		for i in buff_and_debuff.shields_true_multiplicativ.size():
-			shields_true_multiplicative[i] *= (1.0 + buff_and_debuff.shields_true_multiplicativ[i])
+		var add := buff_and_debuff.get_packed_shields_additive()
+		var add_mult := buff_and_debuff.get_packed_shields_additive_multiplicative()
+		var true_mult := buff_and_debuff.get_packed_shields_true_multiplicative()
+		for i in DamageAndDoT.ELEMENT_COUNT:
+			shields_additive[i] += add[i]
+			shields_additive_multiplicative[i] += add_mult[i]
+			shields_true_multiplicative[i] *= (1.0 + true_mult[i])
 		
 		potency_additive += buff_and_debuff.potency_additive
 		potency_additive_multiplicative += buff_and_debuff.potency_additive_multiplicative

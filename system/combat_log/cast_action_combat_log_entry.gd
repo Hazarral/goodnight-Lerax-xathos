@@ -46,3 +46,8 @@ func render_developer() -> String:
 		DamageAndDoT.GENERIC_COLOR_HEX, cooldown
 	]
 	return text
+
+func execute_visuals() -> void:
+	if CombatLog.entity_info_card_registry.has(actor):
+		var card := CombatLog.entity_info_card_registry[actor]
+		card.render()

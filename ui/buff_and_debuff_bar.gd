@@ -88,7 +88,7 @@ func render() -> void:
 func _stat_args(additive : float, additive_multiplicative : float, true_multiplicative : float) -> Array[Variant]:
 	return [
 		get_color_hex(additive, 0.0), _sign(additive), additive,
-		get_color_hex(additive_multiplicative, 0.0), _sign(additive_multiplicative), additive_multiplicative,
+		get_color_hex(additive_multiplicative, 0.0), _sign(additive_multiplicative), additive_multiplicative * 100.0,
 		get_color_hex(true_multiplicative, 1.0), true_multiplicative
 	]
 

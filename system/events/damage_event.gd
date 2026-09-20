@@ -17,4 +17,4 @@ func _init(p_source : Entity, p_target : Entity, p_damage_type : DamageAndDoT.Da
 	ignore_shield = p_ignore_shield
 
 func resolve() -> void:
-	target.take_damage(damage_type, amount, ignore_shield)
+	target.take_damage(damage_type, ceili(amount * source.get_final_damage_dealt_true_multiplicative()), ignore_shield)

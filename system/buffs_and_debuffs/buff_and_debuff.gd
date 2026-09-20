@@ -11,11 +11,36 @@ extends Resource
 @export var health_additive_multiplicative : float = 0.0
 @export var health_true_multiplicative : float = 0.0
 
-## Shield
-@export_group("Shields")
-@export var shields_additive : PackedFloat32Array = PackedFloat32Array()
-@export var shields_additive_multiplicative : PackedFloat32Array = PackedFloat32Array()
-@export var shields_true_multiplicative : PackedFloat32Array = PackedFloat32Array()
+@export_group("Shields Additive")
+@export var fire_shield_additive : float = 0.0
+@export var water_shield_additive : float = 0.0
+@export var wind_shield_additive : float = 0.0
+@export var poison_shield_additive : float = 0.0
+@export var lightning_shield_additive : float = 0.0
+@export var physical_shield_additive : float = 0.0
+@export var earth_shield_additive : float = 0.0
+@export var ice_shield_additive : float = 0.0
+
+@export_group("Shields Additive Multiplicative")
+@export var fire_shield_additive_multiplicative : float = 0.0
+@export var water_shield_additive_multiplicative : float = 0.0
+@export var wind_shield_additive_multiplicative : float = 0.0
+@export var poison_shield_additive_multiplicative : float = 0.0
+@export var lightning_shield_additive_multiplicative : float = 0.0
+@export var physical_shield_additive_multiplicative : float = 0.0
+@export var earth_shield_additive_multiplicative : float = 0.0
+@export var ice_shield_additive_multiplicative : float = 0.0
+
+@export_group("Shields True Multiplicative")
+@export var fire_shield_true_multiplicative : float = 0.0
+@export var water_shield_true_multiplicative : float = 0.0
+@export var wind_shield_true_multiplicative : float = 0.0
+@export var poison_shield_true_multiplicative : float = 0.0
+@export var lightning_shield_true_multiplicative : float = 0.0
+@export var physical_shield_true_multiplicative : float = 0.0
+@export var earth_shield_true_multiplicative : float = 0.0
+@export var ice_shield_true_multiplicative : float = 0.0
+
 
 ## Potency
 @export_group("Potency")
@@ -34,35 +59,78 @@ extends Resource
 @export var final_damage_dealt_true_multiplicative : float = 0.0
 @export var final_damage_received_true_multiplicative : float = 0.0
 
-func _init(p_duration : int) -> void:
-	shields_additive.resize(DamageAndDoT.ELEMENT_COUNT)
-	shields_additive_multiplicative.resize(DamageAndDoT.ELEMENT_COUNT)
-	shields_true_multiplicative.resize(DamageAndDoT.ELEMENT_COUNT)
-	duration = p_duration
+func get_packed_shields_additive() -> PackedFloat32Array:
+	return _pack_shields([
+		fire_shield_additive, water_shield_additive, wind_shield_additive, poison_shield_additive,
+		lightning_shield_additive, physical_shield_additive, earth_shield_additive, ice_shield_additive
+	])
 
-func set_health_buff_and_debuff(additive : float, additive_multiplicative : float, true_multiplicative : float) -> void:
-	health_additive = additive
-	health_additive_multiplicative = additive_multiplicative
-	health_true_multiplicative = true_multiplicative
+func get_packed_shields_additive_multiplicative() -> PackedFloat32Array:
+	return _pack_shields([
+		fire_shield_additive_multiplicative, water_shield_additive_multiplicative,
+		wind_shield_additive_multiplicative, poison_shield_additive_multiplicative,
+		lightning_shield_additive_multiplicative, physical_shield_additive_multiplicative,
+		earth_shield_additive_multiplicative, ice_shield_additive_multiplicative
+	])
 
-func set_shields_buff_and_debuff(additive : PackedFloat32Array, additive_multiplicative : PackedFloat32Array, true_multiplicative : PackedFloat32Array) -> void:
-	shields_additive = additive
-	shields_additive_multiplicative = additive_multiplicative
-	shields_true_multiplicative = true_multiplicative
+func get_packed_shields_true_multiplicative() -> PackedFloat32Array:
+	return _pack_shields([
+		fire_shield_true_multiplicative, water_shield_true_multiplicative,
+		wind_shield_true_multiplicative, poison_shield_true_multiplicative,
+		lightning_shield_true_multiplicative, physical_shield_true_multiplicative,
+		earth_shield_true_multiplicative, ice_shield_true_multiplicative
+	])
 
-func set_potency_buff_and_debuff(additive : float, additive_multiplicative : float, true_multiplicative : float) -> void:
-	potency_additive = additive
-	potency_additive_multiplicative = additive_multiplicative
-	potency_true_multiplicative = true_multiplicative
+func _pack_shields(values : Array[float]) -> PackedFloat32Array:
+	var packed := PackedFloat32Array()
+	packed.resize(DamageAndDoT.ELEMENT_COUNT)
+	
+	packed[DamageAndDoT.DamageType.FIRE] = values[0]
+	packed[DamageAndDoT.DamageType.WATER] = values[1]
+	packed[DamageAndDoT.DamageType.WIND] = values[2]
+	packed[DamageAndDoT.DamageType.POISON] = values[3]
+	packed[DamageAndDoT.DamageType.LIGHTNING] = values[4]
+	packed[DamageAndDoT.DamageType.PHYSICAL] = values[5]
+	packed[DamageAndDoT.DamageType.EARTH] = values[6]
+	packed[DamageAndDoT.DamageType.ICE] = values[7]
+	
+	return packed
 
-func set_mastery_buff_and_debuff(additive : float, additive_multiplicative : float, true_multiplicative : float) -> void:
-	mastery_additive = additive
-	mastery_additive_multiplicative = additive_multiplicative
-	mastery_true_multiplicative = true_multiplicative
+func get_shield_additive(index : int) -> float:
+	match index:
+		DamageAndDoT.DamageType.FIRE: return fire_shield_additive
+		DamageAndDoT.DamageType.WATER: return water_shield_additive
+		DamageAndDoT.DamageType.WIND: return wind_shield_additive
+		DamageAndDoT.DamageType.POISON: return poison_shield_additive
+		DamageAndDoT.DamageType.LIGHTNING: return lightning_shield_additive
+		DamageAndDoT.DamageType.PHYSICAL: return physical_shield_additive
+		DamageAndDoT.DamageType.EARTH: return earth_shield_additive
+		DamageAndDoT.DamageType.ICE: return ice_shield_additive
+	return 0.0
 
-func set_final_damage_dealt_and_received_buff_and_debuff(damage_dealt_multiplicative : float, damage_received_multiplicative : float) -> void:
-	final_damage_dealt_true_multiplicative = damage_dealt_multiplicative
-	final_damage_received_true_multiplicative = damage_received_multiplicative
+func get_shield_additive_multiplicative(index : int) -> float:
+	match index:
+		DamageAndDoT.DamageType.FIRE: return fire_shield_additive_multiplicative
+		DamageAndDoT.DamageType.WATER: return water_shield_additive_multiplicative
+		DamageAndDoT.DamageType.WIND: return wind_shield_additive_multiplicative
+		DamageAndDoT.DamageType.POISON: return poison_shield_additive_multiplicative
+		DamageAndDoT.DamageType.LIGHTNING: return lightning_shield_additive_multiplicative
+		DamageAndDoT.DamageType.PHYSICAL: return physical_shield_additive_multiplicative
+		DamageAndDoT.DamageType.EARTH: return earth_shield_additive_multiplicative
+		DamageAndDoT.DamageType.ICE: return ice_shield_additive_multiplicative
+	return 0.0
+
+func get_shield_true_multiplicative(index : int) -> float:
+	match index:
+		DamageAndDoT.DamageType.FIRE: return fire_shield_true_multiplicative
+		DamageAndDoT.DamageType.WATER: return water_shield_true_multiplicative
+		DamageAndDoT.DamageType.WIND: return wind_shield_true_multiplicative
+		DamageAndDoT.DamageType.POISON: return poison_shield_true_multiplicative
+		DamageAndDoT.DamageType.LIGHTNING: return lightning_shield_true_multiplicative
+		DamageAndDoT.DamageType.PHYSICAL: return physical_shield_true_multiplicative
+		DamageAndDoT.DamageType.EARTH: return earth_shield_true_multiplicative
+		DamageAndDoT.DamageType.ICE: return ice_shield_true_multiplicative
+	return 0.0
 
 func tick_down() -> void:
 	if is_permanent:
