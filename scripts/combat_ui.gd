@@ -73,6 +73,9 @@ var pending_source : Entity = null
 
 var current_combat_log_mode := CombatLog.DisplayMode.BASIC
 
+## 5. Grayscale layer on targeting phase
+@onready var targeting_phase_layer := $TargetingPhaseLayer
+
 func _ready() -> void:
 	EventBus.combat_initialization_finished.connect(_set_time_to_live)
 	EventBus.target_requested.connect(_on_target_requested)
@@ -154,6 +157,7 @@ func _clear_pending_target_state() -> void:
 	pending_action_index = -1
 	pending_source = null
 	_clear_target_highlight()
+	targeting_phase_layer.fade_gray(false)
 
 func _clear_selected_card() -> void:
 	if selected_card:
@@ -261,6 +265,7 @@ func _on_target_requested(_event : ActionEvent, target_faction : ActionEvent.Tar
 	is_awaiting_target = true
 	valid_target_pool = CombatSystem.get_valid_targets(target_faction, target_state)
 	_highlight_targetable_cards(valid_target_pool)
+	targeting_phase_layer.fade_gray(true)
 
 func _refresh_active_turn_cards() -> void:
 	var current_entity := CombatSystem.get_current_actor()

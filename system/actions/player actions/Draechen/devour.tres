@@ -15,7 +15,7 @@
 script = ExtResource("2_eliuv")
 damage_type = 8
 amount = 1
-target_state = 2
+target_state = 1
 target_faction = 1
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 
@@ -68,7 +68,7 @@ metadata/_custom_type_script = "uid://d0c4l5ycbx5ue"
 
 [sub_resource type="Resource" id="Resource_6hb6h"]
 script = ExtResource("6_6hb6h")
-text = "Bites"
+text = "Deals"
 metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 
 [sub_resource type="Resource" id="Resource_1fe6c"]
@@ -79,7 +79,7 @@ metadata/_custom_type_script = "uid://b5tvpmksfnn2p"
 
 [sub_resource type="Resource" id="Resource_8ix4o"]
 script = ExtResource("8_fmiak")
-target_state = 2
+target_state = 1
 target_faction = 1
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"
 

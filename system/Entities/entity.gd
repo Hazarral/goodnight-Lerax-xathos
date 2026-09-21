@@ -525,8 +525,9 @@ func begin_turn() -> void:
 	## Stage F: Tick down on all DoT
 	_resolve_dot_tick_down()
 	
-	## Stage G: Status Effect tick down
+	## Stage G: Status Effect and buff/debuff tick down
 	_resolve_status_effect_tick_down()
+	_resolve_buff_and_debuff_tick_down()
 	
 	## Stage H: Actions
 	start_action_phase()
@@ -955,3 +956,6 @@ func get_final_damage_dealt_true_multiplicative() -> float:
 
 func get_final_damage_received_true_multiplicative() -> float:
 	return buff_and_debuff_manager.compute_final_damage_received_multiplier()
+
+func _resolve_buff_and_debuff_tick_down() -> void:
+	buff_and_debuff_manager.tick_down()

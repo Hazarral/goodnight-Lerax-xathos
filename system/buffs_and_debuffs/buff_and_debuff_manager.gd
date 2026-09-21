@@ -9,6 +9,11 @@ func add_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 	all_buffs_and_debuffs.erase(buff_and_debuff)
 
+func tick_down() -> void:
+	## TODO: rework the signals and auto remove
+	for buff_and_debuff in all_buffs_and_debuffs:
+		buff_and_debuff.tick_down()
+
 func compute_health(base : float) -> float:
 	var additive_sum := 0.0
 	var additive_multiplicative_sum := 0.0

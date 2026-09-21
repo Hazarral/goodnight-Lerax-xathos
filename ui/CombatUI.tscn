@@ -11,6 +11,8 @@
 [ext_resource type="PackedScene" uid="uid://bi7f7265qr116" path="res://ui/action_button.tscn" id="8_v1jbt"]
 [ext_resource type="PackedScene" uid="uid://bm0xfhl4g6ngo" path="res://ui/void_bar.tscn" id="9_bnnle"]
 [ext_resource type="PackedScene" uid="uid://ct0jge8exhfgf" path="res://ui/buff_and_debuff_bar.tscn" id="10_lmode"]
+[ext_resource type="Shader" uid="uid://c7uk1xaqh7ixm" path="res://ui/shaders/targeting_phase.gdshader" id="12_28h72"]
+[ext_resource type="Script" uid="uid://drdu2tmuequr4" path="res://ui/targeting_phase_canvas_layer.gd" id="12_cwnra"]
 
 [sub_resource type="Resource" id="Resource_1482v"]
 script = ExtResource("6_rqx7n")
@@ -26,6 +28,14 @@ innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_gftf7")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
 [sub_resource type="Theme" id="Theme_qbsgc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jpyye"]
+shader = ExtResource("12_28h72")
+shader_parameter/key_a = Color(0.4667, 0, 0, 1)
+shader_parameter/key_b = Color(0.2314, 0, 0, 1)
+shader_parameter/tolerance = 0.1200000057
+shader_parameter/feather = 0.005
+shader_parameter/gray_amount = 0.0
 
 [node name="CombatUI" type="Control" unique_id=1152202896]
 layout_mode = 3
@@ -388,6 +398,19 @@ text = "Export Raw Log"
 [node name="ExportParsedLog" type="Button" parent="Frame/Root/HBoxContainer/LogPanel/LogCol/HBoxContainer" unique_id=1857219920]
 layout_mode = 2
 text = "Export Parsed Log"
+
+[node name="TargetingPhaseLayer" type="CanvasLayer" parent="." unique_id=1468170411]
+layer = 2
+script = ExtResource("12_cwnra")
+
+[node name="ColorRect" type="ColorRect" parent="TargetingPhaseLayer" unique_id=1449597109]
+material = SubResource("ShaderMaterial_jpyye")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [connection signal="pressed" from="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]
 [connection signal="tab_changed" from="Frame/Root/HBoxContainer/LogPanel/LogCol/TabBar" to="." method="_on_tab_bar_tab_changed"]
