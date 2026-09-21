@@ -2,17 +2,29 @@ class_name BuffAndDebuffManager
 extends RefCounted
 
 var all_buffs_and_debuffs : Array[BuffAndDebuff]
+var _pending_removals : Array[BuffAndDebuff] = []
+
+func get_all_buff_and_debuffs() -> Array[BuffAndDebuff]:
+	return all_buffs_and_debuffs
 
 func add_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 	all_buffs_and_debuffs.append(buff_and_debuff)
+	buff_and_debuff.buff_and_debuff_expired.connect(remove_buff_and_debuff)
 
 func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
-	all_buffs_and_debuffs.erase(buff_and_debuff)
+	_pending_removals.append(buff_and_debuff)
 
 func tick_down() -> void:
-	## TODO: rework the signals and auto remove
 	for buff_and_debuff in all_buffs_and_debuffs:
 		buff_and_debuff.tick_down()
+	
+	if _pending_removals.is_empty():
+		return
+	
+	for buff_and_debuff in _pending_removals:
+		all_buffs_and_debuffs.erase(buff_and_debuff)
+	
+	_pending_removals.clear()
 
 func compute_health(base : float) -> float:
 	var additive_sum := 0.0
@@ -85,53 +97,37 @@ func compute_final_damage_received_multiplier() -> float:
 func get_contributors_health() -> Array[BuffAndDebuff]:
 	return all_buffs_and_debuffs.filter(
 		func(buff_and_debuff : BuffAndDebuff): 
-			return (
-				buff_and_debuff.health_additive != 0.0 or 
-				buff_and_debuff.health_additive_multiplicative != 0.0 or 
-				buff_and_debuff.health_true_multiplicative != 0.0
-			)
+			return buff_and_debuff.has_health_modifications()
 	)
 
 func get_contributors_shield(damage_type : DamageAndDoT.DamageType) -> Array[BuffAndDebuff]:
 	return all_buffs_and_debuffs.filter(
 		func(buff_and_debuff : BuffAndDebuff): 
-			return (
-				buff_and_debuff.shields_additive[damage_type] != 0.0 or 
-				buff_and_debuff.shields_additive_multiplicative[damage_type] != 0.0 or 
-				buff_and_debuff.shields_true_multiplicative[damage_type] != 0.0
-			)
+			return buff_and_debuff.has_shield_modifications(damage_type)
 	)
 
 func get_contributors_potency() -> Array[BuffAndDebuff]:
 	return all_buffs_and_debuffs.filter(
 		func(buff_and_debuff : BuffAndDebuff): 
-			return (
-				buff_and_debuff.potency_additive != 0.0 or 
-				buff_and_debuff.potency_additive_multiplicative != 0.0 or 
-				buff_and_debuff.potency_true_multiplicative != 0.0
-			)
+			return buff_and_debuff.has_potency_modifications()
 	)
 
 func get_contributors_mastery() -> Array[BuffAndDebuff]:
 	return all_buffs_and_debuffs.filter(
 		func(buff_and_debuff : BuffAndDebuff): 
-			return (
-				buff_and_debuff.mastery_additive != 0.0 or 
-				buff_and_debuff.mastery_additive_multiplicative != 0.0 or 
-				buff_and_debuff.mastery_true_multiplicative != 0.0
-			)
+			return buff_and_debuff.has_mastery_modifications()
 	)
 
 func get_contributors_final_damage_dealt() -> Array[BuffAndDebuff]:
 	return all_buffs_and_debuffs.filter(
 		func(buff_and_debuff : BuffAndDebuff): 
-			return buff_and_debuff.final_damage_dealt_true_multiplicative != 0.0
+			return buff_and_debuff.has_final_damage_dealt_modifications()
 	)
 
 func get_contributors_final_damage_received() -> Array[BuffAndDebuff]:
 	return all_buffs_and_debuffs.filter(
 		func(buff_and_debuff : BuffAndDebuff): 
-			return buff_and_debuff.final_damage_received_true_multiplicative != 0.0
+			return buff_and_debuff.has_final_damage_received_modifications()
 	)
 
 func get_summary() -> BuffAndDebuffSummary:

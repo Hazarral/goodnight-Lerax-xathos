@@ -948,6 +948,9 @@ func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 	buff_and_debuff_manager.remove_buff_and_debuff(buff_and_debuff)
 	_recompute_all_stats_preserving_percent(hp_percent, shield_percents)
 
+func get_all_buff_and_debuffs() -> Array[BuffAndDebuff]:
+	return buff_and_debuff_manager.get_all_buff_and_debuffs().duplicate(true)
+
 func get_buff_and_debuff_summary() -> BuffAndDebuffSummary:
 	return buff_and_debuff_manager.get_summary()
 

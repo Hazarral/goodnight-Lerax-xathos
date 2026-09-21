@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://ct0jge8exhfgf" path="res://ui/buff_and_debuff_bar.tscn" id="10_lmode"]
 [ext_resource type="Shader" uid="uid://c7uk1xaqh7ixm" path="res://ui/shaders/targeting_phase.gdshader" id="12_28h72"]
 [ext_resource type="Script" uid="uid://drdu2tmuequr4" path="res://ui/targeting_phase_canvas_layer.gd" id="12_cwnra"]
+[ext_resource type="PackedScene" uid="uid://5pr35fxsp354" path="res://ui/target_phase_bar.tscn" id="14_xfgh3"]
 
 [sub_resource type="Resource" id="Resource_1482v"]
 script = ExtResource("6_rqx7n")
@@ -231,8 +232,18 @@ layout_mode = 2
 [node name="ElementalDoTList" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=930276820]
 layout_mode = 2
 
+[node name="StatusEffectLabel" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1559059715]
+layout_mode = 2
+text = "- Status Effects -"
+horizontal_alignment = 1
+
 [node name="StatusEffectList" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1663441655]
 layout_mode = 2
+
+[node name="BuffAndDebuffLabel" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1048768846]
+layout_mode = 2
+text = "- Buffs and Debuffs -"
+horizontal_alignment = 1
 
 [node name="BuffAndDebuffBar" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=743208292 instance=ExtResource("10_lmode")]
 layout_mode = 2
@@ -411,6 +422,34 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[node name="TargetPhaseBarAnchor" type="Control" parent="TargetingPhaseLayer" unique_id=114493880]
+custom_minimum_size = Vector2(400, 100)
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -3.0517578e-05
+offset_right = 3.0517578e-05
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="TargetPhaseBar" parent="TargetingPhaseLayer/TargetPhaseBarAnchor" unique_id=1676737660 instance=ExtResource("14_xfgh3")]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 580.0
+offset_top = 782.0
+offset_right = 980.0
+offset_bottom = 860.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
 
 [connection signal="pressed" from="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]
 [connection signal="tab_changed" from="Frame/Root/HBoxContainer/LogPanel/LogCol/TabBar" to="." method="_on_tab_bar_tab_changed"]

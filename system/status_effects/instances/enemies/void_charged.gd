@@ -73,6 +73,3 @@ func on_applied(target : Entity, _caster : Entity) -> void:
 # A bit unintuitive, but it's how it works
 func attaches_to_caster() -> bool:
 	return true
-
-func _expire() -> void:	
-	EventBus.status_expired.emit(self)

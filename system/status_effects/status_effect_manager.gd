@@ -10,8 +10,6 @@ var _hooks : Dictionary[StatusEffectPriorityList.CheckpointType, Array] = {}
 func _init() -> void:
 	for checkpoint in StatusEffectPriorityList.CheckpointType.values():
 		_hooks[checkpoint] = [] as Array[HookBinding]
-	
-	EventBus.status_expired.connect(remove_status_effect)
 
 func get_status_effects() -> Array[StatusEffect]:
 	return effects
@@ -40,6 +38,8 @@ func apply_status_effect(effect : StatusEffect) -> void:
 	
 	effects.append(effect)
 	effect.register_hooks(self)
+	effect.status_expired.connect(remove_status_effect)
+	effect.status_purged.connect(remove_status_effect)
 
 func tick_down(entity : Entity) -> void:
 	for effect in effects:

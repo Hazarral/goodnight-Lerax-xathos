@@ -1,12 +1,12 @@
 [gd_scene format=3 uid="uid://5pr35fxsp354"]
 
 [ext_resource type="Theme" uid="uid://b22qfjr0ovdew" path="res://ui/CombatTheme.tres" id="1_yjfvs"]
-[ext_resource type="Script" uid="uid://dx54g0xhm6aqm" path="res://ui/buff_and_debuff_bar.gd" id="2_7nqgp"]
+[ext_resource type="Script" uid="uid://cqvx7jqqu45aq" path="res://ui/target_phase_bar.gd" id="2_yjfvs"]
 
 [node name="TargetPhaseBar" type="PanelContainer" unique_id=743208292]
-custom_minimum_size = Vector2(400, 0)
+custom_minimum_size = Vector2(400, 50)
 theme = ExtResource("1_yjfvs")
-script = ExtResource("2_7nqgp")
+script = ExtResource("2_yjfvs")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=584057140]
 layout_mode = 2
@@ -16,7 +16,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 theme_type_variation = &"VoidLabel"
-theme_override_colors/default_color = Color(0.9098039, 0.8862745, 0.83137256, 1)
+theme_override_colors/default_color = Color(1, 0.11372549, 0.45882353, 1)
 theme_override_font_sizes/normal_font_size = 15
 bbcode_enabled = true
 text = "Choose a Target (Esc/RMB to cancel)"

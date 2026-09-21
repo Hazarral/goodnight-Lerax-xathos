@@ -1,0 +1,49 @@
+[gd_resource type="Resource" script_class="Action" format=3 uid="uid://cuknegaq73lou"]
+
+[ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_v6d5t"]
+[ext_resource type="Resource" uid="uid://balwcp0qfju8s" path="res://system/buffs_and_debuffs/instances/heated.tres" id="2_kw1vs"]
+[ext_resource type="Script" uid="uid://cf6kdelbuccca" path="res://system/actions/apply_buff_and_debuff_action_event.gd" id="3_ct332"]
+[ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="4_6d3hc"]
+[ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="5_leou4"]
+[ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="6_7yup0"]
+[ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="7_o6rye"]
+
+[sub_resource type="Resource" id="Resource_rqsrq"]
+script = ExtResource("3_ct332")
+buff_and_debuff = ExtResource("2_kw1vs")
+target_mode = 1
+metadata/_custom_type_script = "uid://cf6kdelbuccca"
+
+[sub_resource type="Resource" id="Resource_qiwwa"]
+script = ExtResource("5_leou4")
+text = "Roslum engulfs himself in infernal flame, clearing his mind."
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_isqc7"]
+script = ExtResource("6_7yup0")
+metadata/_custom_type_script = "uid://d0c4l5ycbx5ue"
+
+[sub_resource type="Resource" id="Resource_mn7rd"]
+script = ExtResource("5_leou4")
+text = "Applies"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_v1ri7"]
+script = ExtResource("5_leou4")
+highlighted = true
+text = "Heated"
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[sub_resource type="Resource" id="Resource_ipkog"]
+script = ExtResource("5_leou4")
+text = "to himself."
+metadata/_custom_type_script = "uid://dyb2pec6aaxji"
+
+[resource]
+script = ExtResource("7_o6rye")
+action_name = "Overheat"
+action_point_cost = 2
+cooldown = 5
+description_segments = Array[ExtResource("4_6d3hc")]([SubResource("Resource_qiwwa"), SubResource("Resource_isqc7"), SubResource("Resource_mn7rd"), SubResource("Resource_v1ri7"), SubResource("Resource_ipkog")])
+action_events = Array[ExtResource("1_v6d5t")]([SubResource("Resource_rqsrq")])
+metadata/_custom_type_script = "uid://doysxg78oub0w"

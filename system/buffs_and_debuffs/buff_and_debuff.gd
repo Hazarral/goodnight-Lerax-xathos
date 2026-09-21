@@ -1,6 +1,8 @@
 class_name BuffAndDebuff
 extends Resource
 
+@export var buff_and_debuff_name : String = ""
+
 @export_group("Duration and permanence")
 @export var duration : int = 0
 @export var is_permanent : bool = false
@@ -58,6 +60,8 @@ extends Resource
 @export_group("Final damage dealt and received")
 @export var final_damage_dealt_true_multiplicative : float = 0.0
 @export var final_damage_received_true_multiplicative : float = 0.0
+
+signal buff_and_debuff_expired(buff_and_debuff : BuffAndDebuff)
 
 func get_packed_shields_additive() -> PackedFloat32Array:
 	return _pack_shields([
@@ -141,4 +145,30 @@ func tick_down() -> void:
 		expire()
 
 func expire() -> void:
-	EventBus.buff_and_debuff_expired.emit(self)
+	buff_and_debuff_expired.emit(self)
+
+func has_health_modifications() -> bool:
+	return (
+		health_additive != 0.0 or 
+		health_additive_multiplicative != 0.0 or 
+		health_true_multiplicative != 0.0
+	)
+
+func has_shield_modifications(damage_type : DamageAndDoT.DamageType) -> bool:
+	return (
+		get_shield_additive(damage_type) != 0.0 or 
+		get_shield_additive_multiplicative(damage_type) != 0.0 or 
+		get_shield_true_multiplicative(damage_type) != 0.0
+	)
+
+func has_potency_modifications() -> bool:
+	return potency_additive != 0.0 or potency_additive_multiplicative != 0.0 or potency_true_multiplicative != 0.0
+
+func has_mastery_modifications() -> bool:
+	return mastery_additive != 0.0 or mastery_additive_multiplicative != 0.0 or mastery_true_multiplicative != 0.0
+
+func has_final_damage_dealt_modifications() -> bool:
+	return final_damage_dealt_true_multiplicative != 0.0
+
+func has_final_damage_received_modifications() -> bool:
+	return final_damage_received_true_multiplicative != 0.0

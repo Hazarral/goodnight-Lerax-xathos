@@ -24,7 +24,9 @@ const ENEMY_ROSTER_HAS_REINFORCEMENT_HEADER := "ENEMIES (REINFORCEMENT: %d)"
 @onready var inspector_mastery_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/MasteryLine
 @onready var inspector_shield_grid := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid
 @onready var inspector_elemental_dot_list := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ElementalDoTList
+@onready var inspector_status_effect_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/StatusEffectLabel
 @onready var inspector_status_effect_list := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/StatusEffectList
+@onready var inspector_buff_and_debuff_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/BuffAndDebuffLabel
 @onready var inspector_buff_and_debuff_bar := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/BuffAndDebuffBar
 
 const ENTITY_INFO_CARD_SCENE : PackedScene = preload("res://ui/entity_info_card.tscn")
@@ -40,6 +42,7 @@ const INSPECTOR_HP_TEXT := "HP: %d / %d"
 const INSPECTOR_POTENCY_TEXT := "Potency: %d"
 const INSPECTOR_MASTERY_TEXT := "Mastery: %d"
 
+var is_choosing_card := false
 var selected_card : EntityInfoCard = null
 
 @onready var void_bar := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidBar
@@ -75,20 +78,17 @@ var current_combat_log_mode := CombatLog.DisplayMode.BASIC
 
 ## 5. Grayscale layer on targeting phase
 @onready var targeting_phase_layer := $TargetingPhaseLayer
+@onready var targeting_phase_bar := $TargetingPhaseLayer/TargetPhaseBarAnchor/TargetPhaseBar
 
 func _ready() -> void:
 	EventBus.combat_initialization_finished.connect(_set_time_to_live)
 	EventBus.target_requested.connect(_on_target_requested)
 	EventBus.force_refresh_turn_ui.connect(_refresh_turn_ui)
 	EventBus.log_updated.connect(_set_combat_log)
+	targeting_phase_bar.cancel_button.pressed.connect(_clear_pending_target_state_cancelled)
 	
 	_combat_mockup()
 	_refresh_turn_ui()
-
-static func clear_children(container_list : Array[Node]) -> void:
-	for container in container_list:
-		for child in container.get_children():
-			child.queue_free()
 
 func _set_time_to_live() -> void:
 	print("Setting time to live...")
@@ -137,20 +137,19 @@ func _on_entity_info_card_pressed(card : EntityInfoCard) -> void:
 		if card.entity in valid_target_pool:
 			_clear_pending_target_state()
 			EventBus.target_resolved.emit(card.entity)
-		# else: invalid click while targeting — ignore, or flash a rejection cue
+		# else: invalid click while targeting, ignore
 		return
 	
 	## Only 1 card is read at a time
 	_clear_selected_card()
 	card.set_selected(true)
 	selected_card = card
-	
+	is_choosing_card = true
 	_set_inspector(card.entity)
 
 func _input(event : InputEvent) -> void:
 	if is_awaiting_target and event.is_action_pressed("target_cancel"):
-		_clear_pending_target_state()
-		EventBus.target_resolved.emit(null)  # cancel = resolved with null
+		_clear_pending_target_state_cancelled()
 
 func _clear_pending_target_state() -> void:
 	is_awaiting_target = false
@@ -158,13 +157,19 @@ func _clear_pending_target_state() -> void:
 	pending_source = null
 	_clear_target_highlight()
 	targeting_phase_layer.fade_gray(false)
+	targeting_phase_bar.slide(false)
+
+func _clear_pending_target_state_cancelled() -> void:
+	## Note: Only used for cancel
+	_clear_pending_target_state()
+	EventBus.target_resolved.emit(null)
 
 func _clear_selected_card() -> void:
-	if selected_card:
+	if selected_card != null:
 		selected_card.set_selected(false)
 
 func _set_inspector(entity : Entity) -> void:
-	clear_children([
+	DisplayUtility.clear_children([
 		inspector_shield_grid, 
 		inspector_elemental_dot_list,
 		inspector_status_effect_list
@@ -207,6 +212,7 @@ func _set_inspector(entity : Entity) -> void:
 		void_bar.render()
 	
 	var status_effects := entity.get_status_effects()
+	inspector_status_effect_label.visible = not status_effects.is_empty()
 	for status_effect in status_effects:
 		var status_bar := STATUS_EFFECT_BAR_SCENE.instantiate()
 		inspector_status_effect_list.add_child(status_bar)
@@ -215,6 +221,8 @@ func _set_inspector(entity : Entity) -> void:
 	
 	inspector_buff_and_debuff_bar.setup(entity)
 	inspector_buff_and_debuff_bar.render()
+	
+	print("INSPECTOR UPDATED")
 
 func _add_roster_for_faction(is_player_faction : bool) -> void:
 	_add_roster(CombatSystem.get_on_field(is_player_faction), is_player_faction)
@@ -266,6 +274,7 @@ func _on_target_requested(_event : ActionEvent, target_faction : ActionEvent.Tar
 	valid_target_pool = CombatSystem.get_valid_targets(target_faction, target_state)
 	_highlight_targetable_cards(valid_target_pool)
 	targeting_phase_layer.fade_gray(true)
+	targeting_phase_bar.slide(true)
 
 func _refresh_active_turn_cards() -> void:
 	var current_entity := CombatSystem.get_current_actor()
@@ -277,9 +286,11 @@ func _refresh_active_turn_cards() -> void:
 		#card.render()
 
 func _refresh_turn_ui() -> void:
-	_clear_selected_card()
+	if not is_choosing_card:
+		_clear_selected_card()
 	_refresh_active_turn_cards()
-	_set_inspector(CombatSystem.get_current_actor())
+	var entity := selected_card.entity if is_choosing_card else CombatSystem.get_current_actor()
+	_set_inspector(entity)
 	_update_action_bar()
 	_update_combat_log()
 
@@ -288,8 +299,11 @@ func _update_end_turn_button() -> void:
 	end_turn_button.modulate.a = opacity
 
 func _on_end_turn_button_pressed() -> void:
-	if not CombatLog.is_log_playing():
-		CombatSystem.end_current_actor_turn()
+	if CombatLog.is_log_playing():
+		return
+	
+	is_choosing_card = false
+	CombatSystem.end_current_actor_turn()
 
 func _highlight_targetable_cards(targets : Array[Entity]) -> void:
 	for card : EntityInfoCard in player_roster_list.get_children():

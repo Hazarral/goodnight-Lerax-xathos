@@ -26,6 +26,7 @@ World="*uid://bub4rv24oh3v4"
 CombatLog="*uid://qu3tsj1nbs1w"
 StatusEffectPriorityList="*uid://d3ewotmc2bces"
 GlobalSettings="*uid://b7gfv4pgs8kti"
+DisplayUtility="*uid://bitwrwhi2cer1"
 
 [display]
 
