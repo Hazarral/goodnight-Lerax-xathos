@@ -57,5 +57,6 @@ Combat 1.0:
 
 ## Upcoming features
 - Status effects
-- Buffs and debuffs
+- Buffs and debuffs (Stat modifiers, though the code says BuffAndDebuff)
 - Actual encounters and content (enemies, recruits, actions)
+- Runes (Will be considered, they are implemented as status effects or stat modifiers)
