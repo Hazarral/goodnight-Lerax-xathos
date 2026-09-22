@@ -28,6 +28,12 @@ action_point_regen_per_turn = 5
 innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_gftf7")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
+[sub_resource type="Resource" id="Resource_xfgh3"]
+script = ExtResource("6_rqx7n")
+entity_name = "Strong Reinforcement Test"
+max_hp = 100000
+metadata/_custom_type_script = "uid://nf30jicvf3ri"
+
 [sub_resource type="Theme" id="Theme_qbsgc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_jpyye"]
@@ -48,7 +54,7 @@ grow_vertical = 2
 theme = ExtResource("1_theme")
 script = ExtResource("2_script")
 player_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("4_0ncfs"), SubResource("Resource_1482v"), ExtResource("7_bnnle")])
-enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("7_nsbht"), ExtResource("7_nsbht"), ExtResource("7_nsbht")])
+enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("7_nsbht"), ExtResource("7_nsbht"), ExtResource("7_nsbht"), ExtResource("7_nsbht"), ExtResource("7_nsbht"), SubResource("Resource_xfgh3")])
 
 [node name="Background" type="ColorRect" parent="." unique_id=1394668291]
 layout_mode = 1
@@ -171,7 +177,7 @@ theme_override_constants/separation = 6
 [node name="Header" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol" unique_id=1095148201]
 layout_mode = 2
 theme_type_variation = &"HeaderLabel"
-text = "INSPECTOR"
+text = "INSPECTOR (TRUE SIGHT)"
 
 [node name="InspScroll" type="ScrollContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol" unique_id=57609054]
 layout_mode = 2

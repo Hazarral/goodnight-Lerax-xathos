@@ -2,7 +2,6 @@ class_name StatusEffectManager
 extends RefCounted
 
 var effects : Array[StatusEffect] = []
-var _pending_removals : Array[StatusEffect] = []
 
 ## Array is actually Array[HookBinding]
 var _hooks : Dictionary[StatusEffectPriorityList.CheckpointType, Array] = {}
@@ -26,7 +25,10 @@ func remove_effect_hooks(effect: StatusEffect) -> void:
 				arr.remove_at(i)
 
 func execute_effect_hooks(type: StatusEffectPriorityList.CheckpointType, context : CheckpointContext) -> void:
-	for hook : HookBinding in _hooks[type]:
+	var hooks_snapshot := _hooks[type].duplicate(true)
+	for hook : HookBinding in hooks_snapshot:
+		if hook.source_effect != null and hook.source_effect not in effects:
+			continue  # this effect was removed earlier in this same pass
 		hook.execute.call(context)
 
 func apply_status_effect(effect : StatusEffect) -> void:
@@ -42,19 +44,18 @@ func apply_status_effect(effect : StatusEffect) -> void:
 	effect.status_purged.connect(remove_status_effect)
 
 func tick_down(entity : Entity) -> void:
-	for effect in effects:
+	var effects_snapshot := effects.duplicate(true)
+	for effect in effects_snapshot:
+		if effect not in effects:
+			continue
+		
 		var status_effect_tick_down_context := PreStatusEffectTickDownContext.new(entity, effect, effect.duration)
 		execute_effect_hooks(StatusEffectPriorityList.CheckpointType.PRE_STATUS_EFFECT_TICK_DOWN, status_effect_tick_down_context)
 		
+		if effect not in effects:
+			continue  # removed by the hook just fired
+		
 		effect.tick_down()
-	
-	if _pending_removals.is_empty():
-		return
-	
-	for effect in _pending_removals:
-		effects.erase(effect)
-	
-	_pending_removals.clear()
 
 func _find_matching_effect(effect : StatusEffect) -> StatusEffect:
 	for e in effects:
@@ -64,7 +65,7 @@ func _find_matching_effect(effect : StatusEffect) -> StatusEffect:
 
 func remove_status_effect(effect : StatusEffect) -> void:
 	remove_effect_hooks(effect)
-	_pending_removals.append(effect)
+	effects.erase(effect)
 	
 	var combat_log_entry := StatusEffectRemovedCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),

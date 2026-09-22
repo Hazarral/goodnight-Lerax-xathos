@@ -62,6 +62,9 @@ func get_entity_name_suffix(entity : Entity) -> String:
 	if entity.display_suffix == -1:
 		return ""
 	
+	if _entity_name_counter[entity.entity_name] <= 1:
+		return ""
+	
 	return " (%s)" % _to_roman_numeral(entity.display_suffix)
 
 func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side_templates : Array[EntityTemplate]) -> void:
@@ -151,6 +154,8 @@ func add_reinforcement_to_field() -> void:
 		turn_order.append(entity)
 		_register_or_increment_entity_name(entity.template.entity_name)
 		entity.display_suffix = _entity_name_counter[entity.template.entity_name]
+		
+		EventBus.backfill_reinforcement.emit(entity)
 
 func backfill_reinforcements() -> void:
 	while get_alive_targets(enemy_on_field).size() < MAX_ALIVE_ENEMY_ON_FIELD and not enemy_reinforcement.is_empty():

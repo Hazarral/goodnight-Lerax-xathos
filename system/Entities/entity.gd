@@ -212,13 +212,14 @@ func is_player_faction() -> bool:
 
 func apply_dot(dot_instance : DoTInstance) -> void:
 	active_dots[dot_instance.damage_type].add_dot_instance(dot_instance)
-	var combat_log_entry := DoTAfflictionCombatLogEntry.new(
-		CombatSystem.get_turn_counter(),
-		self,
-		"Affliction: Elemental DoT Affliction",
-		dot_instance
-	)
-	CombatLog.register(combat_log_entry)
+	if current_state != State.DEAD:
+		var combat_log_entry := DoTAfflictionCombatLogEntry.new(
+			CombatSystem.get_turn_counter(),
+			self,
+			"Affliction: Elemental DoT Affliction",
+			dot_instance
+		)
+		CombatLog.register(combat_log_entry)
 
 func apply_void(stacks : int) -> void:
 	## NOTE: Technically is_plahyer_faction can never change, and must be opposite to this entity	
@@ -462,6 +463,12 @@ func die() -> void:
 		print("The dead is no more, but more can be lost.")
 		return
 	
+	var death_context := DeathContext.new(self)
+	status_effect_manager.execute_effect_hooks(
+		StatusEffectPriorityList.CheckpointType.PRE_DEATH, 
+		death_context
+	)
+	
 	current_state = State.DEAD
 	current_hp = 0
 	
@@ -471,6 +478,11 @@ func die() -> void:
 		"Death"
 	)
 	CombatLog.register(combat_log_entry)
+	
+	status_effect_manager.execute_effect_hooks(
+		StatusEffectPriorityList.CheckpointType.POST_DEATH, 
+		death_context
+	)
 	
 	## Resolve poison effect here
 	if has_dot(DamageAndDoT.DoT.POISON):
@@ -498,8 +510,11 @@ func begin_turn() -> void:
 	)
 	
 	if current_state == State.DEAD:
-		print("This target is dead! DoT will still tick down")
+		print("This target is dead! DoT, Status Effect, Buff and Debuff will still tick down")
+		_resolve_void()
 		_resolve_dot_tick_down()
+		_resolve_status_effect_tick_down()
+		_resolve_buff_and_debuff_tick_down()
 		end_turn()
 		return
 	
@@ -519,7 +534,6 @@ func begin_turn() -> void:
 		_resolve_wind_shear_blast_effect()
 	
 	## Stage E: Void
-	## TODO: implement Void damage and escalation here
 	_resolve_void()
 	
 	## Stage F: Tick down on all DoT
@@ -939,8 +953,17 @@ func apply_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 		var old_max := get_max_shield(i)
 		shield_percents[i] = float(current_shields[i]) / old_max if old_max > 0 else 0.0
 	
+	buff_and_debuff.owner = self
 	buff_and_debuff_manager.add_buff_and_debuff(buff_and_debuff)
 	_recompute_all_stats_preserving_percent(hp_percent, shield_percents)
+	
+	var combat_log_entry := BuffAndDebuffAppliedCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Buff and Debuff applied",
+		buff_and_debuff
+	)
+	CombatLog.register(combat_log_entry)
 
 func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 	var old_max_hp := get_max_hp()

@@ -85,6 +85,7 @@ func _ready() -> void:
 	EventBus.target_requested.connect(_on_target_requested)
 	EventBus.force_refresh_turn_ui.connect(_refresh_turn_ui)
 	EventBus.log_updated.connect(_set_combat_log)
+	EventBus.backfill_reinforcement.connect(_add_reinforcement)
 	targeting_phase_bar.cancel_button.pressed.connect(_clear_pending_target_state_cancelled)
 	
 	_combat_mockup()
@@ -234,6 +235,15 @@ func _add_roster(faction : Array[Entity], is_player_faction : bool) -> void:
 		entity_card.setup(entity, is_player_faction)
 		entity_card.render()
 		CombatLog.register_entity(entity, entity_card)
+
+func _add_reinforcement(entity : Entity) -> void:
+	var entity_card := ENTITY_INFO_CARD_SCENE.instantiate()
+	enemy_roster_list.add_child(entity_card)
+	entity_card.setup(entity, entity.is_player_faction())
+	entity_card.render()
+	CombatLog.register_entity(entity, entity_card)
+	entity_card.card_pressed.connect(_on_entity_info_card_pressed)	
+	_update_enemy_roster_header()
 
 func _update_enemy_roster_header() -> void:
 	var reinforcement_count := CombatSystem.get_enemy_reinforcement_count()

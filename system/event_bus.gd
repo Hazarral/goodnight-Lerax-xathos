@@ -1,9 +1,5 @@
 extends Node
 
-## Emitted when a DoT instance expires
-@warning_ignore("unused_signal")
-signal dot_instance_expired(dot_instance : DoTInstance)
-
 ## Emitted by the action event itself to seek a single target
 @warning_ignore("unused_signal")
 signal target_requested(
@@ -23,6 +19,10 @@ signal force_refresh_turn_ui()
 ## When the combat system inished initializing
 @warning_ignore("unused_signal")
 signal combat_initialization_finished()
+
+## When a reinforcement enemy enters the field
+@warning_ignore("unused_signal")
+signal backfill_reinforcement(entity : Entity)
 
 ## When the CombatSystem finishes processing its queue and has released the lock
 @warning_ignore("unused_signal")

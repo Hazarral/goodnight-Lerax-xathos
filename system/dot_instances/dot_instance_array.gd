@@ -2,13 +2,11 @@ class_name DoTInstanceArray
 extends RefCounted
 
 var data : Array[DoTInstance]
-var _pending_removals : Array[DoTInstance] = []
 
 func _init(dot_instance : DoTInstance = null) -> void:
 	if dot_instance:
 		add_dot_instance(dot_instance)
-	
-	EventBus.dot_instance_expired.connect(remove_dot_instance)
+		dot_instance.expired.connect(remove_dot_instance)
 
 func has_dot() -> bool:
 	return not data.is_empty()
@@ -32,7 +30,7 @@ func add_dot_instance(dot_instance : DoTInstance) -> void:
 	data.append(dot_instance)
 
 func remove_dot_instance(dot_instance : DoTInstance) -> void:
-	_pending_removals.append(dot_instance)
+	data.erase(dot_instance)
 
 func clear_all_instances() -> void:
 	data.clear()
@@ -64,16 +62,11 @@ func get_highest_mastery() -> int:
 	return max_mastery
 
 func tick_down() -> void:
-	for dot_instance in data:
+	var data_snapshot := data.duplicate(true)
+	for dot_instance in data_snapshot:
+		if dot_instance not in data:
+			continue
 		dot_instance.tick_down()
-	
-	if _pending_removals.is_empty():
-		return
-	
-	for dot in _pending_removals:
-		data.erase(dot)
-	
-	_pending_removals.clear()
 
 func resolve_damage(target : Entity, has_current : bool) -> void:
 	var is_current := get_dot_type() == DamageAndDoT.DoT.CURRENT
@@ -88,13 +81,14 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 			total_amount
 		)
 		
-		var dot_tick_log_entry := DoTTickCombatLogEntry.new(
-			CombatSystem.get_turn_counter(),
-			target,
-			"C: Natural DoT Tick",
-			dot_instance.duplicate(),
-		)
-		CombatLog.register(dot_tick_log_entry)
+		if target.current_state != Entity.State.DEAD:
+			var dot_tick_log_entry := DoTTickCombatLogEntry.new(
+				CombatSystem.get_turn_counter(),
+				target,
+				"C: Natural DoT Tick",
+				dot_instance.duplicate(),
+			)
+			CombatLog.register(dot_tick_log_entry)
 		
 		CombatSystem.register_combat_event(damage_event)
 		CombatSystem.process_combat_event_queue()	
@@ -110,15 +104,16 @@ func resolve_damage(target : Entity, has_current : bool) -> void:
 			echo_damage
 		)
 		
-		var dot_echo_log_entry := EchoDoTTickCombatLogEntry.new(
-			CombatSystem.get_turn_counter(),
-			target,
-			"C: Current DoT Echo",
-			dot_instance.duplicate(),
-			DamageAndDoT.get_current_echo_effectiveness(get_highest_mastery()),
-			echo_damage
-		)
-		CombatLog.register(dot_echo_log_entry)
+		if target.current_state != Entity.State.DEAD:
+			var dot_echo_log_entry := EchoDoTTickCombatLogEntry.new(
+				CombatSystem.get_turn_counter(),
+				target,
+				"C: Current DoT Echo",
+				dot_instance.duplicate(),
+				DamageAndDoT.get_current_echo_effectiveness(get_highest_mastery()),
+				echo_damage
+			)
+			CombatLog.register(dot_echo_log_entry)
 		
 		CombatSystem.register_combat_event(echo_damage_event)
 		CombatSystem.process_combat_event_queue()

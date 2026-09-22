@@ -2,7 +2,6 @@ class_name BuffAndDebuffManager
 extends RefCounted
 
 var all_buffs_and_debuffs : Array[BuffAndDebuff]
-var _pending_removals : Array[BuffAndDebuff] = []
 
 func get_all_buff_and_debuffs() -> Array[BuffAndDebuff]:
 	return all_buffs_and_debuffs
@@ -12,19 +11,22 @@ func add_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 	buff_and_debuff.buff_and_debuff_expired.connect(remove_buff_and_debuff)
 
 func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
-	_pending_removals.append(buff_and_debuff)
+	all_buffs_and_debuffs.erase(buff_and_debuff)
+	var combat_log_entry := BuffAndDebuffRemovedCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		buff_and_debuff.owner,
+		"Buff and Debuff removed",
+		buff_and_debuff
+	)
+	CombatLog.register(combat_log_entry)
 
 func tick_down() -> void:
-	for buff_and_debuff in all_buffs_and_debuffs:
+	var all_buffs_and_debuffs_snapshot := all_buffs_and_debuffs.duplicate(true)
+	for buff_and_debuff in all_buffs_and_debuffs_snapshot:
+		if buff_and_debuff not in all_buffs_and_debuffs:
+			continue
+		
 		buff_and_debuff.tick_down()
-	
-	if _pending_removals.is_empty():
-		return
-	
-	for buff_and_debuff in _pending_removals:
-		all_buffs_and_debuffs.erase(buff_and_debuff)
-	
-	_pending_removals.clear()
 
 func compute_health(base : float) -> float:
 	var additive_sum := 0.0

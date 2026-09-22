@@ -43,7 +43,6 @@ extends Resource
 @export var earth_shield_true_multiplicative : float = 0.0
 @export var ice_shield_true_multiplicative : float = 0.0
 
-
 ## Potency
 @export_group("Potency")
 @export var potency_additive : float = 0.0
@@ -61,6 +60,7 @@ extends Resource
 @export var final_damage_dealt_true_multiplicative : float = 0.0
 @export var final_damage_received_true_multiplicative : float = 0.0
 
+var owner : Entity
 signal buff_and_debuff_expired(buff_and_debuff : BuffAndDebuff)
 
 func get_packed_shields_additive() -> PackedFloat32Array:

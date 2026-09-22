@@ -46,9 +46,9 @@ func _render_shield_modifications() -> void:
 		var damage_type := i as DamageAndDoT.DamageType
 		if buff_and_debuff.has_shield_modifications(damage_type):
 			var stat_args := DisplayUtility.stat_args(
-				buff_and_debuff.add[i],
-				buff_and_debuff.add_mult[i],
-				1 + buff_and_debuff.true_mult[i]
+				add[i],
+				add_mult[i],
+				1 + true_mult[i]
 			)
 			
 			var arg_array := [
