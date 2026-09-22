@@ -221,8 +221,6 @@ func _set_inspector(entity : Entity) -> void:
 	
 	inspector_buff_and_debuff_bar.setup(entity)
 	inspector_buff_and_debuff_bar.render()
-	
-	print("INSPECTOR UPDATED")
 
 func _add_roster_for_faction(is_player_faction : bool) -> void:
 	_add_roster(CombatSystem.get_on_field(is_player_faction), is_player_faction)

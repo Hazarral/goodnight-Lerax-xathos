@@ -5,16 +5,12 @@
 [ext_resource type="Script" uid="uid://b5etb2vg83gh1" path="res://system/actions/apply_status_effect_action_event.gd" id="2_jnf5m"]
 [ext_resource type="Script" uid="uid://x3uk4u3duw0u" path="res://system/status_effects/status_effect.gd" id="3_6t233"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="3_gkwm7"]
-[ext_resource type="Script" uid="uid://dvlu88pftqn5t" path="res://system/status_effects/instances/allies/ashen_flame.gd" id="4_v25he"]
+[ext_resource type="Resource" uid="uid://b58ttfiferyc" path="res://system/status_effects/instances/allies/ashen_flame.tres" id="4_jnf5m"]
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="6_r7nb3"]
-
-[sub_resource type="Resource" id="Resource_jnf5m"]
-script = ExtResource("4_v25he")
-metadata/_custom_type_script = "uid://dvlu88pftqn5t"
 
 [sub_resource type="Resource" id="Resource_uswrw"]
 script = ExtResource("2_jnf5m")
-status_effects = Array[ExtResource("3_6t233")]([SubResource("Resource_jnf5m")])
+status_effects = Array[ExtResource("3_6t233")]([ExtResource("4_jnf5m")])
 target_state = 2
 target_faction = 2
 target_count = 1

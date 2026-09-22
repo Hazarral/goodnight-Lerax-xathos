@@ -1,6 +1,10 @@
 @abstract class_name StatusEffect
 extends Resource
 
+@export var effect_name : String
+@export var default_duration : int = -1
+@export_multiline var description : String
+
 var owner : Entity       # who the effect lives on — ticks, gets cleansed, shows in their status bar
 var source : Entity      # who caused/casts it — Potency/Mastery source, authority for resolution
 var stacks : int
@@ -18,9 +22,9 @@ signal status_expired(status_effect : StatusEffect)
 signal status_purged(status_effect : StatusEffect)
 
 @abstract func register_hooks(manager : StatusEffectManager) -> void
-@abstract func get_description() -> String
-@abstract func get_effect_name() -> String
-@abstract func get_default_duration() -> int
+
+func get_description() -> String:
+	return description
 
 func tick_down() -> void:
 	if is_permanent or _is_expired:

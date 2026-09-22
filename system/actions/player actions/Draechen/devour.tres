@@ -21,6 +21,7 @@ metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 
 [sub_resource type="Resource" id="Resource_hiyvb"]
 script = ExtResource("3_fmiak")
+buff_and_debuff_name = "Demo Buff and Debuff"
 duration = 2
 health_additive = 100.0
 health_additive_multiplicative = 0.5

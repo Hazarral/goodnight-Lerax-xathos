@@ -4,20 +4,15 @@ extends StatusEffect
 var prechosen_target : Entity  # who eats the Void stack on expiry
 var _interrupted := false
 
-const DEFAULT_DURATION := 2
-
-const VOID_STACKS := 1
+@export var void_stacks := 1
 const DESCRIPTION := "On expiration, apply %d Void Stack%s to %s. If the owner's shield is broken or receives damage to Health, Void-Charged is cancelled and does not apply Void."
-const NAME := "Void-Charged"
 
-func _init(p_duration : int = DEFAULT_DURATION) -> void:
+func _init() -> void:
 	registered_checkpoints = [
 		StatusEffectPriorityList.CheckpointType.POST_DAMAGE_TO_HP_TAKEN,
 		StatusEffectPriorityList.CheckpointType.POST_SHIELD_BREAK,
 		StatusEffectPriorityList.CheckpointType.PRE_STATUS_EFFECT_TICK_DOWN
 	]
-	
-	duration = p_duration
 
 func register_hooks(manager : StatusEffectManager) -> void:
 	manager.register_hook(
@@ -37,16 +32,10 @@ func register_hooks(manager : StatusEffectManager) -> void:
 
 func get_description() -> String:
 	return DESCRIPTION % [
-		VOID_STACKS,
-		"s" if VOID_STACKS != 1 else "",
+		void_stacks,
+		"s" if void_stacks != 1 else "",
 		prechosen_target.get_entity_name_with_suffix() 
 	]
-
-func get_effect_name() -> String:
-	return NAME
-
-func get_default_duration() -> int:
-	return DEFAULT_DURATION
 
 func _interrupt(_context : CheckpointContext) -> void:
 	if _interrupted:
@@ -64,11 +53,12 @@ func _apply_void(context : PreStatusEffectTickDownContext) -> void:
 	if _interrupted:
 		return
 	
-	prechosen_target.apply_void(VOID_STACKS)
+	prechosen_target.apply_void(void_stacks)
 
 # StatusEffect base
 func on_applied(target : Entity, _caster : Entity) -> void:
 	prechosen_target = target
+	duration = default_duration
 
 # A bit unintuitive, but it's how it works
 func attaches_to_caster() -> bool:

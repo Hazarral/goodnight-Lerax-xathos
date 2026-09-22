@@ -1,0 +1,10 @@
+[gd_resource type="Resource" script_class="VoidCharged" format=3 uid="uid://disnq3cqqmfbc"]
+
+[ext_resource type="Script" uid="uid://c2vmk8gyswkqx" path="res://system/status_effects/instances/enemies/void_charged.gd" id="1_20fdt"]
+
+[resource]
+script = ExtResource("1_20fdt")
+effect_name = "Void-Charged"
+default_duration = 2
+description = "[overidden in get_description()]"
+metadata/_custom_type_script = "uid://c2vmk8gyswkqx"

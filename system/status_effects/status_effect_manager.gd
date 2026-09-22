@@ -33,7 +33,7 @@ func apply_status_effect(effect : StatusEffect) -> void:
 	var existing := _find_matching_effect(effect)
 	if existing:
 		if not existing.is_permanent:
-			existing.duration = existing.get_default_duration()
+			existing.duration = existing.default_duration
 		return
 	
 	effects.append(effect)
@@ -65,3 +65,11 @@ func _find_matching_effect(effect : StatusEffect) -> StatusEffect:
 func remove_status_effect(effect : StatusEffect) -> void:
 	remove_effect_hooks(effect)
 	_pending_removals.append(effect)
+	
+	var combat_log_entry := StatusEffectRemovedCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		effect.owner,
+		"Status Effect removed",
+		effect
+	)
+	CombatLog.register(combat_log_entry)

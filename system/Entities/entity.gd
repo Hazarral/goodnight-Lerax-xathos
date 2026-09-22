@@ -906,7 +906,13 @@ func apply_status_effect(effect : StatusEffect, caster : Entity, chosen_target :
 	instance.on_applied(chosen_target, caster)
 	status_effect_manager.apply_status_effect(instance)
 	
-	print("Applied %s to %s" % [instance.get_effect_name(), get_entity_name_with_suffix()])
+	var combat_log_entry := StatusEffectAppliedCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Status Effect applied",
+		instance
+	)
+	CombatLog.register(combat_log_entry)
 
 func remove_status_effect(effect : StatusEffect) -> void:
 	status_effect_manager.remove_status_effect(effect)

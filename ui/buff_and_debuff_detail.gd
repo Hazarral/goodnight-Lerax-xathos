@@ -38,13 +38,17 @@ func _render_health_modifications() -> void:
 
 func _render_shield_modifications() -> void:
 	var shield_string_arr := PackedStringArray()
+	var add := buff_and_debuff.get_packed_shields_additive()
+	var add_mult := buff_and_debuff.get_packed_shields_additive_multiplicative()
+	var true_mult := buff_and_debuff.get_packed_shields_true_multiplicative()
+	
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		var damage_type := i as DamageAndDoT.DamageType
 		if buff_and_debuff.has_shield_modifications(damage_type):
 			var stat_args := DisplayUtility.stat_args(
-				buff_and_debuff.shields_additive[i],
-				buff_and_debuff.shields_additive_multiplicative[i],
-				1 + buff_and_debuff.shields_true_multiplicative[i]
+				buff_and_debuff.add[i],
+				buff_and_debuff.add_mult[i],
+				1 + buff_and_debuff.true_mult[i]
 			)
 			
 			var arg_array := [
