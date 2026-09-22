@@ -38,7 +38,7 @@ const INSPECTOR_STATE_TEXT := "[%s]"
 const STATE_ALIVE_TEXT := "ALIVE"
 const STATE_DEAD_TEXT := "DEAD"
 
-const INSPECTOR_HP_TEXT := "HP: %d / %d"
+const INSPECTOR_HP_TEXT := "Health: %d / %d"
 const INSPECTOR_POTENCY_TEXT := "Potency: %d"
 const INSPECTOR_MASTERY_TEXT := "Mastery: %d"
 

@@ -26,7 +26,7 @@ const STATE_NAME_DEAD := "DEAD"
 const STATE_TEXT := "[%s]"
 const SHIELD_STATE_TEXT := "%s"
 const AP_TEXT := "> %d / %d AP (+%d / turn)"
-const HP_TEXT := "> %d / %d HP"
+const HP_TEXT := "> %d / %d Health"
 
 signal card_pressed(card : EntityInfoCard)
 

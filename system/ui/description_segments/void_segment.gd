@@ -3,7 +3,7 @@ extends DescriptionSegment
 
 @export var stacks : int
 const SIMPLE_TEMPLATE := "[color=%s]%d Void Stack%s[/color]"
-const DETAILED_TEMPLATE := "[color=%s]%d Void Stack%s[/color] [color=%s][Base Damage at 0 Target Attrition and %d Stack%s: (%.2f(%.2fHP) + %.2f(%.2fShield) + %.2f(%.2fP^%.2f) + %.2f(%.2fM^%.2f)) * %d = [/color][color=%s]%d[/color][color=%s]][/color]"
+const DETAILED_TEMPLATE := "[color=%s]%d Void Stack%s[/color] [color=%s][Base Damage at 0 Target Attrition and %d Stack%s: (%.2f(%.2fHealth) + %.2f(%.2fShield) + %.2f(%.2fP^%.2f) + %.2f(%.2fM^%.2f)) * %d = [/color][color=%s]%d[/color][color=%s]][/color]"
 
 func to_text(detailed : bool = false) -> String:
 	if detailed:
