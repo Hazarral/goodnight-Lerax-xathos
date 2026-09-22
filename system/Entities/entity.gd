@@ -249,17 +249,20 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int, i
 		# NOTE: DoT will still tick later on, but not compute the damage.
 		return
 	
+	# Reduce damage exactly once here
+	incoming_damage = ceili(incoming_damage * get_final_damage_received_true_multiplicative() - EPSILON)
+	
 	if ignore_shield:
 		print("This damage ignores shield...")
-		reduce_hp(damage_type, incoming_damage, ignore_shield)
+		_reduce_hp(damage_type, incoming_damage, ignore_shield)
 		return
 	
 	# 1. Void Special Case
 	if damage_type == DamageAndDoT.DamageType.VOID:
 		if is_any_shield_breached() or has_no_shields():
-			reduce_hp(damage_type, incoming_damage, ignore_shield)
+			_reduce_hp(damage_type, incoming_damage, ignore_shield)
 		else:
-			shield_cascade(damage_type, incoming_damage)
+			_shield_cascade(damage_type, incoming_damage)
 		return
 		
 	# 2. Resonance (Direct Match) Case
@@ -285,18 +288,18 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int, i
 			
 			var surplus = incoming_damage - damage_to_shield
 			if surplus > 0:
-				reduce_hp(damage_type, surplus, ignore_shield)
+				_reduce_hp(damage_type, surplus, ignore_shield)
 			
 			return
 		
 		# Shield is broken, matching damage goes straight to HP
-		reduce_hp(damage_type, incoming_damage, ignore_shield)
+		_reduce_hp(damage_type, incoming_damage, ignore_shield)
 		return
 			
 	# 3. Wrong Element Case (50% Penalty, hits weakest shield)
-	shield_cascade(damage_type, incoming_damage)
+	_shield_cascade(damage_type, incoming_damage)
 
-func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -> void:
+func _shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -> void:
 	var multiplier_against_shield := (
 		DamageAndDoT.VOID_MULTIPLIER_AGAINST_SHIELD 
 		if damage_type == DamageAndDoT.DamageType.VOID 
@@ -381,7 +384,7 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 	CombatLog.fill_reserved_slot(pending_slot, combat_log_entry)
 	
 	if remaining_damage > 0:
-		reduce_hp(damage_type, remaining_damage)
+		_reduce_hp(damage_type, remaining_damage)
 
 func _resolve_shield_break(idx : int, was_broken_before : bool) -> void:
 	if not was_broken_before and current_shields[idx] == 0:
@@ -399,12 +402,9 @@ func _resolve_shield_break(idx : int, was_broken_before : bool) -> void:
 		if has_dot(DamageAndDoT.DoT.FROSTBITE):
 			_trigger_frostbite_on_break(idx)
 
-func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shield : bool = false) -> void:
+func _reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shield : bool = false) -> void:
 	if current_state == State.DEAD:
 		return
-	
-	# Reduce damage exactly once here
-	amount = ceili(amount * get_final_damage_received_true_multiplicative() - EPSILON)
 	
 	var current_hp_before := current_hp
 	current_hp = maxi(0, current_hp - amount)
@@ -413,7 +413,7 @@ func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shiel
 	var damage_to_hp_log := DamageToHPCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"Damage: reduce_hp(...)",
+		"Damage: _reduce_hp(...)",
 		current_hp_before,
 		current_hp_after,
 		damage_type,

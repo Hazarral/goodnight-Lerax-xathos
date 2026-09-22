@@ -7,6 +7,7 @@ var ally_on_field : Array[Entity]
 var enemy_on_field: Array[Entity]
 var enemy_reinforcement : Array[Entity]
 var _combat_event_queue : Array[CombatEvent]
+var _queue_index := 0
 
 var turn_order : Array[Entity]
 var current_turn_index := 0
@@ -236,7 +237,7 @@ func register_multi_combat_event(multi_combat_event : MultiCombatEvent) -> void:
 	_combat_event_queue.append_array(multi_combat_event.data)
 
 func inject_combat_event(damage_event : CombatEvent) -> void:
-	_combat_event_queue.push_front(damage_event)
+	_combat_event_queue.insert(_queue_index, damage_event)
 	
 	## Always force call, protected by lock so this is safe
 	process_combat_event_queue()
@@ -247,13 +248,15 @@ func process_combat_event_queue() -> void:
 	
 	is_processing_combat_event_queue = true
 	
-	while not _combat_event_queue.is_empty() and not is_combat_over():
-		var current_event : CombatEvent = _combat_event_queue.pop_front()
-		
+	while _queue_index < _combat_event_queue.size() and not is_combat_over():
+		var current_event : CombatEvent = _combat_event_queue[_queue_index]
+		_queue_index += 1
 		# NOTE: This may inject during resolve() but that is none of this script's business\
 		# current_event also gets ref = 0 when going out of scope
 		current_event.resolve()
 	
+	_combat_event_queue.clear()
+	_queue_index = 0
 	is_processing_combat_event_queue = false
 	EventBus.combat_event_queue_processing_finished.emit()
 
