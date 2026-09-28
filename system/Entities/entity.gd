@@ -917,8 +917,7 @@ func apply_status_effect(effect : StatusEffect, caster : Entity, chosen_target :
 	var instance := effect.duplicate(true)
 	instance.owner = self          # self is now correctly whoever get_attachment_entity picked
 	instance.source = caster
-	instance.on_applied(chosen_target, caster)
-	status_effect_manager.apply_status_effect(instance)
+	status_effect_manager.apply_status_effect(instance, caster, chosen_target)
 	
 	var combat_log_entry := StatusEffectAppliedCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),

@@ -25,13 +25,13 @@ func remove_effect_hooks(effect: StatusEffect) -> void:
 				arr.remove_at(i)
 
 func execute_effect_hooks(type: StatusEffectPriorityList.CheckpointType, context : CheckpointContext) -> void:
-	var hooks_snapshot := _hooks[type].duplicate(true)
+	var hooks_snapshot := _hooks[type].duplicate(false)
 	for hook : HookBinding in hooks_snapshot:
 		if hook.source_effect != null and hook.source_effect not in effects:
 			continue  # this effect was removed earlier in this same pass
 		hook.execute.call(context)
 
-func apply_status_effect(effect : StatusEffect) -> void:
+func apply_status_effect(effect : StatusEffect, caster : Entity, chosen_target : Entity) -> void:
 	var existing := _find_matching_effect(effect)
 	if existing:
 		if not existing.is_permanent:
@@ -40,11 +40,12 @@ func apply_status_effect(effect : StatusEffect) -> void:
 	
 	effects.append(effect)
 	effect.register_hooks(self)
+	effect.on_applied(chosen_target, caster)
 	effect.status_expired.connect(remove_status_effect)
 	effect.status_purged.connect(remove_status_effect)
 
 func tick_down(entity : Entity) -> void:
-	var effects_snapshot := effects.duplicate(true)
+	var effects_snapshot := effects.duplicate(false)
 	for effect in effects_snapshot:
 		if effect not in effects:
 			continue
@@ -64,6 +65,9 @@ func _find_matching_effect(effect : StatusEffect) -> StatusEffect:
 	return null
 
 func remove_status_effect(effect : StatusEffect) -> void:
+	if effect not in effects:
+		return
+	
 	remove_effect_hooks(effect)
 	effects.erase(effect)
 	

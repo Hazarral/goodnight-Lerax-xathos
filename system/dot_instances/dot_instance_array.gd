@@ -62,7 +62,7 @@ func get_highest_mastery() -> int:
 	return max_mastery
 
 func tick_down() -> void:
-	var data_snapshot := data.duplicate(true)
+	var data_snapshot := data.duplicate(false)
 	for dot_instance in data_snapshot:
 		if dot_instance not in data:
 			continue

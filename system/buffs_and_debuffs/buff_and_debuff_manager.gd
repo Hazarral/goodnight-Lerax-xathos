@@ -21,7 +21,7 @@ func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 	CombatLog.register(combat_log_entry)
 
 func tick_down() -> void:
-	var all_buffs_and_debuffs_snapshot := all_buffs_and_debuffs.duplicate(true)
+	var all_buffs_and_debuffs_snapshot := all_buffs_and_debuffs.duplicate(false)
 	for buff_and_debuff in all_buffs_and_debuffs_snapshot:
 		if buff_and_debuff not in all_buffs_and_debuffs:
 			continue
