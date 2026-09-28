@@ -62,7 +62,7 @@ func get_entity_name_suffix(entity : Entity) -> String:
 	if entity.display_suffix == -1:
 		return ""
 	
-	if _entity_name_counter[entity.entity_name] <= 1:
+	if _entity_name_counter[entity.template.entity_name] <= 1:
 		return ""
 	
 	return " (%s)" % _to_roman_numeral(entity.display_suffix)

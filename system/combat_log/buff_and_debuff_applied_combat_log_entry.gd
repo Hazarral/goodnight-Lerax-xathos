@@ -27,7 +27,7 @@ func render_basic() -> String:
 	else:
 		text += EXTRA_TURN_TEMPLATE % [
 			buff_and_debuff.duration,
-			"s" if buff_and_debuff.duration != 1 else ""
+			DisplayUtility.plural_ending(buff_and_debuff.duration)
 		]
 	
 	return text

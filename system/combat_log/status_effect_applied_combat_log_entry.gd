@@ -27,7 +27,7 @@ func render_basic() -> String:
 	else:
 		text += EXTRA_TURN_TEMPLATE % [
 			status_effect.duration,
-			"s" if status_effect.duration != 1 else ""
+			DisplayUtility.plural_ending(status_effect.duration)
 		]
 	
 	return text

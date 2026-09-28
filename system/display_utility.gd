@@ -65,5 +65,8 @@ func formatted_permanence(duration : int, is_permanent : bool) -> String:
 	
 	return DisplayUtility.FINITE_DURATION_TEXT % [
 		duration,
-		"s" if duration != 1 else ""
+		plural_ending(duration)
 	]
+
+func plural_ending(value : int) -> String:
+	return "s" if value != 1 else ""

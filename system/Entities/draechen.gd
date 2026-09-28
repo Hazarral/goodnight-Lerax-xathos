@@ -70,9 +70,9 @@ func get_time_to_live_str() -> String:
 	
 	return TIME_TO_LIVE_TEXT % [
 		days,
-		"s" if days != 1 else "",
+		DisplayUtility.plural_ending(days),
 		hours,
-		"s" if hours != 1 else ""
+		DisplayUtility.plural_ending(hours)
 	]
 
 func toggle_godmode() -> void:
