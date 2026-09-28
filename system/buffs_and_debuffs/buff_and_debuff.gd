@@ -89,14 +89,9 @@ func _pack_shields(values : Array[float]) -> PackedFloat32Array:
 	var packed := PackedFloat32Array()
 	packed.resize(DamageAndDoT.ELEMENT_COUNT)
 	
-	packed[DamageAndDoT.DamageType.FIRE] = values[0]
-	packed[DamageAndDoT.DamageType.WATER] = values[1]
-	packed[DamageAndDoT.DamageType.WIND] = values[2]
-	packed[DamageAndDoT.DamageType.POISON] = values[3]
-	packed[DamageAndDoT.DamageType.LIGHTNING] = values[4]
-	packed[DamageAndDoT.DamageType.PHYSICAL] = values[5]
-	packed[DamageAndDoT.DamageType.EARTH] = values[6]
-	packed[DamageAndDoT.DamageType.ICE] = values[7]
+	for i in range(DamageAndDoT.ELEMENT_COUNT):
+		var damage_type := i as DamageAndDoT.DamageType
+		packed[damage_type] = values[i]
 	
 	return packed
 
