@@ -14,13 +14,14 @@ func tick_down() -> void:
 	duration -= 1
 	turns_elapsed += 1
 	
-	var combat_log_entry := BurnRampCombatLogEntry.new(
-		CombatSystem.get_turn_counter(),
-		target,
-		"Burn Ramping",
-		self
-	)
-	CombatLog.register(combat_log_entry)
+	if target.current_state != Entity.State.DEAD:
+		var combat_log_entry := BurnRampCombatLogEntry.new(
+			CombatSystem.get_turn_counter(),
+			target,
+			"Burn Ramping",
+			self
+		)
+		CombatLog.register(combat_log_entry)
 	
 	if duration <= 0:
 		expire()

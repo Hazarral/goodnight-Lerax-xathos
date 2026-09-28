@@ -28,13 +28,26 @@ var void_instance : VoidInstance = null
 var known_actions : Array[KnownAction]
 
 var status_effect_manager := StatusEffectManager.new()
+var buff_and_debuff_manager := BuffAndDebuffManager.new()
 
 ## This is for distinguishing entities with the exact same name based on field position
 var display_suffix : int = -1
 
-const STACKS_KEY := &"Stacks"
-const BASE_DAMAGE_KEY := &"Base damage"
-const TURNS_ELAPSED_KEY := &"Turns elapsed"
+enum ShieldState {
+	NO_SHIELD,		## No shield at all, all max == 0
+	FULLY_SHIELDED, ## All active shields are not broken
+	BREACHED,		## At least 1 active shield is breached
+	ALL_BREACHED	## All active shields are breached
+}
+
+const SHIELD_STATE_NAME : Dictionary[ShieldState, String] = {
+	ShieldState.NO_SHIELD : "[No Shield]",
+	ShieldState.FULLY_SHIELDED : "[Fully Shielded]",
+	ShieldState.BREACHED : "[Shield Breached]",
+	ShieldState.ALL_BREACHED : "[All Shield Breached]"
+}
+
+const EPSILON := 1e-4
 
 ## Template will be duplicated
 func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> void:
@@ -51,17 +64,29 @@ func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> voi
 	
 	current_state = State.ALIVE
 
+func _get_base_max_hp() -> float:
+	return template.max_hp * magnification
+
 func get_max_hp() -> int:
-	return floori(template.max_hp * magnification)
+	return ceili(buff_and_debuff_manager.compute_health(_get_base_max_hp()) - EPSILON)
+
+func _get_base_max_shield(i : int) -> float:
+	return max_shields[i] * magnification
 
 func get_max_shield(i : int) -> int:
-	return floori(max_shields[i] * magnification)
+	return ceili(buff_and_debuff_manager.compute_shield(i, _get_base_max_shield(i)) - EPSILON)
+
+func _get_base_potency() -> float:
+	return template.potency * magnification
 
 func get_potency() -> int:
-	return floori(template.potency * magnification)
+	return ceili(buff_and_debuff_manager.compute_potency(_get_base_potency()) - EPSILON)
+
+func _get_base_mastery() -> int:
+	return floori(template.mastery * magnification)
 
 func get_mastery() -> int:
-	return floori(template.mastery * magnification)
+	return ceili(buff_and_debuff_manager.compute_mastery(_get_base_mastery()) - EPSILON)
 
 func setup_shields() -> void:
 	max_shields = template.get_packed_shields()
@@ -92,6 +117,21 @@ func get_action_point_regen_per_turn() -> int:
 
 func recover_action_point() -> void:
 	current_action_point = mini(current_action_point + template.action_point_regen_per_turn, template.max_action_point)
+
+func get_shield_state() -> ShieldState:
+	if has_no_shields():
+		return ShieldState.NO_SHIELD
+	
+	if are_all_shields_breached():
+		return ShieldState.ALL_BREACHED
+	
+	if is_any_shield_breached():
+		return ShieldState.BREACHED
+	
+	return ShieldState.FULLY_SHIELDED
+
+func get_shield_state_name() -> String:
+	return SHIELD_STATE_NAME.get(get_shield_state())
 
 func has_shield(damage_type : DamageAndDoT.DamageType) -> bool:
 	if damage_type == DamageAndDoT.DamageType.VOID:
@@ -165,20 +205,21 @@ func get_total_attrition() -> int:
 		
 		result += dot_instance_array.calculate_total_attrition()
 	
-	return ceili(result)
+	return ceili(result - EPSILON)
 
 func is_player_faction() -> bool:
 	return template.is_player_faction
 
 func apply_dot(dot_instance : DoTInstance) -> void:
 	active_dots[dot_instance.damage_type].add_dot_instance(dot_instance)
-	var combat_log_entry := DoTAfflictionCombatLogEntry.new(
-		CombatSystem.get_turn_counter(),
-		self,
-		"Affliction: Elemental DoT Affliction",
-		dot_instance
-	)
-	CombatLog.register(combat_log_entry)
+	if current_state != State.DEAD:
+		var combat_log_entry := DoTAfflictionCombatLogEntry.new(
+			CombatSystem.get_turn_counter(),
+			self,
+			"Affliction: Elemental DoT Affliction",
+			dot_instance
+		)
+		CombatLog.register(combat_log_entry)
 
 func apply_void(stacks : int) -> void:
 	## NOTE: Technically is_plahyer_faction can never change, and must be opposite to this entity	
@@ -209,17 +250,20 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int, i
 		# NOTE: DoT will still tick later on, but not compute the damage.
 		return
 	
+	# Reduce damage exactly once here
+	incoming_damage = ceili(incoming_damage * get_final_damage_received_true_multiplicative() - EPSILON)
+	
 	if ignore_shield:
 		print("This damage ignores shield...")
-		reduce_hp(damage_type, incoming_damage, ignore_shield)
+		_reduce_hp(damage_type, incoming_damage, ignore_shield)
 		return
 	
 	# 1. Void Special Case
 	if damage_type == DamageAndDoT.DamageType.VOID:
 		if is_any_shield_breached() or has_no_shields():
-			reduce_hp(damage_type, incoming_damage, ignore_shield)
+			_reduce_hp(damage_type, incoming_damage, ignore_shield)
 		else:
-			shield_cascade(damage_type, incoming_damage)
+			_shield_cascade(damage_type, incoming_damage)
 		return
 		
 	# 2. Resonance (Direct Match) Case
@@ -245,18 +289,18 @@ func take_damage(damage_type : DamageAndDoT.DamageType, incoming_damage : int, i
 			
 			var surplus = incoming_damage - damage_to_shield
 			if surplus > 0:
-				reduce_hp(damage_type, surplus, ignore_shield)
+				_reduce_hp(damage_type, surplus, ignore_shield)
 			
 			return
 		
 		# Shield is broken, matching damage goes straight to HP
-		reduce_hp(damage_type, incoming_damage, ignore_shield)
+		_reduce_hp(damage_type, incoming_damage, ignore_shield)
 		return
 			
 	# 3. Wrong Element Case (50% Penalty, hits weakest shield)
-	shield_cascade(damage_type, incoming_damage)
+	_shield_cascade(damage_type, incoming_damage)
 
-func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -> void:
+func _shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int) -> void:
 	var multiplier_against_shield := (
 		DamageAndDoT.VOID_MULTIPLIER_AGAINST_SHIELD 
 		if damage_type == DamageAndDoT.DamageType.VOID 
@@ -341,7 +385,7 @@ func shield_cascade(damage_type : DamageAndDoT.DamageType, incoming_damage : int
 	CombatLog.fill_reserved_slot(pending_slot, combat_log_entry)
 	
 	if remaining_damage > 0:
-		reduce_hp(damage_type, remaining_damage)
+		_reduce_hp(damage_type, remaining_damage)
 
 func _resolve_shield_break(idx : int, was_broken_before : bool) -> void:
 	if not was_broken_before and current_shields[idx] == 0:
@@ -359,16 +403,20 @@ func _resolve_shield_break(idx : int, was_broken_before : bool) -> void:
 		if has_dot(DamageAndDoT.DoT.FROSTBITE):
 			_trigger_frostbite_on_break(idx)
 
-func reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shield : bool = false) -> void:
+func _reduce_hp(damage_type : DamageAndDoT.DamageType, amount : int, ignore_shield : bool = false) -> void:
 	if current_state == State.DEAD:
 		return
 	
+	var current_hp_before := current_hp
 	current_hp = maxi(0, current_hp - amount)
+	var current_hp_after := current_hp
 	
 	var damage_to_hp_log := DamageToHPCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
-		"Damage: reduce_hp(...)",
+		"Damage: _reduce_hp(...)",
+		current_hp_before,
+		current_hp_after,
 		damage_type,
 		amount,
 		ignore_shield
@@ -415,6 +463,12 @@ func die() -> void:
 		print("The dead is no more, but more can be lost.")
 		return
 	
+	var death_context := DeathContext.new(self)
+	status_effect_manager.execute_effect_hooks(
+		StatusEffectPriorityList.CheckpointType.PRE_DEATH, 
+		death_context
+	)
+	
 	current_state = State.DEAD
 	current_hp = 0
 	
@@ -424,6 +478,11 @@ func die() -> void:
 		"Death"
 	)
 	CombatLog.register(combat_log_entry)
+	
+	status_effect_manager.execute_effect_hooks(
+		StatusEffectPriorityList.CheckpointType.POST_DEATH, 
+		death_context
+	)
 	
 	## Resolve poison effect here
 	if has_dot(DamageAndDoT.DoT.POISON):
@@ -451,8 +510,11 @@ func begin_turn() -> void:
 	)
 	
 	if current_state == State.DEAD:
-		print("This target is dead! DoT will still tick down")
+		print("This target is dead! DoT, Status Effect, Buff and Debuff will still tick down")
+		_resolve_void()
 		_resolve_dot_tick_down()
+		_resolve_status_effect_tick_down()
+		_resolve_buff_and_debuff_tick_down()
 		end_turn()
 		return
 	
@@ -472,14 +534,14 @@ func begin_turn() -> void:
 		_resolve_wind_shear_blast_effect()
 	
 	## Stage E: Void
-	## TODO: implement Void damage and escalation here
 	_resolve_void()
 	
 	## Stage F: Tick down on all DoT
 	_resolve_dot_tick_down()
 	
-	## Stage G: Status Effect tick down
+	## Stage G: Status Effect and buff/debuff tick down
 	_resolve_status_effect_tick_down()
+	_resolve_buff_and_debuff_tick_down()
 	
 	## Stage H: Actions
 	start_action_phase()
@@ -555,7 +617,7 @@ func _regen_shields() -> void:
 	
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		if max_shields[i] > 0:
-			var attrition := ceili(get_attrition(i as DamageAndDoT.DamageType))
+			var attrition := ceili(get_attrition(i as DamageAndDoT.DamageType) - EPSILON)
 			current_shields[i] = maxi(0, max_shields[i] - attrition)
 			attrition_list[i] = attrition
 		else:
@@ -591,7 +653,12 @@ func _resolve_crumble_splash_effect() -> void:
 			continue
 		
 		var real_amount := mini(current_shields[idx], non_earth_shield_damage)
-		var damage_event := DamageEvent.new(self, self, idx as DamageAndDoT.DamageType, real_amount)
+		var damage_event := DamageEvent.new(
+			null, 
+			self, 
+			idx as DamageAndDoT.DamageType, 
+			real_amount
+		)
 		multi_damage_event.add_event(damage_event)
 	
 	var combat_log_entry := CrumbleSplashCombatLogEntry.new(
@@ -669,7 +736,7 @@ func _resolve_wind_shear_blast_effect() -> void:
 	
 	for target in valid_targets:
 		var damage_event := DamageEvent.new(
-			self,
+			null,
 			target,
 			DamageAndDoT.DamageType.WIND,
 			ceili(
@@ -706,7 +773,7 @@ func _trigger_frostbite_on_break(idx : int) -> void:
 	
 	var multiplier : float = DamageAndDoT.FROSTBITE_ICE_SHIELD_BREAK_COEFFICIENT if ((idx as DamageAndDoT.DamageType) == DamageAndDoT.DamageType.ICE) else DamageAndDoT.FROSTBITE_NON_ICE_SHIELD_BREAK_COEFFICIENT
 	var damage_event := DamageEvent.new(
-		self,
+		null,
 		self,
 		DamageAndDoT.DamageType.ICE,
 		ceili(multiplier * max_shields[idx]),
@@ -728,7 +795,7 @@ func _trigger_bleed_rupture_damage(heal_amount : int) -> void:
 	
 	var anti_heal_damage := ceili(DamageAndDoT.get_bleed_anti_heal_damage(total_bleed_damage, heal_amount, highest_mastery, highest_potency, stacks_count))
 	var damage_event := DamageEvent.new(
-		self,
+		null,
 		self,
 		DamageAndDoT.DamageType.PHYSICAL,
 		anti_heal_damage,
@@ -761,7 +828,7 @@ func _trigger_poison_explosion_on_death() -> void:
 	
 	for entity in valid_targets:
 		var damage_event := DamageEvent.new(
-			self,
+			null,
 			entity,
 			DamageAndDoT.DamageType.POISON,
 			explosion_damage
@@ -796,7 +863,7 @@ func _trigger_shock_damage_on_action(cast_result : CastResult) -> void:
 	var highest_potency := active_dots[DamageAndDoT.DoT.SHOCK].get_highest_potency()
 	var shock_damage_on_action := ceili(DamageAndDoT.get_shock_damage_on_action(total_shock_damage, highest_potency, cast_result.ap_spent))
 	var damage_event := DamageEvent.new(
-		self,
+		null,
 		self,
 		DamageAndDoT.DamageType.LIGHTNING,
 		shock_damage_on_action,
@@ -855,16 +922,76 @@ func apply_status_effect(effect : StatusEffect, caster : Entity, chosen_target :
 	var instance := effect.duplicate(true)
 	instance.owner = self          # self is now correctly whoever get_attachment_entity picked
 	instance.source = caster
-	instance.on_applied(chosen_target, caster)
-	status_effect_manager.apply_status_effect(instance)
+	status_effect_manager.apply_status_effect(instance, caster, chosen_target)
 	
-	print("Applied %s to %s" % [instance.get_effect_name(), get_entity_name_with_suffix()])
+	var combat_log_entry := StatusEffectAppliedCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Status Effect applied",
+		instance
+	)
+	CombatLog.register(combat_log_entry)
 
 func remove_status_effect(effect : StatusEffect) -> void:
 	status_effect_manager.remove_status_effect(effect)
 
-func get_status_effects_display_info() -> Array[StatusEffectDisplayInfo]:
-	return status_effect_manager.get_status_effects_display_info()
+func get_status_effects() -> Array[StatusEffect]:
+	return status_effect_manager.get_status_effects().duplicate(true)
 
 func _resolve_status_effect_tick_down() -> void:
 	status_effect_manager.tick_down(self)
+
+func _recompute_all_stats_preserving_percent(hp_percent: float, shield_percents: PackedFloat32Array) -> void:
+	current_hp = ceili(hp_percent * get_max_hp())
+	current_potency = get_potency()
+	current_mastery = get_mastery()
+	for i in range(DamageAndDoT.ELEMENT_COUNT):
+		current_shields[i] = ceili(shield_percents[i] * get_max_shield(i))
+
+func apply_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
+	var old_max_hp := get_max_hp()
+	var hp_percent := float(current_hp) / old_max_hp if old_max_hp > 0 else 0.0
+	var shield_percents := PackedFloat32Array()
+	shield_percents.resize(DamageAndDoT.ELEMENT_COUNT)
+	for i in DamageAndDoT.ELEMENT_COUNT:
+		var old_max := get_max_shield(i)
+		shield_percents[i] = float(current_shields[i]) / old_max if old_max > 0 else 0.0
+	
+	buff_and_debuff.owner = self
+	buff_and_debuff_manager.add_buff_and_debuff(buff_and_debuff)
+	_recompute_all_stats_preserving_percent(hp_percent, shield_percents)
+	
+	var combat_log_entry := BuffAndDebuffAppliedCombatLogEntry.new(
+		CombatSystem.get_turn_counter(),
+		self,
+		"Buff and Debuff applied",
+		buff_and_debuff
+	)
+	CombatLog.register(combat_log_entry)
+
+func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
+	var old_max_hp := get_max_hp()
+	var hp_percent := float(current_hp) / old_max_hp if old_max_hp > 0 else 0.0
+	var shield_percents := PackedFloat32Array()
+	shield_percents.resize(DamageAndDoT.ELEMENT_COUNT)
+	for i in DamageAndDoT.ELEMENT_COUNT:
+		var old_max := get_max_shield(i)
+		shield_percents[i] = float(current_shields[i]) / old_max if old_max > 0 else 0.0
+	
+	buff_and_debuff_manager.remove_buff_and_debuff(buff_and_debuff)
+	_recompute_all_stats_preserving_percent(hp_percent, shield_percents)
+
+func get_all_buff_and_debuffs() -> Array[BuffAndDebuff]:
+	return buff_and_debuff_manager.get_all_buff_and_debuffs().duplicate(true)
+
+func get_buff_and_debuff_summary() -> BuffAndDebuffSummary:
+	return buff_and_debuff_manager.get_summary()
+
+func get_final_damage_dealt_true_multiplicative() -> float:
+	return buff_and_debuff_manager.compute_final_damage_dealt_multiplier()
+
+func get_final_damage_received_true_multiplicative() -> float:
+	return buff_and_debuff_manager.compute_final_damage_received_multiplier()
+
+func _resolve_buff_and_debuff_tick_down() -> void:
+	buff_and_debuff_manager.tick_down()

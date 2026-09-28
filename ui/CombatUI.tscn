@@ -10,6 +10,10 @@
 [ext_resource type="Resource" uid="uid://bvla4v52rv7w4" path="res://system/entities/templates/enemy_side/fire_world_World_With_No_Name/basic/lust_drunk_wolf.tres" id="7_nsbht"]
 [ext_resource type="PackedScene" uid="uid://bi7f7265qr116" path="res://ui/action_button.tscn" id="8_v1jbt"]
 [ext_resource type="PackedScene" uid="uid://bm0xfhl4g6ngo" path="res://ui/void_bar.tscn" id="9_bnnle"]
+[ext_resource type="PackedScene" uid="uid://ct0jge8exhfgf" path="res://ui/buff_and_debuff_bar.tscn" id="10_lmode"]
+[ext_resource type="Shader" uid="uid://c7uk1xaqh7ixm" path="res://ui/shaders/targeting_phase.gdshader" id="12_28h72"]
+[ext_resource type="Script" uid="uid://drdu2tmuequr4" path="res://ui/targeting_phase_canvas_layer.gd" id="12_cwnra"]
+[ext_resource type="PackedScene" uid="uid://5pr35fxsp354" path="res://ui/target_phase_bar.tscn" id="14_xfgh3"]
 
 [sub_resource type="Resource" id="Resource_1482v"]
 script = ExtResource("6_rqx7n")
@@ -24,7 +28,21 @@ action_point_regen_per_turn = 5
 innate_actions = Array[ExtResource("5_0ncfs")]([ExtResource("6_gftf7")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
 
+[sub_resource type="Resource" id="Resource_xfgh3"]
+script = ExtResource("6_rqx7n")
+entity_name = "Strong Reinforcement Test"
+max_hp = 100000
+metadata/_custom_type_script = "uid://nf30jicvf3ri"
+
 [sub_resource type="Theme" id="Theme_qbsgc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jpyye"]
+shader = ExtResource("12_28h72")
+shader_parameter/key_a = Color(0.4667, 0, 0, 1)
+shader_parameter/key_b = Color(0.2314, 0, 0, 1)
+shader_parameter/tolerance = 0.1200000057
+shader_parameter/feather = 0.005
+shader_parameter/gray_amount = 0.0
 
 [node name="CombatUI" type="Control" unique_id=1152202896]
 layout_mode = 3
@@ -36,7 +54,7 @@ grow_vertical = 2
 theme = ExtResource("1_theme")
 script = ExtResource("2_script")
 player_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("4_0ncfs"), SubResource("Resource_1482v"), ExtResource("7_bnnle")])
-enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("7_nsbht"), ExtResource("7_nsbht"), ExtResource("7_nsbht")])
+enemy_faction_entity_templates = Array[ExtResource("6_rqx7n")]([ExtResource("7_nsbht"), ExtResource("7_nsbht"), ExtResource("7_nsbht"), ExtResource("7_nsbht"), ExtResource("7_nsbht"), SubResource("Resource_xfgh3")])
 
 [node name="Background" type="ColorRect" parent="." unique_id=1394668291]
 layout_mode = 1
@@ -159,7 +177,7 @@ theme_override_constants/separation = 6
 [node name="Header" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol" unique_id=1095148201]
 layout_mode = 2
 theme_type_variation = &"HeaderLabel"
-text = "INSPECTOR"
+text = "INSPECTOR (TRUE SIGHT)"
 
 [node name="InspScroll" type="ScrollContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol" unique_id=57609054]
 layout_mode = 2
@@ -220,7 +238,20 @@ layout_mode = 2
 [node name="ElementalDoTList" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=930276820]
 layout_mode = 2
 
+[node name="StatusEffectLabel" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1559059715]
+layout_mode = 2
+text = "- Status Effects -"
+horizontal_alignment = 1
+
 [node name="StatusEffectList" type="VBoxContainer" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1663441655]
+layout_mode = 2
+
+[node name="BuffAndDebuffLabel" type="Label" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=1048768846]
+layout_mode = 2
+text = "- Buffs and Debuffs -"
+horizontal_alignment = 1
+
+[node name="BuffAndDebuffBar" parent="Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody" unique_id=743208292 instance=ExtResource("10_lmode")]
 layout_mode = 2
 
 [node name="ActionBar" type="PanelContainer" parent="Frame/Root/HBoxContainer/VBoxContainer" unique_id=962627189]
@@ -384,6 +415,47 @@ text = "Export Raw Log"
 [node name="ExportParsedLog" type="Button" parent="Frame/Root/HBoxContainer/LogPanel/LogCol/HBoxContainer" unique_id=1857219920]
 layout_mode = 2
 text = "Export Parsed Log"
+
+[node name="TargetingPhaseLayer" type="CanvasLayer" parent="." unique_id=1468170411]
+layer = 2
+script = ExtResource("12_cwnra")
+
+[node name="ColorRect" type="ColorRect" parent="TargetingPhaseLayer" unique_id=1449597109]
+material = SubResource("ShaderMaterial_jpyye")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TargetPhaseBarAnchor" type="Control" parent="TargetingPhaseLayer" unique_id=114493880]
+custom_minimum_size = Vector2(400, 100)
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -3.0517578e-05
+offset_right = 3.0517578e-05
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="TargetPhaseBar" parent="TargetingPhaseLayer/TargetPhaseBarAnchor" unique_id=1676737660 instance=ExtResource("14_xfgh3")]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = 580.0
+offset_top = 782.0
+offset_right = 980.0
+offset_bottom = 860.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_horizontal = 4
 
 [connection signal="pressed" from="Frame/Root/HBoxContainer/VBoxContainer/ActionBar/ActionBarRow/MarginContainer/VBoxContainer/EndTurnButton" to="." method="_on_end_turn_button_pressed"]
 [connection signal="tab_changed" from="Frame/Root/HBoxContainer/LogPanel/LogCol/TabBar" to="." method="_on_tab_bar_tab_changed"]

@@ -136,3 +136,8 @@ func render_developer() -> String:
 		] + "\n"
 	
 	return text.trim_suffix("\n")
+
+func execute_visuals() -> void:
+	if CombatLog.entity_info_card_registry.has(actor):
+		var card := CombatLog.entity_info_card_registry[actor]
+		card.sync_shield_state()

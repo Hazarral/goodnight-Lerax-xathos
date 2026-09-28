@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="1_6dllg"]
 [ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://system/entities/entity_template.gd" id="2_18ehv"]
 [ext_resource type="Resource" uid="uid://k2ra83djv2ai" path="res://system/actions/player actions/Roslum/ashen_flame_demo.tres" id="2_a56jd"]
+[ext_resource type="Resource" uid="uid://cuknegaq73lou" path="res://system/actions/player actions/Roslum/overheat.tres" id="3_a56jd"]
 
 [resource]
 script = ExtResource("2_18ehv")
@@ -15,5 +16,5 @@ physical_shield = 500
 max_action_point = 6
 starting_action_point = 3
 action_point_regen_per_turn = 4
-innate_actions = Array[ExtResource("1_6dllg")]([ExtResource("2_a56jd")])
+innate_actions = Array[ExtResource("1_6dllg")]([ExtResource("2_a56jd"), ExtResource("3_a56jd")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"

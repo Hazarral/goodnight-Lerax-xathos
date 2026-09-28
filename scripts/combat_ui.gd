@@ -24,7 +24,10 @@ const ENEMY_ROSTER_HAS_REINFORCEMENT_HEADER := "ENEMIES (REINFORCEMENT: %d)"
 @onready var inspector_mastery_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/MasteryLine
 @onready var inspector_shield_grid := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ShieldGrid
 @onready var inspector_elemental_dot_list := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/ElementalDoTList
+@onready var inspector_status_effect_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/StatusEffectLabel
 @onready var inspector_status_effect_list := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/StatusEffectList
+@onready var inspector_buff_and_debuff_label := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/BuffAndDebuffLabel
+@onready var inspector_buff_and_debuff_bar := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/BuffAndDebuffBar
 
 const ENTITY_INFO_CARD_SCENE : PackedScene = preload("res://ui/entity_info_card.tscn")
 const SHIELD_CHIP_SCENE : PackedScene = preload("res://ui/shield_chip.tscn")
@@ -35,10 +38,11 @@ const INSPECTOR_STATE_TEXT := "[%s]"
 const STATE_ALIVE_TEXT := "ALIVE"
 const STATE_DEAD_TEXT := "DEAD"
 
-const INSPECTOR_HP_TEXT := "HP: %d / %d"
+const INSPECTOR_HP_TEXT := "Health: %d / %d"
 const INSPECTOR_POTENCY_TEXT := "Potency: %d"
 const INSPECTOR_MASTERY_TEXT := "Mastery: %d"
 
+var is_choosing_card := false
 var selected_card : EntityInfoCard = null
 
 @onready var void_bar := $Frame/Root/HBoxContainer/VBoxContainer/EntityInfoRow/InspectorPanel/InspectorCol/InspScroll/InspBody/VoidBar
@@ -70,26 +74,22 @@ var pending_source : Entity = null
 ## 4. Combat log
 @onready var combat_log_label := $Frame/Root/HBoxContainer/LogPanel/LogCol/LogScroll/LogText
 
-const COMBAT_LOG_MODE : Dictionary[int, CombatLog.DisplayMode] = {
-	0 : CombatLog.DisplayMode.BASIC,
-	1 : CombatLog.DisplayMode.ADVANCED,
-	2 : CombatLog.DisplayMode.DEVELOPER
-}
-
 var current_combat_log_mode := CombatLog.DisplayMode.BASIC
+
+## 5. Grayscale layer on targeting phase
+@onready var targeting_phase_layer := $TargetingPhaseLayer
+@onready var targeting_phase_bar := $TargetingPhaseLayer/TargetPhaseBarAnchor/TargetPhaseBar
 
 func _ready() -> void:
 	EventBus.combat_initialization_finished.connect(_set_time_to_live)
 	EventBus.target_requested.connect(_on_target_requested)
 	EventBus.force_refresh_turn_ui.connect(_refresh_turn_ui)
+	EventBus.log_updated.connect(_set_combat_log)
+	EventBus.backfill_reinforcement.connect(_add_reinforcement)
+	targeting_phase_bar.cancel_button.pressed.connect(_clear_pending_target_state_cancelled)
 	
 	_combat_mockup()
 	_refresh_turn_ui()
-
-static func clear_children(container_list : Array[Node]) -> void:
-	for container in container_list:
-		for child in container.get_children():
-			child.queue_free()
 
 func _set_time_to_live() -> void:
 	print("Setting time to live...")
@@ -138,33 +138,39 @@ func _on_entity_info_card_pressed(card : EntityInfoCard) -> void:
 		if card.entity in valid_target_pool:
 			_clear_pending_target_state()
 			EventBus.target_resolved.emit(card.entity)
-		# else: invalid click while targeting — ignore, or flash a rejection cue
+		# else: invalid click while targeting, ignore
 		return
 	
 	## Only 1 card is read at a time
 	_clear_selected_card()
 	card.set_selected(true)
 	selected_card = card
-	
+	is_choosing_card = true
 	_set_inspector(card.entity)
 
 func _input(event : InputEvent) -> void:
 	if is_awaiting_target and event.is_action_pressed("target_cancel"):
-		_clear_pending_target_state()
-		EventBus.target_resolved.emit(null)  # cancel = resolved with null
+		_clear_pending_target_state_cancelled()
 
 func _clear_pending_target_state() -> void:
 	is_awaiting_target = false
 	pending_action_index = -1
 	pending_source = null
 	_clear_target_highlight()
+	targeting_phase_layer.fade_gray(false)
+	targeting_phase_bar.slide(false)
+
+func _clear_pending_target_state_cancelled() -> void:
+	## Note: Only used for cancel
+	_clear_pending_target_state()
+	EventBus.target_resolved.emit(null)
 
 func _clear_selected_card() -> void:
-	if selected_card:
+	if selected_card != null:
 		selected_card.set_selected(false)
 
 func _set_inspector(entity : Entity) -> void:
-	clear_children([
+	DisplayUtility.clear_children([
 		inspector_shield_grid, 
 		inspector_elemental_dot_list,
 		inspector_status_effect_list
@@ -206,12 +212,16 @@ func _set_inspector(entity : Entity) -> void:
 		void_bar.setup(entity)
 		void_bar.render()
 	
-	var status_effect_display_info := entity.get_status_effects_display_info()
-	for display_info in status_effect_display_info:
+	var status_effects := entity.get_status_effects()
+	inspector_status_effect_label.visible = not status_effects.is_empty()
+	for status_effect in status_effects:
 		var status_bar := STATUS_EFFECT_BAR_SCENE.instantiate()
 		inspector_status_effect_list.add_child(status_bar)
-		status_bar.setup(display_info)
+		status_bar.setup(status_effect)
 		status_bar.render()
+	
+	inspector_buff_and_debuff_bar.setup(entity)
+	inspector_buff_and_debuff_bar.render()
 
 func _add_roster_for_faction(is_player_faction : bool) -> void:
 	_add_roster(CombatSystem.get_on_field(is_player_faction), is_player_faction)
@@ -224,6 +234,16 @@ func _add_roster(faction : Array[Entity], is_player_faction : bool) -> void:
 		roster_list.add_child(entity_card)
 		entity_card.setup(entity, is_player_faction)
 		entity_card.render()
+		CombatLog.register_entity(entity, entity_card)
+
+func _add_reinforcement(entity : Entity) -> void:
+	var entity_card := ENTITY_INFO_CARD_SCENE.instantiate()
+	enemy_roster_list.add_child(entity_card)
+	entity_card.setup(entity, entity.is_player_faction())
+	entity_card.render()
+	CombatLog.register_entity(entity, entity_card)
+	entity_card.card_pressed.connect(_on_entity_info_card_pressed)	
+	_update_enemy_roster_header()
 
 func _update_enemy_roster_header() -> void:
 	var reinforcement_count := CombatSystem.get_enemy_reinforcement_count()
@@ -261,24 +281,36 @@ func _on_target_requested(_event : ActionEvent, target_faction : ActionEvent.Tar
 	is_awaiting_target = true
 	valid_target_pool = CombatSystem.get_valid_targets(target_faction, target_state)
 	_highlight_targetable_cards(valid_target_pool)
+	targeting_phase_layer.fade_gray(true)
+	targeting_phase_bar.slide(true)
 
 func _refresh_active_turn_cards() -> void:
 	var current_entity := CombatSystem.get_current_actor()
 	for card : EntityInfoCard in player_roster_list.get_children():
 		card.set_active_turn(card.entity == current_entity)
-		card.render()
+		#card.render()
 	for card : EntityInfoCard in enemy_roster_list.get_children():
 		card.set_active_turn(card.entity == current_entity)
-		card.render()
+		#card.render()
 
 func _refresh_turn_ui() -> void:
-	_clear_selected_card()
+	if not is_choosing_card:
+		_clear_selected_card()
 	_refresh_active_turn_cards()
-	_set_inspector(CombatSystem.get_current_actor())
+	var entity := selected_card.entity if is_choosing_card else CombatSystem.get_current_actor()
+	_set_inspector(entity)
 	_update_action_bar()
 	_update_combat_log()
 
+func _update_end_turn_button() -> void:
+	var opacity := 0.5 if CombatLog.is_log_playing() else 1.0
+	end_turn_button.modulate.a = opacity
+
 func _on_end_turn_button_pressed() -> void:
+	if CombatLog.is_log_playing():
+		return
+	
+	is_choosing_card = false
 	CombatSystem.end_current_actor_turn()
 
 func _highlight_targetable_cards(targets : Array[Entity]) -> void:
@@ -295,11 +327,10 @@ func _clear_target_highlight() -> void:
 
 func _update_combat_log() -> void:
 	## We use basic for now
-	CombatLog.build_logs()
-	_set_combat_log()
+	CombatLog.play_logs()
 
 func _on_tab_bar_tab_changed(tab: int) -> void:
-	current_combat_log_mode = COMBAT_LOG_MODE.get(tab)
+	current_combat_log_mode = tab as CombatLog.DisplayMode
 	_set_combat_log()
 
 func _set_combat_log() -> void:
@@ -317,11 +348,11 @@ const DEVELOPER_LOG_EXPORT := "user://developer_combat_log.txt"
 func _export_combat_log(mode: ExportMode) -> void:
 	var export_path := ""
 	match current_combat_log_mode:
-		COMBAT_LOG_MODE[0]:
+		CombatLog.DisplayMode.BASIC:
 			export_path = BASIC_LOG_EXPORT
-		COMBAT_LOG_MODE[1]:
+		CombatLog.DisplayMode.ADVANCED:
 			export_path = ADVANCED_LOG_EXPORT
-		COMBAT_LOG_MODE[2]:
+		CombatLog.DisplayMode.DEVELOPER:
 			export_path = DEVELOPER_LOG_EXPORT
 	
 	var file := FileAccess.open(export_path, FileAccess.WRITE)

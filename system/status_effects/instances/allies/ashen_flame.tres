@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="AshenFlame" format=3 uid="uid://b58ttfiferyc"]
+
+[ext_resource type="Script" uid="uid://dvlu88pftqn5t" path="res://system/status_effects/instances/allies/ashen_flame.gd" id="1_47agl"]
+
+[resource]
+script = ExtResource("1_47agl")
+effect_name = "Ashen Flame"
+description = "The Ashen Flame of the God of Fire and Ash. After any entity ends their turn, inflicts Burn on all enemies."
+metadata/_custom_type_script = "uid://dvlu88pftqn5t"

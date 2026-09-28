@@ -12,7 +12,7 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 	
 	var multi_heal_event := MultiCombatEvent.new(source)
 	var final_amount = amount + potency_scaling * source.get_potency() + mastery_scaling * source.get_mastery()
-	for entity in targets:
+	for entity : Entity in targets:
 		var heal_event := HealEvent.new(source, entity, final_amount)
 		multi_heal_event.add_event(heal_event)
 	

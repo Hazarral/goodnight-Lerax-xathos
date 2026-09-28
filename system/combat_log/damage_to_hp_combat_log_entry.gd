@@ -1,6 +1,8 @@
 class_name DamageToHPCombatLogEntry
 extends CombatLogEntry
 
+var current_hp_before : int
+var current_hp_after : int
 var damage_type : DamageAndDoT.DamageType
 var amount : int
 var ignore_shield : bool
@@ -15,11 +17,15 @@ func _init(
 	p_turn_number : int, 
 	p_actor : Entity, 
 	p_stage : String, 
+	p_current_hp_before : int,
+	p_current_hp_after : int,
 	p_damage_type : DamageAndDoT.DamageType,
 	p_amount : int,
 	 p_ignore_shield : bool
 	) -> void:
 	super(p_turn_number, p_actor, p_stage)
+	current_hp_before = p_current_hp_before
+	current_hp_after = p_current_hp_after
 	damage_type = p_damage_type
 	amount = p_amount
 	ignore_shield = p_ignore_shield
@@ -47,3 +53,10 @@ func render_developer() -> String:
 	]
 	
 	return text
+
+func execute_visuals() -> void:
+	if CombatLog.entity_info_card_registry.has(actor):
+		var card := CombatLog.entity_info_card_registry[actor]
+		var tween_time := GlobalSettings.ui_playback_delay
+
+		card.tween_hp(current_hp_after, tween_time)

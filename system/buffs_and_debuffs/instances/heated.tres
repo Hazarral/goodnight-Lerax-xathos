@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="BuffAndDebuff" format=3 uid="uid://balwcp0qfju8s"]
+
+[ext_resource type="Script" uid="uid://cs47mymn2ir7n" path="res://system/buffs_and_debuffs/buff_and_debuff.gd" id="1_snqrd"]
+
+[resource]
+script = ExtResource("1_snqrd")
+buff_and_debuff_name = "Heated"
+duration = 3
+potency_additive = 20.0
+potency_true_multiplicative = 0.5
+metadata/_custom_type_script = "uid://cs47mymn2ir7n"

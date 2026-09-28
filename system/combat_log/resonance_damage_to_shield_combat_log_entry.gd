@@ -31,3 +31,8 @@ func render_developer() -> String:
 	var text := _get_developer_stage_prefix()
 	text += render_basic()
 	return text
+
+func execute_visuals() -> void:
+	if CombatLog.entity_info_card_registry.has(actor):
+		var card := CombatLog.entity_info_card_registry[actor]
+		card.sync_shield_state()

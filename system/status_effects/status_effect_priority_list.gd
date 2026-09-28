@@ -144,9 +144,7 @@ const VOID_CHARGED_POST_DAMAGE_TO_HP_TAKEN := 100
 ## (see above) rather than being a heal-stage constant itself.
 
 ## --- PRE_DEATH / POST_DEATH ---
-## Brackets an entity's state transition to DEAD. Poison
-## Explosion/Transfer are typically registered as reactions
-## to POST_DEATH rather than being POST_DEATH itself.
+const VOID_CHARGED_POST_DEATH := 100
 
 ## --- PRE_STATUS_EFFECT_TICK_DOWN ---
 ## Something which happens when any effect ticks down

@@ -15,6 +15,7 @@
 [ext_resource type="Resource" uid="uid://cynf8sly8hj1p" path="res://system/actions/player actions/Draechen/heal.tres" id="13_viaak"]
 [ext_resource type="Resource" uid="uid://chfo1o7314g3d" path="res://system/actions/player actions/Draechen/exalted_restoration.tres" id="14_atlsi"]
 [ext_resource type="Resource" uid="uid://bmqs81xadc286" path="res://system/actions/player actions/Draechen/void_kiss.tres" id="15_01tdu"]
+[ext_resource type="Resource" uid="uid://dubpe57kpm1o1" path="res://system/actions/player actions/Draechen/devour.tres" id="16_dxchh"]
 [ext_resource type="Script" uid="uid://uxw4xg6ix3ti" path="res://system/entities/draechen_template.gd" id="16_hadhy"]
 
 [resource]
@@ -27,5 +28,5 @@ max_hp = 2000
 max_action_point = 16
 starting_action_point = 10
 action_point_regen_per_turn = 10
-innate_actions = Array[ExtResource("1_hadhy")]([ExtResource("2_pm54n"), ExtResource("3_ro7e5"), ExtResource("4_s4enl"), ExtResource("5_oxgyq"), ExtResource("6_3fsw4"), ExtResource("7_h0j81"), ExtResource("8_gcco3"), ExtResource("9_mf2d4"), ExtResource("10_tnehb"), ExtResource("11_6l2ey"), ExtResource("12_fxwl2"), ExtResource("13_viaak"), ExtResource("14_atlsi"), ExtResource("15_01tdu")])
+innate_actions = Array[ExtResource("1_hadhy")]([ExtResource("2_pm54n"), ExtResource("3_ro7e5"), ExtResource("4_s4enl"), ExtResource("5_oxgyq"), ExtResource("6_3fsw4"), ExtResource("7_h0j81"), ExtResource("8_gcco3"), ExtResource("9_mf2d4"), ExtResource("10_tnehb"), ExtResource("11_6l2ey"), ExtResource("12_fxwl2"), ExtResource("13_viaak"), ExtResource("14_atlsi"), ExtResource("15_01tdu"), ExtResource("16_dxchh")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"

@@ -23,26 +23,14 @@ var is_targetable : bool = false
 const STATE_NAME_ALIVE := "ALIVE"
 const STATE_NAME_DEAD := "DEAD"
 
-enum ShieldState {
-	NO_SHIELD,		## No shield at all, all max == 0
-	FULLY_SHIELDED, ## All active shields are not broken
-	BREACHED,		## At least 1 active shield is breached
-	ALL_BREACHED	## All active shields are breached
-}
-
-const SHIELD_STATE_NAME : Dictionary[ShieldState, String] = {
-	ShieldState.NO_SHIELD : "[No Shield]",
-	ShieldState.FULLY_SHIELDED : "[Fully Shielded]",
-	ShieldState.BREACHED : "[Shield Breached]",
-	ShieldState.ALL_BREACHED : "[All Shield Breached]"
-}
-
 const STATE_TEXT := "[%s]"
 const SHIELD_STATE_TEXT := "%s"
 const AP_TEXT := "> %d / %d AP (+%d / turn)"
-const HP_TEXT := "> %d / %d HP"
+const HP_TEXT := "> %d / %d Health"
 
 signal card_pressed(card : EntityInfoCard)
+
+var render_dead : bool = false
 
 func _ready() -> void:
 	if debug_mode:
@@ -57,8 +45,8 @@ func _ready() -> void:
 
 func setup(p_entity : Entity, p_show_ap : bool = true) -> void:
 	entity = p_entity
-	hp_bar.max_value = entity.get_max_hp()
 	show_ap = p_show_ap
+	hp_bar.max_value = entity.get_max_hp()
 
 func set_selected(value: bool) -> void:
 	is_selected = value
@@ -72,8 +60,15 @@ func set_targetable(value : bool) -> void:
 	is_targetable = value
 	_refresh_visual_state()
 
-func _set_font_opacity() -> void:
-	var opacity := 1.0 if entity.current_state == Entity.State.ALIVE else 0.5
+func set_dead_visuals() -> void:
+	state_label.text = STATE_TEXT % STATE_NAME_DEAD
+	_set_font_opacity(true)
+
+func _set_font_opacity(is_dead : bool = false) -> void:
+	## Set this flag permanently
+	render_dead = render_dead or is_dead
+	
+	var opacity := 0.5 if render_dead else 1.0
 	name_label.modulate.a = opacity
 	state_label.modulate.a = opacity
 	shield_status_label.modulate.a = opacity
@@ -105,33 +100,15 @@ func render() -> void:
 	
 	name_label.text = entity.get_entity_name_with_suffix()
 	state_label.text = STATE_TEXT % _get_entity_state_name() 
-	shield_status_label.text = SHIELD_STATE_TEXT % SHIELD_STATE_NAME.get(get_shield_state())
-	
-	ap_label.visible = show_ap
-	ap_label.text = AP_TEXT % [
-		entity.current_action_point, 
-		entity.template.max_action_point, 
-		entity.template.action_point_regen_per_turn
-	]
+	sync_shield_state()
+	sync_action_point()
 	
 	hp_label.text = HP_TEXT % [
 		entity.current_hp,
 		entity.get_max_hp()
 	]
 	
-	hp_bar.value = entity.current_hp
-
-func get_shield_state() -> ShieldState:
-	if entity.has_no_shields():
-		return ShieldState.NO_SHIELD
-	
-	if entity.are_all_shields_breached():
-		return ShieldState.ALL_BREACHED
-	
-	if entity.is_any_shield_breached():
-		return ShieldState.BREACHED
-	
-	return ShieldState.FULLY_SHIELDED
+	_set_display_hp(entity.current_hp)
 
 func _on_mouse_entered() -> void:
 	modulate = Color(0.75, 0.75, 0.75)  # grey-out on hover
@@ -142,3 +119,36 @@ func _on_mouse_exited() -> void:
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		card_pressed.emit(self)
+
+func tween_hp(target_hp : int, duration: float) -> void:
+	# If the user dragged the speed slider to instant
+	if duration <= 0.0:
+		_set_display_hp(target_hp)
+		return
+		
+	var tween := create_tween()
+	
+	# Tween the physical bar
+	tween.tween_property(hp_bar, "value", target_hp, duration)
+	
+	# Parallel tween the text label so the numbers roll down smoothly with the bar
+	tween.parallel().tween_method(_set_display_hp, hp_bar.value, target_hp, duration)
+
+# A helper setter so the tween can update the label string every frame
+func _set_display_hp(display_hp : int) -> void:
+	hp_bar.value = display_hp
+	hp_label.text = HP_TEXT % [
+		display_hp,
+		entity.get_max_hp()
+	]
+
+func sync_shield_state() -> void:
+	shield_status_label.text = SHIELD_STATE_TEXT % entity.get_shield_state_name()
+
+func sync_action_point() -> void:
+	ap_label.visible = show_ap
+	ap_label.text = AP_TEXT % [
+		entity.current_action_point, 
+		entity.template.max_action_point, 
+		entity.template.action_point_regen_per_turn
+	]

@@ -9,7 +9,7 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 		## Already cancelled!
 		return false
 	
-	for entity in targets:
+	for entity : Entity in targets:
 		entity.apply_void(stacks)
 	
 	return true

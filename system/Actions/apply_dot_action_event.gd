@@ -16,7 +16,7 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 		## Already cancelled!
 		return false
 	
-	for entity in targets:
+	for entity : Entity in targets:
 		var dot_instance : DoTInstance = null
 		match damage_type:
 			DamageAndDoT.DamageType.FIRE:

@@ -3,7 +3,7 @@ extends DescriptionSegment
 
 @export var stacks : int
 const SIMPLE_TEMPLATE := "[color=%s]%d Void Stack%s[/color]"
-const DETAILED_TEMPLATE := "[color=%s]%d Void Stack%s[/color] [color=%s][Base Damage at 0 Target Attrition and %d Stack%s: (%.2f(%.2fHP) + %.2f(%.2fShield) + %.2f(%.2fP^%.2f) + %.2f(%.2fM^%.2f)) * %d = [/color][color=%s]%d[/color][color=%s]][/color]"
+const DETAILED_TEMPLATE := "[color=%s]%d Void Stack%s[/color] [color=%s][Base Damage at 0 Target Attrition and %d Stack%s: (%.2f(%.2fHealth) + %.2f(%.2fShield) + %.2f(%.2fP^%.2f) + %.2f(%.2fM^%.2f)) * %d = [/color][color=%s]%d[/color][color=%s]][/color]"
 
 func to_text(detailed : bool = false) -> String:
 	if detailed:
@@ -31,10 +31,10 @@ func to_text(detailed : bool = false) -> String:
 		return DETAILED_TEMPLATE % [
 			DamageAndDoT.VOID_COLOR_HEX,               # 1. %s
 			stacks,                                    # 2. %d
-			"s" if stacks != 1 else "",                 # 3. %s
+			DisplayUtility.plural_ending(stacks),      # 3. %s
 			DamageAndDoT.GENERIC_COLOR_HEX,            # 4. %s
 			stacks,                                    # 5. %d
-			"s" if stacks != 1 else "",                 # 6. %s
+			DisplayUtility.plural_ending(stacks),      # 6. %s
 			hp_term,                                   # 7. %.2f (HP term value)
 			DamageAndDoT.MAX_HP_SCALING,               # 8. %.2f (HP coefficient)
 			shield_term,                               # 9. %.2f (Shield term value)
@@ -54,5 +54,5 @@ func to_text(detailed : bool = false) -> String:
 	return SIMPLE_TEMPLATE % [
 		DamageAndDoT.VOID_COLOR_HEX,
 		stacks,
-		"s" if stacks != 1 else ""
+		DisplayUtility.plural_ending(stacks)
 	]
