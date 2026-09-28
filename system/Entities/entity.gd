@@ -653,7 +653,12 @@ func _resolve_crumble_splash_effect() -> void:
 			continue
 		
 		var real_amount := mini(current_shields[idx], non_earth_shield_damage)
-		var damage_event := DamageEvent.new(self, self, idx as DamageAndDoT.DamageType, real_amount)
+		var damage_event := DamageEvent.new(
+			null, 
+			self, 
+			idx as DamageAndDoT.DamageType, 
+			real_amount
+		)
 		multi_damage_event.add_event(damage_event)
 	
 	var combat_log_entry := CrumbleSplashCombatLogEntry.new(
@@ -731,7 +736,7 @@ func _resolve_wind_shear_blast_effect() -> void:
 	
 	for target in valid_targets:
 		var damage_event := DamageEvent.new(
-			self,
+			null,
 			target,
 			DamageAndDoT.DamageType.WIND,
 			ceili(
@@ -768,7 +773,7 @@ func _trigger_frostbite_on_break(idx : int) -> void:
 	
 	var multiplier : float = DamageAndDoT.FROSTBITE_ICE_SHIELD_BREAK_COEFFICIENT if ((idx as DamageAndDoT.DamageType) == DamageAndDoT.DamageType.ICE) else DamageAndDoT.FROSTBITE_NON_ICE_SHIELD_BREAK_COEFFICIENT
 	var damage_event := DamageEvent.new(
-		self,
+		null,
 		self,
 		DamageAndDoT.DamageType.ICE,
 		ceili(multiplier * max_shields[idx]),
@@ -790,7 +795,7 @@ func _trigger_bleed_rupture_damage(heal_amount : int) -> void:
 	
 	var anti_heal_damage := ceili(DamageAndDoT.get_bleed_anti_heal_damage(total_bleed_damage, heal_amount, highest_mastery, highest_potency, stacks_count))
 	var damage_event := DamageEvent.new(
-		self,
+		null,
 		self,
 		DamageAndDoT.DamageType.PHYSICAL,
 		anti_heal_damage,
@@ -823,7 +828,7 @@ func _trigger_poison_explosion_on_death() -> void:
 	
 	for entity in valid_targets:
 		var damage_event := DamageEvent.new(
-			self,
+			null,
 			entity,
 			DamageAndDoT.DamageType.POISON,
 			explosion_damage
@@ -858,7 +863,7 @@ func _trigger_shock_damage_on_action(cast_result : CastResult) -> void:
 	var highest_potency := active_dots[DamageAndDoT.DoT.SHOCK].get_highest_potency()
 	var shock_damage_on_action := ceili(DamageAndDoT.get_shock_damage_on_action(total_shock_damage, highest_potency, cast_result.ap_spent))
 	var damage_event := DamageEvent.new(
-		self,
+		null,
 		self,
 		DamageAndDoT.DamageType.LIGHTNING,
 		shock_damage_on_action,
