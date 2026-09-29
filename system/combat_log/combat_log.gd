@@ -17,7 +17,7 @@ var _cleanup_pending := false
 var _null_count := 0								## Umbrella for all null
 var _pending_slots : Dictionary[int, bool] = {}		## For explicit registration/cancellation
 const NULL_THRESHOLD := 0.5
-const MAXIMUM_NULL_ENTRIES := 100
+const MINIMUM_NULL_ENTRIES := 100
 
 const ENTRY_LINE_DELIMITER := "\n\n"
 
@@ -43,6 +43,10 @@ func reset():
 	entity_info_card_registry.clear()
 
 func register(entry : CombatLogEntry) -> void:
+	if entry == null:
+		# This will be outside of the null control flow
+		return
+	
 	_entries.append(entry)
 
 func set_mode(display_mode : DisplayMode) -> void:
@@ -98,7 +102,7 @@ func cancel_reserved_slot(index : int) -> void:
 		_clear_null_entries()
 
 func _should_clear_nulls() -> bool:
-	return _null_count >= mini(ceili(_entries.size() * NULL_THRESHOLD), MAXIMUM_NULL_ENTRIES)
+	return _null_count >= maxi(ceili(_entries.size() * NULL_THRESHOLD), MINIMUM_NULL_ENTRIES)
 
 func _try_clear_null_entries() -> void:
 	if not _pending_slots.is_empty() or _is_playing:
