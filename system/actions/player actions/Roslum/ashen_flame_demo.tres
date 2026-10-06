@@ -16,7 +16,6 @@ script = ExtResource("2_jnf5m")
 status_effects = Array[ExtResource("3_6t233")]([ExtResource("4_jnf5m")])
 target_state = 2
 target_faction = 2
-target_count = 1
 metadata/_custom_type_script = "uid://b5etb2vg83gh1"
 
 [sub_resource type="Resource" id="Resource_6t233"]
@@ -40,7 +39,6 @@ metadata/_custom_type_script = "uid://dkl0chnt0ao1p"
 
 [sub_resource type="Resource" id="Resource_oai2f"]
 script = ExtResource("10_0e7xf")
-target_count = 1
 target_state = 2
 target_faction = 2
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"
