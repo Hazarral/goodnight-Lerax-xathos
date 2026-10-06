@@ -16,6 +16,9 @@ extends Resource
 ## Description: what it does
 @export var description_segments : Array[DescriptionSegment]
 
+## First action event which is single target manually picked. This is optional
+@export var single_target_action_event : ActionEvent
+
 ## List of modular action this will perform in order, all ActionEvent have the same targeting specification as this Action
 @export var action_events : Array[ActionEvent]
 

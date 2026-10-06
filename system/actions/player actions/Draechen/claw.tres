@@ -16,7 +16,6 @@ amount = 20
 potency_scaling = 0.6
 mastery_scaling = 0.6
 target_faction = 1
-target_count = 1
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 
 [sub_resource type="Resource" id="Resource_q6v30"]
@@ -43,7 +42,6 @@ metadata/_custom_type_script = "uid://b5tvpmksfnn2p"
 
 [sub_resource type="Resource" id="Resource_46ch2"]
 script = ExtResource("7_eunbx")
-target_count = 1
 target_faction = 1
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"
 

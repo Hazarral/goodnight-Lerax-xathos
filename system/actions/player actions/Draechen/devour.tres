@@ -17,6 +17,7 @@ damage_type = 8
 amount = 1
 target_state = 1
 target_faction = 1
+target_mode = 0
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 
 [sub_resource type="Resource" id="Resource_hiyvb"]
@@ -55,7 +56,7 @@ metadata/_custom_type_script = "uid://cs47mymn2ir7n"
 [sub_resource type="Resource" id="Resource_fmiak"]
 script = ExtResource("4_hiyvb")
 buff_and_debuff = SubResource("Resource_hiyvb")
-target_mode = 1
+target_mode = 2
 metadata/_custom_type_script = "uid://cf6kdelbuccca"
 
 [sub_resource type="Resource" id="Resource_d0gfr"]

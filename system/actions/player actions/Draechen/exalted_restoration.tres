@@ -18,7 +18,6 @@ script = ExtResource("2_48lso")
 amount = 500
 potency_scaling = 2.5
 mastery_scaling = 2.5
-target_count = 1
 metadata/_custom_type_script = "uid://jdkkvelphwtm"
 
 [sub_resource type="Resource" id="Resource_101qr"]
@@ -28,7 +27,6 @@ stacks = 1
 duration = 2
 target_state = 2
 target_faction = 1
-target_count = 1
 metadata/_custom_type_script = "uid://b54ndx2ge1ied"
 
 [sub_resource type="Resource" id="Resource_wcln0"]
@@ -63,7 +61,6 @@ metadata/_custom_type_script = "uid://cfps8viah6gb1"
 
 [sub_resource type="Resource" id="Resource_ixqep"]
 script = ExtResource("7_8wjot")
-target_count = 1
 target_state = 2
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"
 
@@ -119,7 +116,6 @@ metadata/_custom_type_script = "uid://s82c3e2kmea8"
 
 [sub_resource type="Resource" id="Resource_de7ca"]
 script = ExtResource("7_8wjot")
-target_count = 1
 target_state = 2
 target_faction = 1
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"

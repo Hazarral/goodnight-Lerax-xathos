@@ -19,7 +19,6 @@ amount = 26
 potency_scaling = 0.6
 mastery_scaling = 0.6
 target_faction = 1
-target_count = 1
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 
 [sub_resource type="Resource" id="Resource_dcutq"]
@@ -29,8 +28,7 @@ base_damage = 12.0
 stacks = 4
 duration = 5
 target_faction = 1
-target_count = 1
-target_mode = 2
+target_mode = 4
 metadata/_custom_type_script = "uid://dl0omykhmcmxj"
 
 [sub_resource type="Resource" id="Resource_w284u"]
@@ -57,7 +55,6 @@ metadata/_custom_type_script = "uid://b5tvpmksfnn2p"
 
 [sub_resource type="Resource" id="Resource_c84j4"]
 script = ExtResource("7_dcutq")
-target_count = 1
 target_faction = 1
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"
 

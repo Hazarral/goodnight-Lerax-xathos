@@ -12,6 +12,7 @@
 [sub_resource type="Resource" id="Resource_0ehkf"]
 script = ExtResource("2_bp6ab")
 status_effects = Array[ExtResource("3_wxt3q")]([ExtResource("4_wxt3q")])
+target_mode = 0
 metadata/_custom_type_script = "uid://b5etb2vg83gh1"
 
 [sub_resource type="Resource" id="Resource_bdkja"]

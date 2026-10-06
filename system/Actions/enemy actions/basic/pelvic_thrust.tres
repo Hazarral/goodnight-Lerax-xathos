@@ -20,6 +20,7 @@ damage_type = 5
 amount = 80
 potency_scaling = 4.0
 target_state = 2
+target_mode = 0
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 
 [sub_resource type="Resource" id="Resource_vnk4y"]
@@ -29,7 +30,7 @@ base_damage = 1.0
 stacks = 10
 duration = 3
 target_state = 2
-target_mode = 2
+target_mode = 4
 metadata/_custom_type_script = "uid://dl0omykhmcmxj"
 
 [sub_resource type="Resource" id="Resource_4rnhi"]
@@ -37,7 +38,7 @@ script = ExtResource("4_4rnhi")
 amount = 40
 potency_scaling = 2.0
 target_faction = 1
-target_mode = 1
+target_mode = 2
 metadata/_custom_type_script = "uid://jdkkvelphwtm"
 
 [sub_resource type="Resource" id="Resource_nsbht"]
