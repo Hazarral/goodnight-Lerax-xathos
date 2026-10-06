@@ -24,11 +24,17 @@ extends Resource
 
 func cast(source : Entity) -> bool:	
 	var last_targets : Array[Entity] = []
-	for action_event in action_events:
-		var dynamic_event : Variant = action_event
+	
+	if single_target_action_event != null:
+		var dynamic_event : Variant = single_target_action_event
 		var success : bool = await dynamic_event.resolve(source, last_targets)
 		if not success:
 			return false
+		last_targets = single_target_action_event.get_last_resolved_targets()
+	
+	for action_event in action_events:
+		var dynamic_event : Variant = action_event
+		await dynamic_event.resolve(source, last_targets)
 		last_targets = action_event.get_last_resolved_targets()
 	
 	return true
