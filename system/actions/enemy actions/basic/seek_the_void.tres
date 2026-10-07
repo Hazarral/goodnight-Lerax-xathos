@@ -8,6 +8,7 @@
 [ext_resource type="Resource" uid="uid://disnq3cqqmfbc" path="res://system/status_effects/instances/enemies/void_charged.tres" id="4_wxt3q"]
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="5_b4mj5"]
 [ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="6_k8f7o"]
+[ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="9_b4mj5"]
 
 [sub_resource type="Resource" id="Resource_bdkja"]
 script = ExtResource("5_b4mj5")
@@ -35,6 +36,12 @@ status_effects = Array[ExtResource("3_wxt3q")]([ExtResource("4_wxt3q")])
 target_mode = 0
 metadata/_custom_type_script = "uid://b5etb2vg83gh1"
 
+[sub_resource type="Resource" id="Resource_ct332"]
+script = ExtResource("9_b4mj5")
+tags = Array[int]([2, 14])
+considerations = Array[int]([3, 2])
+metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
+
 [resource]
 script = ExtResource("3_pmi45")
 action_name = "Seek the Void"
@@ -42,4 +49,5 @@ action_point_cost = 4
 cooldown = 4
 description_segments = Array[ExtResource("2_mg5nd")]([SubResource("Resource_bdkja"), SubResource("Resource_wxt3q"), SubResource("Resource_b4mj5"), SubResource("Resource_k8f7o")])
 single_target_action_event = SubResource("Resource_0ehkf")
+utility = SubResource("Resource_ct332")
 metadata/_custom_type_script = "uid://doysxg78oub0w"

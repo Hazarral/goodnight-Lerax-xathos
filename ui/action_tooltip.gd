@@ -8,6 +8,9 @@ const AP_COST_TEXT := "%d AP"
 const COOLDOWN_TEXT := "%d CD"
 
 @onready var description := $ActionTooltip/VBoxContainer/Description
+@onready var tags := $ActionTooltip/VBoxContainer/Tags
+
+const TAGS_START_TEMPLATE := "Tags: "
 
 var _current_action : Action = null
 var _detailed_mode := false
@@ -36,6 +39,7 @@ func render(action : Action) -> void:
 	action_point_cost_label.text = AP_COST_TEXT % action.action_point_cost
 	cooldown_label.text = COOLDOWN_TEXT % action.cooldown
 	description.text = _compile_description(action.description_segments)
+	tags.text = _compile_tags(action)
 
 func _compile_description(segments : Array[DescriptionSegment], detailed : bool = false) -> String:
 	var result := ""
@@ -52,3 +56,10 @@ func _compile_description(segments : Array[DescriptionSegment], detailed : bool 
 		result += "."
 	
 	return result
+
+func _compile_tags(action : Action) -> String:
+	var str_arr := PackedStringArray()
+	for tag in action.utility.tags:
+		str_arr.append(Utility.get_tag_name(tag))
+	
+	return TAGS_START_TEMPLATE + ", ".join(str_arr)
