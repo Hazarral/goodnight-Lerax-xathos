@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://g0gfyafsh524"]
 
 [ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_annsb"]
-[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_qr8yx"]
 [ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/actions/apply_dot_action_event.gd" id="3_upj74"]
 [ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="4_ea6cg"]
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="5_fu0l8"]
@@ -66,15 +65,6 @@ script = ExtResource("5_fu0l8")
 text = "to the target hit."
 metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 
-[sub_resource type="Resource" id="Resource_577f5"]
-script = ExtResource("2_qr8yx")
-amount = 50
-potency_scaling = 2.0
-mastery_scaling = 1.0
-target_faction = 2
-target_mode = 0
-metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
-
 [resource]
 script = ExtResource("11_75vsp")
 origin = 1
@@ -82,6 +72,5 @@ action_name = "Fireball"
 action_point_cost = 2
 cooldown = 3
 description_segments = Array[ExtResource("4_ea6cg")]([SubResource("Resource_upj3k"), SubResource("Resource_tkost"), SubResource("Resource_ebnqq"), SubResource("Resource_krjl2"), SubResource("Resource_r80vl"), SubResource("Resource_nqmr1"), SubResource("Resource_wjrv1"), SubResource("Resource_vgkxf"), SubResource("Resource_lmjs1")])
-single_target_action_event = SubResource("Resource_577f5")
 action_events = Array[ExtResource("1_annsb")]([SubResource("Resource_unris")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"

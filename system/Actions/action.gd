@@ -1,3 +1,4 @@
+@tool
 class_name Action
 extends Resource
 
@@ -25,6 +26,9 @@ extends Resource
 ## Tags and considerations, used for AI mostly
 @export var utility : Utility
 
+@export_tool_button("Auto-populate Tags")
+var auto_tag_button := _auto_assign_tags
+
 func cast(source : Entity) -> bool:	
 	var last_targets : Array[Entity] = []
 	
@@ -41,3 +45,28 @@ func cast(source : Entity) -> bool:
 		last_targets = action_event.get_last_resolved_targets()
 	
 	return true
+
+func _auto_assign_tags() -> void:
+	if utility == null:
+		push_warning("Cannot auto-assign tags: 'utility' subresource is null.")
+		return
+	
+	var tag_dict : Dictionary[Utility.Tag, bool] = {}
+	
+	for action_event : ActionEvent in [single_target_action_event] + action_events:
+		if action_event == null:
+			continue
+		
+		var curr_tags = action_event.get_tags()
+		for tag in curr_tags:
+			tag_dict[tag] = true
+	
+	## Populate the list
+	var typed_tags: Array[Utility.Tag] = []
+	typed_tags.assign(tag_dict.keys())
+	
+	utility.tags = typed_tags
+	
+	utility.notify_property_list_changed()
+	notify_property_list_changed()
+	print("Successfully auto-filled %d tags" % utility.tags.size())

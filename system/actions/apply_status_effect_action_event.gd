@@ -1,3 +1,4 @@
+@tool
 class_name ApplyStatusEffectActionEvent
 extends ActionEvent
 
@@ -16,3 +17,6 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 			attach_to.apply_status_effect(effect, source, entity)
 	
 	return true
+
+func get_tags() -> Array[Utility.Tag]:
+	return super() + [Utility.Tag.APPLY_STATUS_EFFECT]

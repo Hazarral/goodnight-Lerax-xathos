@@ -23,3 +23,6 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 		entity.apply_dot(dot_instance)
 	
 	return true
+
+func get_tags() -> Array[Utility.Tag]:
+	return Utility.TAG_CONSIDERATION[Utility.Tag.APPLY_RANDOM_DOT]

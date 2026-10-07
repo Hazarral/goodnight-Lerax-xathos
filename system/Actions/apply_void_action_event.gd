@@ -1,3 +1,4 @@
+@tool
 class_name ApplyVoidActionEvent
 extends ActionEvent
 
@@ -13,3 +14,6 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 		entity.apply_void(stacks)
 	
 	return true
+
+func get_tags() -> Array[Utility.Tag]:
+	return super() + Utility.TAG_CONSIDERATION[Utility.Tag.APPLY_VOID]

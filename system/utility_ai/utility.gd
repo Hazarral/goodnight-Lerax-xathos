@@ -109,20 +109,23 @@ const TAG_CONSIDERATION : Dictionary[Tag, Array] = {
 @export var considerations : Array[Consideration] = []
 
 @export_tool_button("Auto-populate Considerations")
-var auto_tag_button = _auto_assign_considerations
+var auto_consider_button := _auto_assign_considerations
 
 func _auto_assign_considerations() -> void:
 	## NOTE: Safety check before clearing anything
 	for current_tag in tags:
 		assert(TAG_CONSIDERATION.has(current_tag), "ACTION CONFIG ERROR: Nonexistent tag %s" % current_tag)
 		
-	considerations.clear()
+	var new_considerations: Array[Consideration] = []
 	
 	# Loop through every tag currently assigned to this action
 	for current_tag in tags:
-		var auto_considerations: Array = TAG_CONSIDERATION[current_tag]
-		
+		var auto_considerations : Array = TAG_CONSIDERATION[current_tag]
 		# Add the consideration if it isn't already in the list
 		for cons in auto_considerations:
-			if not cons in considerations:
-				considerations.append(cons)
+			if not cons in new_considerations:
+				new_considerations.append(cons)
+	
+	considerations = new_considerations
+	notify_property_list_changed()
+	print("Successfully auto-filled %d considerations" % considerations.size())

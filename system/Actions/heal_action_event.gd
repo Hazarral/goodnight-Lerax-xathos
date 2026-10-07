@@ -1,3 +1,4 @@
+@tool
 class_name HealActionEvent
 extends ActionEvent
 
@@ -20,3 +21,6 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 	CombatSystem.process_combat_event_queue()
 	
 	return true
+
+func get_tags() -> Array[Utility.Tag]:
+	return super() + [Utility.Tag.HEAL]

@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_d0fye"]
 [ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="2_3v7b5"]
-[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_t3bao"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="3_et80i"]
 [ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/actions/apply_dot_action_event.gd" id="3_vnk4y"]
 [ext_resource type="Script" uid="uid://jdkkvelphwtm" path="res://system/actions/heal_action_event.gd" id="4_4rnhi"]
@@ -91,15 +90,6 @@ script = ExtResource("6_7ywvy")
 text = "to self."
 metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 
-[sub_resource type="Resource" id="Resource_t3bao"]
-script = ExtResource("2_t3bao")
-damage_type = 5
-amount = 80
-potency_scaling = 4.0
-target_state = 2
-target_mode = 0
-metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
-
 [resource]
 script = ExtResource("3_et80i")
 origin = 1
@@ -107,6 +97,5 @@ action_name = "Pelvic Thrust"
 action_point_cost = 3
 cooldown = 5
 description_segments = Array[ExtResource("2_3v7b5")]([SubResource("Resource_nsbht"), SubResource("Resource_bnnle"), SubResource("Resource_28h72"), SubResource("Resource_cwnra"), SubResource("Resource_u37hb"), SubResource("Resource_xfgh3"), SubResource("Resource_gccix"), SubResource("Resource_qjcwn"), SubResource("Resource_xibjb"), SubResource("Resource_mw613"), SubResource("Resource_gqcgt")])
-single_target_action_event = SubResource("Resource_t3bao")
 action_events = Array[ExtResource("1_d0fye")]([SubResource("Resource_vnk4y"), SubResource("Resource_4rnhi")])
 metadata/_custom_type_script = "uid://doysxg78oub0w"
