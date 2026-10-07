@@ -8,6 +8,7 @@
 [ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="5_v6cql"]
 [ext_resource type="Script" uid="uid://b5tvpmksfnn2p" path="res://system/ui/description_segments/damage_segment.gd" id="5_xxut1"]
 [ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="6_wesgp"]
+[ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/tag_and_consideration.gd" id="9_pxgns"]
 
 [sub_resource type="Resource" id="Resource_0jytx"]
 script = ExtResource("4_wesgp")
@@ -46,10 +47,17 @@ target_faction = 1
 target_mode = 0
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 
+[sub_resource type="Resource" id="Resource_3rs3o"]
+script = ExtResource("9_pxgns")
+tags = Array[int]([0, 1])
+considerations = Array[int]([0, 1, 3, 4])
+metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
+
 [resource]
 script = ExtResource("2_0gcgf")
 action_name = "Bite"
 action_point_cost = 2
 description_segments = Array[ExtResource("3_d8rsf")]([SubResource("Resource_0jytx"), SubResource("Resource_wrlne"), SubResource("Resource_xxut1"), SubResource("Resource_v6cql"), SubResource("Resource_dxyw3")])
 single_target_action_event = SubResource("Resource_wesgp")
+utility = SubResource("Resource_3rs3o")
 metadata/_custom_type_script = "uid://doysxg78oub0w"

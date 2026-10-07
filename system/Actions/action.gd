@@ -22,6 +22,9 @@ extends Resource
 ## List of modular action this will perform in order, all ActionEvent have the same targeting specification as this Action
 @export var action_events : Array[ActionEvent]
 
+## Tags and considerations, used for AI mostly
+@export var utility : Utility
+
 func cast(source : Entity) -> bool:	
 	var last_targets : Array[Entity] = []
 	
