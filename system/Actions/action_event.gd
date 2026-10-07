@@ -13,22 +13,17 @@ enum TargetState {
 	ALL
 }
 
-enum TargetCount {
-	SINGLE,
-	ALL
-}
-
 enum TargetMode { 
-	INDEPENDENT_FILTER, 	## Use its own target faction, state and count filter. Ask for confirmation and manual targeting if single target, else it will auto target valid entities when target count = all
-	SELF,					## Always target caster
-	INHERIT_FILTERED,		## Inherit the previous action event targets while respecting the filtering of the target faction, state and count
-	INHERIT					## Inherit the previous action event targets, ignore any and all target faction, state and count filtering
+	SINGLE_INDEPENDENT_FILTER,	## Use its own target and state filter, ask for confirmation and manual targeting
+	ALL_INDEPENDENT_FILTER, 	## Use its own target faction and state filter, auto target valid entities, or do nothing without valid entities
+	SELF,						## Always target caster
+	INHERIT_FILTERED,			## Inherit the previous action event targets while respecting the filtering of the target faction and state
+	INHERIT						## Inherit the previous action event targets, ignore any and all target faction and state filtering
 }
 
 @export var target_state : TargetState
 @export var target_faction : TargetFaction
-@export var target_count : TargetCount
-@export var target_mode : TargetMode = TargetMode.INDEPENDENT_FILTER
+@export var target_mode : TargetMode = TargetMode.ALL_INDEPENDENT_FILTER
 
 var _last_resolved_targets : Array[Entity] = []
 
@@ -46,16 +41,15 @@ func get_targets(caster : Entity, inherited_targets : Array[Entity]) -> Variant:
 			targets = inherited_targets
 		TargetMode.INHERIT_FILTERED:
 			targets = _filter_targets(inherited_targets)
-		TargetMode.INDEPENDENT_FILTER:
-			if target_count == TargetCount.SINGLE:
-				EventBus.target_requested.emit(self, target_faction, target_state)
-				var picked : Entity = await EventBus.target_resolved
-				if picked == null:
-					print("Picked null! Cancelling...")
-					return null
-				targets = [picked]
-			else:
-				targets = CombatSystem.get_valid_targets(target_faction, target_state)
+		TargetMode.SINGLE_INDEPENDENT_FILTER:
+			EventBus.target_requested.emit(self, target_faction, target_state)
+			var picked : Entity = await EventBus.target_resolved
+			if picked == null:
+				print("Picked null! Cancelling...")
+				return null
+			targets = [picked]
+		TargetMode.ALL_INDEPENDENT_FILTER:
+			targets = CombatSystem.get_valid_targets(target_faction, target_state)
 	
 	_last_resolved_targets = targets
 	return targets

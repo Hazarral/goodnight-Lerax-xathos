@@ -27,6 +27,7 @@ CombatLog="*uid://qu3tsj1nbs1w"
 StatusEffectPriorityList="*uid://d3ewotmc2bces"
 GlobalSettings="*uid://b7gfv4pgs8kti"
 DisplayUtility="*uid://bitwrwhi2cer1"
+ActionValidator="*uid://0qqf8r8dfbd8"
 
 [display]
 

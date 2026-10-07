@@ -1,7 +1,7 @@
 class_name TargetSegment
 extends DescriptionSegment
 
-@export var target_count : ActionEvent.TargetCount
+@export var target_mode : ActionEvent.TargetMode
 @export var target_state : ActionEvent.TargetState
 @export var target_faction : ActionEvent.TargetFaction
 
@@ -30,12 +30,12 @@ func to_text(_detailed : bool = false) -> String:
 	return TEMPLATE % [count, state, faction]
 
 func _count_text() -> String:
-	match target_count:
-		ActionEvent.TargetCount.SINGLE:
+	match target_mode:
+		ActionEvent.TargetMode.SINGLE_INDEPENDENT_FILTER:
 			return TARGET_COUNT_SINGLE_TEMPLATE
-		ActionEvent.TargetCount.ALL:
+		ActionEvent.TargetMode.SINGLE_INDEPENDENT_FILTER:
 			return TARGET_COUNT_ALL_TEMPLATE
-	return ""
+	return "ERROR: Not Independent Filter"
 
 func _state_text() -> String:
 	match target_state:
@@ -48,7 +48,7 @@ func _state_text() -> String:
 	return ""
 
 func _faction_text() -> String:
-	var is_plural := target_count == ActionEvent.TargetCount.ALL
+	var is_plural := target_mode == ActionEvent.TargetMode.ALL_INDEPENDENT_FILTER
 	match target_faction:
 		ActionEvent.TargetFaction.ENEMY:
 			return TARGET_FACTION_ENEMY_PLURAL_TEMPLATE if is_plural else TARGET_FACTION_ENEMY_SINGULAR_TEMPLATE
@@ -57,7 +57,7 @@ func _faction_text() -> String:
 	return ""
 
 func _player_faction_text() -> String:
-	var is_plural := target_count == ActionEvent.TargetCount.ALL
+	var is_plural := target_mode == ActionEvent.TargetMode.ALL_INDEPENDENT_FILTER
 	var state := _state_text()
 	
 	if is_plural:
