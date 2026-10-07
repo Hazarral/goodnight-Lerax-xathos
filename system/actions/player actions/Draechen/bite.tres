@@ -49,7 +49,7 @@ metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 
 [sub_resource type="Resource" id="Resource_3rs3o"]
 script = ExtResource("9_pxgns")
-tags = Array[int]([0, 1])
+tags = Array[int]([0])
 considerations = Array[int]([0, 1, 3, 4])
 metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
 
