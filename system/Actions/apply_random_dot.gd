@@ -25,4 +25,4 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 	return true
 
 func get_tags() -> Array[Utility.Tag]:
-	return Utility.TAG_CONSIDERATION[Utility.Tag.APPLY_RANDOM_DOT]
+	return [Utility.Tag.APPLY_RANDOM_DOT]

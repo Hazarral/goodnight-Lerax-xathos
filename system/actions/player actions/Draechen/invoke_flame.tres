@@ -1,6 +1,8 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://bryq065munqlv"]
 
 [ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_mmlux"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_lwtby"]
+[ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/actions/apply_dot_action_event.gd" id="3_okxkf"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="4_tt374"]
 [ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="4_yh26n"]
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="5_rmys7"]
@@ -9,6 +11,24 @@
 [ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="8_rrq72"]
 [ext_resource type="Script" uid="uid://c2vel0thkoyid" path="res://system/ui/description_segments/comma_segment.gd" id="9_y02es"]
 [ext_resource type="Script" uid="uid://boalnkb0mp4cw" path="res://system/ui/description_segments/dot_segment.gd" id="10_agsuc"]
+[ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="12_eum88"]
+
+[sub_resource type="Resource" id="Resource_hs7md"]
+script = ExtResource("2_lwtby")
+amount = 40
+potency_scaling = 1.0
+mastery_scaling = 0.4
+target_faction = 1
+metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
+
+[sub_resource type="Resource" id="Resource_q00y0"]
+script = ExtResource("3_okxkf")
+base_damage = 20.0
+stacks = 3
+duration = 5
+target_faction = 1
+target_mode = 4
+metadata/_custom_type_script = "uid://dl0omykhmcmxj"
 
 [sub_resource type="Resource" id="Resource_oeudv"]
 script = ExtResource("5_rmys7")
@@ -57,10 +77,18 @@ script = ExtResource("5_rmys7")
 text = "to all targets hit."
 metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 
+[sub_resource type="Resource" id="Resource_kdkf5"]
+script = ExtResource("12_eum88")
+tags = Array[int]([3, 0, 4])
+considerations = Array[int]([5, 0, 1, 3, 4, 2, 9])
+metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
+
 [resource]
 script = ExtResource("4_tt374")
 action_name = "Invoke Flame"
 action_point_cost = 3
 cooldown = 2
 description_segments = Array[ExtResource("4_yh26n")]([SubResource("Resource_oeudv"), SubResource("Resource_j141k"), SubResource("Resource_xcucr"), SubResource("Resource_woh64"), SubResource("Resource_ya2be"), SubResource("Resource_yjc6t"), SubResource("Resource_0r2q7"), SubResource("Resource_6xb0a"), SubResource("Resource_4uoyl")])
+action_events = Array[ExtResource("1_mmlux")]([SubResource("Resource_hs7md"), SubResource("Resource_q00y0")])
+utility = SubResource("Resource_kdkf5")
 metadata/_custom_type_script = "uid://doysxg78oub0w"

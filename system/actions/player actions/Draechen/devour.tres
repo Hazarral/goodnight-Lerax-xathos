@@ -9,6 +9,8 @@
 [ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="7_8ix4o"]
 [ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="8_fmiak"]
 [ext_resource type="Script" uid="uid://b5tvpmksfnn2p" path="res://system/ui/description_segments/damage_segment.gd" id="8_hiyvb"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="10_6hb6h"]
+[ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="11_8ix4o"]
 
 [sub_resource type="Resource" id="Resource_hiyvb"]
 script = ExtResource("3_fmiak")
@@ -75,10 +77,26 @@ target_state = 1
 target_faction = 1
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"
 
+[sub_resource type="Resource" id="Resource_os67x"]
+script = ExtResource("10_6hb6h")
+damage_type = 8
+amount = 1
+target_state = 1
+target_faction = 1
+target_mode = 0
+metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
+
+[sub_resource type="Resource" id="Resource_oin1u"]
+script = ExtResource("11_8ix4o")
+tags = Array[int]([2, 0, 15])
+metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
+
 [resource]
 script = ExtResource("3_oqjj0")
 action_name = "Devour"
 action_point_cost = 1
 description_segments = Array[ExtResource("2_2crdj")]([SubResource("Resource_d0gfr"), SubResource("Resource_pibrd"), SubResource("Resource_6hb6h"), SubResource("Resource_1fe6c"), SubResource("Resource_8ix4o")])
+single_target_action_event = SubResource("Resource_os67x")
 action_events = Array[ExtResource("1_k332s")]([SubResource("Resource_fmiak")])
+utility = SubResource("Resource_oin1u")
 metadata/_custom_type_script = "uid://doysxg78oub0w"

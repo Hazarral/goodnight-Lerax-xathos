@@ -35,7 +35,9 @@ enum Consideration {
 	TOTAL_DOT_DEALT,			## Damage but DoT version, the potential
 	HIGH_DOT_COUNT,				## Target has a lot of DoT instances
 	HIGH_DOT_DAMAGE,			## Target has high total DoT damage received
-	DOT_EXIST					## Boolean
+	DOT_EXIST,					## Boolean
+	COOLDOWN,
+	AP_COST
 }
 
 const TAG_CONSIDERATION : Dictionary[Tag, Array] = {
@@ -109,6 +111,7 @@ const TAG_CONSIDERATION : Dictionary[Tag, Array] = {
 @export var considerations : Array[Consideration] = []
 
 @export_tool_button("Auto-populate Considerations")
+## Auto-fill considerations based on current tags
 var auto_consider_button := _auto_assign_considerations
 
 func _auto_assign_considerations() -> void:

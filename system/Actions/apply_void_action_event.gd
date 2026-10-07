@@ -16,4 +16,4 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 	return true
 
 func get_tags() -> Array[Utility.Tag]:
-	return super() + Utility.TAG_CONSIDERATION[Utility.Tag.APPLY_VOID]
+	return super() + [Utility.Tag.APPLY_VOID]

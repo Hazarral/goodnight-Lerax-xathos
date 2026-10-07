@@ -72,7 +72,7 @@ func _filter_targets(pool : Array[Entity]) -> Array[Entity]:
 
 @abstract func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool
 func get_tags() -> Array[Utility.Tag]:
-	if target_mode == TargetMode.SINGLE_INDEPENDENT_FILTER:
+	if target_mode in [TargetMode.SINGLE_INDEPENDENT_FILTER, TargetMode.SELF]:
 		return [Utility.Tag.SINGLE_TARGET]
 	
 	return [Utility.Tag.MULTI_TARGET]

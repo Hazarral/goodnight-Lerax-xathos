@@ -7,6 +7,8 @@
 [ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="5_eh1n1"]
 [ext_resource type="Script" uid="uid://b5tvpmksfnn2p" path="res://system/ui/description_segments/damage_segment.gd" id="6_6cqme"]
 [ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="7_i0oi6"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="8_452hg"]
+[ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="9_napvb"]
 
 [sub_resource type="Resource" id="Resource_rkmf6"]
 script = ExtResource("4_vilvg")
@@ -32,10 +34,25 @@ metadata/_custom_type_script = "uid://b5tvpmksfnn2p"
 script = ExtResource("7_i0oi6")
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"
 
+[sub_resource type="Resource" id="Resource_pxgns"]
+script = ExtResource("8_452hg")
+amount = 30
+potency_scaling = 2.0
+target_mode = 0
+metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
+
+[sub_resource type="Resource" id="Resource_u400b"]
+script = ExtResource("9_napvb")
+tags = Array[int]([2, 0])
+considerations = Array[int]([5, 0, 1, 3, 4])
+metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
+
 [resource]
 script = ExtResource("3_cgnf8")
 origin = 1
 action_name = "Fiery Bite"
 action_point_cost = 1
 description_segments = Array[ExtResource("2_68u7n")]([SubResource("Resource_rkmf6"), SubResource("Resource_i8i6e"), SubResource("Resource_vilvg"), SubResource("Resource_eh1n1"), SubResource("Resource_6cqme")])
+single_target_action_event = SubResource("Resource_pxgns")
+utility = SubResource("Resource_u400b")
 metadata/_custom_type_script = "uid://doysxg78oub0w"

@@ -10,6 +10,7 @@
 [ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="7_bouiv"]
 [ext_resource type="Script" uid="uid://dkl0chnt0ao1p" path="res://system/ui/description_segments/apply_status_segment.gd" id="8_uxw47"]
 [ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="10_0e7xf"]
+[ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="11_bouiv"]
 
 [sub_resource type="Resource" id="Resource_uswrw"]
 script = ExtResource("2_jnf5m")
@@ -43,6 +44,12 @@ target_state = 2
 target_faction = 2
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"
 
+[sub_resource type="Resource" id="Resource_a3xx6"]
+script = ExtResource("11_bouiv")
+tags = Array[int]([3, 14])
+considerations = Array[int]([5])
+metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
+
 [resource]
 script = ExtResource("3_gkwm7")
 origin = 1
@@ -50,4 +57,5 @@ action_name = "Ashen Flame Demo"
 cooldown = 2
 description_segments = Array[ExtResource("2_hj8px")]([SubResource("Resource_6t233"), SubResource("Resource_6d3hc"), SubResource("Resource_leou4"), SubResource("Resource_7yup0"), SubResource("Resource_oai2f")])
 action_events = Array[ExtResource("1_vmo07")]([SubResource("Resource_uswrw")])
+utility = SubResource("Resource_a3xx6")
 metadata/_custom_type_script = "uid://doysxg78oub0w"

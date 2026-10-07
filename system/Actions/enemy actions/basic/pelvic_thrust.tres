@@ -12,6 +12,8 @@
 [ext_resource type="Script" uid="uid://c2vel0thkoyid" path="res://system/ui/description_segments/comma_segment.gd" id="10_v5etq"]
 [ext_resource type="Script" uid="uid://boalnkb0mp4cw" path="res://system/ui/description_segments/dot_segment.gd" id="11_0hreh"]
 [ext_resource type="Script" uid="uid://cfps8viah6gb1" path="res://system/ui/description_segments/heal_segment.gd" id="12_nys7l"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="13_4wndu"]
+[ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="14_kufeo"]
 
 [sub_resource type="Resource" id="Resource_vnk4y"]
 script = ExtResource("3_vnk4y")
@@ -90,6 +92,21 @@ script = ExtResource("6_7ywvy")
 text = "to self."
 metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 
+[sub_resource type="Resource" id="Resource_apo2y"]
+script = ExtResource("13_4wndu")
+damage_type = 5
+amount = 80
+potency_scaling = 4.0
+target_state = 2
+target_mode = 0
+metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
+
+[sub_resource type="Resource" id="Resource_w0syi"]
+script = ExtResource("14_kufeo")
+tags = Array[int]([2, 0, 9, 1])
+considerations = Array[int]([5, 0, 1, 3, 4])
+metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
+
 [resource]
 script = ExtResource("3_et80i")
 origin = 1
@@ -97,5 +114,7 @@ action_name = "Pelvic Thrust"
 action_point_cost = 3
 cooldown = 5
 description_segments = Array[ExtResource("2_3v7b5")]([SubResource("Resource_nsbht"), SubResource("Resource_bnnle"), SubResource("Resource_28h72"), SubResource("Resource_cwnra"), SubResource("Resource_u37hb"), SubResource("Resource_xfgh3"), SubResource("Resource_gccix"), SubResource("Resource_qjcwn"), SubResource("Resource_xibjb"), SubResource("Resource_mw613"), SubResource("Resource_gqcgt")])
+single_target_action_event = SubResource("Resource_apo2y")
 action_events = Array[ExtResource("1_d0fye")]([SubResource("Resource_vnk4y"), SubResource("Resource_4rnhi")])
+utility = SubResource("Resource_w0syi")
 metadata/_custom_type_script = "uid://doysxg78oub0w"
