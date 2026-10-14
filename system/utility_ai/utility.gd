@@ -3,43 +3,46 @@ class_name Utility
 extends Resource
 
 enum Tag {
-	DAMAGE,
-	HEAL,
-	SINGLE_TARGET,			## Self cast is always single target implicitly
-	MULTI_TARGET,			## Also known as AoE
-	APPLY_BURN,
-	APPLY_CURRENT,
-	APPLY_WIND_SHEAR,
-	APPLY_POISON,
-	APPLY_SHOCK,
-	APPLY_BLEED,
-	APPLY_CRUMBLE,
-	APPLY_FROSTBITE,
-	APPLY_VOID,
-	APPLY_RANDOM_DOT,
-	APPLY_STATUS_EFFECT,		## Neutral by design, not actually considered
-	APPLY_BUFF,
-	APPLY_DEBUFF
+	DAMAGE = 0,
+	HEAL = 1,
+	SINGLE_TARGET = 2,			## Self cast is always single target implicitly
+	MULTI_TARGET = 3,			## Also known as AoE
+	APPLY_BURN = 4,
+	APPLY_CURRENT = 5,
+	APPLY_WIND_SHEAR = 6,
+	APPLY_POISON = 7,
+	APPLY_SHOCK = 8,
+	APPLY_BLEED = 9,
+	APPLY_CRUMBLE = 10,
+	APPLY_FROSTBITE = 11,
+	APPLY_VOID = 12,
+	APPLY_RANDOM_DOT = 13,
+	APPLY_STATUS_EFFECT = 14,	## Neutral by design, not actually considered
+	APPLY_BUFF = 15,
+	APPLY_DEBUFF = 16
 }
 
 enum Consideration {
-	MATCHING_SHIELD,			## Boolean
-	FROSTBITE_BOUNTY,			## Additive
-	EARLY_COMBAT,
-	HIGH_HP_TARGET,				## Current HP
-	LOW_HP_TARGET,				## Current HP
-	HIGH_TARGET_COUNT,
-	HIGH_WIND_SHEARED_COUNT,
-	HIGH_ACTIVE_SHIELD_COUNT,
-	HIGH_MAX_SHIELD_VALUE,
-	TOTAL_DOT_DEALT,			## Damage but DoT version, the potential
-	HIGH_DOT_COUNT,				## Target has a lot of DoT instances
-	HIGH_DOT_DAMAGE,			## Target has high total DoT damage received
-	DOT_EXIST,					## Boolean
-	COOLDOWN,
-	AP_COST
+	MATCHING_SHIELD = 0,		## Boolean
+	FROSTBITE_BOUNTY = 1,		## Additive
+	EARLY_COMBAT = 2,
+	HIGH_HP_TARGET = 3,			## Current HP
+	LOW_HP_TARGET = 4,			## Current HP
+	LOW_HP_ALLY = 5,
+	LOW_HP_SELF = 6,
+	HIGH_TARGET_COUNT = 7,
+	HIGH_WIND_SHEARED_COUNT = 8,
+	HIGH_ACTIVE_SHIELD_COUNT = 9,
+	HIGH_MAX_SHIELD_VALUE = 10,
+	TOTAL_DOT_DEALT = 11,		## Damage but DoT version, the potential
+	HIGH_DOT_COUNT = 12,		## Target has a lot of DoT instances
+	HIGH_DOT_DAMAGE = 13,		## Target has high total DoT damage received
+	DOT_EXIST = 14,				## Boolean
+	COOLDOWN = 15,
+	AP_COST = 16
 }
 
+## This table is entirely heuristics and not the end-all-be-all truth
 const TAG_CONSIDERATION : Dictionary[Tag, Array] = {
 	Tag.DAMAGE : [
 		Consideration.MATCHING_SHIELD,
@@ -48,7 +51,8 @@ const TAG_CONSIDERATION : Dictionary[Tag, Array] = {
 		Consideration.LOW_HP_TARGET
 	],
 	Tag.HEAL : [
-		Consideration.LOW_HP_TARGET
+		Consideration.LOW_HP_ALLY,
+		Consideration.LOW_HP_SELF
 	],
 	Tag.SINGLE_TARGET : [
 		Consideration.HIGH_TARGET_COUNT # Most of the time this is ignored with a weight of 0.0 
