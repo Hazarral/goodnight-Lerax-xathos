@@ -39,7 +39,11 @@ enum Consideration {
 	HIGH_DOT_DAMAGE = 13,		## Target has high total DoT damage received
 	DOT_EXIST = 14,				## Boolean
 	COOLDOWN = 15,
-	AP_COST = 16
+	AP_COST = 16,
+	MISSING_SELF_BUFF = 17,		## Boolean: Returns 1.0 if the caster DOES NOT have the buff, 0.0 if they already do.
+	MISSING_TARGET_DEBUFF = 18,	## Boolean: Returns 1.0 if the target DOES NOT have the debuff.
+	EXCESS_AP = 19,				## Additive/Curve: Scores higher the closer the caster is to their Max AP.
+	PREVENT_AP_OVERCAP = 20		## Additive, [0.0, 1.0] to reward some actions to burn AP, must be dynamic
 }
 
 ## This table is entirely heuristics and not the end-all-be-all truth
@@ -103,10 +107,13 @@ const TAG_CONSIDERATION : Dictionary[Tag, Array] = {
 		# Nothing, status effect is too broad
 	],
 	Tag.APPLY_BUFF : [
-		# Nothing, buff is too broad
+		Consideration.MISSING_SELF_BUFF,  # CRITICAL: Prevents casting buff if it's already active.
+		Consideration.EXCESS_AP,          # Good heuristic: Buff when you have plenty of AP to combo next turn.
+		Consideration.EARLY_COMBAT        # Buffs generally yield more value the earlier they are cast.
 	],
 	Tag.APPLY_DEBUFF : [
-		# Nothing, debuff is too broad
+		Consideration.MISSING_TARGET_DEBUFF, # Don't waste turns applying Vulnerability to someone who already has it.
+		Consideration.HIGH_HP_TARGET         # Debuffing the healthiest target yields the best mathematical return on damage.
 	]
 }
 
