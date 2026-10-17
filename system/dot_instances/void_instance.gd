@@ -63,3 +63,8 @@ func get_current_damage(the_draechen : Draechen) -> int:
 
 func apply_stacks(incoming_stacks : int) -> void:
 	stacks += incoming_stacks
+
+func duplicate() -> VoidInstance:
+	var clone := VoidInstance.new(target, stacks, is_player_faction)
+	clone.turns_elapsed = turns_elapsed
+	return clone

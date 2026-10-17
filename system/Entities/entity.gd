@@ -176,6 +176,9 @@ func get_total_max_shield() -> int:
 func has_dot(dot_type : DamageAndDoT.DoT) -> bool:
 	return active_dots[dot_type].has_dot()
 
+func get_active_dots() -> Array[DoTInstanceArray]:
+	return active_dots.duplicate(true)
+
 func has_void() -> bool:
 	return void_instance != null
 
