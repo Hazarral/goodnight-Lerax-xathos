@@ -1,4 +1,5 @@
-extends Node
+class_name StatusEffectPriorityList
+extends Object
 
 ## This holds constants and static functions that allow operation on status effects
 enum CheckpointType {
