@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="5_b4mj5"]
 [ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="6_k8f7o"]
 [ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="9_b4mj5"]
+[ext_resource type="Script" uid="uid://dodttldcqs87q" path="res://system/utility_ai/utility_entry.gd" id="10_k8f7o"]
 
 [sub_resource type="Resource" id="Resource_bdkja"]
 script = ExtResource("5_b4mj5")
@@ -36,10 +37,18 @@ status_effects = Array[ExtResource("3_wxt3q")]([ExtResource("4_wxt3q")])
 target_mode = 0
 metadata/_custom_type_script = "uid://b5etb2vg83gh1"
 
+[sub_resource type="Resource" id="Resource_mseoq"]
+script = ExtResource("10_k8f7o")
+tag = 2
+
+[sub_resource type="Resource" id="Resource_6aje2"]
+script = ExtResource("10_k8f7o")
+tag = 14
+
 [sub_resource type="Resource" id="Resource_ct332"]
 script = ExtResource("9_b4mj5")
-tags = Array[int]([2, 14])
-considerations = Array[int]([3, 2])
+utility_entries = Array[ExtResource("10_k8f7o")]([SubResource("Resource_mseoq"), SubResource("Resource_6aje2")])
+considerations = Array[int]([15, 16, 19, 20, 7])
 metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
 
 [resource]

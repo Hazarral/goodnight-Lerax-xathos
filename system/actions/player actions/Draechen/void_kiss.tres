@@ -9,6 +9,7 @@
 [ext_resource type="Script" uid="uid://cndu85pttcpit" path="res://system/ui/description_segments/void_segment.gd" id="6_4c2we"]
 [ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="7_tntq6"]
 [ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="9_a3xx6"]
+[ext_resource type="Script" uid="uid://dodttldcqs87q" path="res://system/utility_ai/utility_entry.gd" id="10_ddknw"]
 
 [sub_resource type="Resource" id="Resource_5m6qf"]
 script = ExtResource("4_tntq6")
@@ -41,10 +42,20 @@ target_faction = 1
 target_mode = 0
 metadata/_custom_type_script = "uid://cbmjqb7jkhgk6"
 
+[sub_resource type="Resource" id="Resource_pw5k1"]
+script = ExtResource("10_ddknw")
+tag = 2
+target_faction = 1
+
+[sub_resource type="Resource" id="Resource_go5il"]
+script = ExtResource("10_ddknw")
+tag = 12
+target_faction = 1
+
 [sub_resource type="Resource" id="Resource_6hpnt"]
 script = ExtResource("9_a3xx6")
-tags = Array[int]([2, 12])
-considerations = Array[int]([5, 2, 3])
+utility_entries = Array[ExtResource("10_ddknw")]([SubResource("Resource_pw5k1"), SubResource("Resource_go5il")])
+considerations = Array[int]([15, 16, 19, 20, 7, 2, 3])
 metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
 
 [resource]

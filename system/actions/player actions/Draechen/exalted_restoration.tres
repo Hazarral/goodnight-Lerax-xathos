@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://bjn8ngu02dbxr" path="res://system/ui/description_segments/stacks_segment.gd" id="9_101qr"]
 [ext_resource type="Script" uid="uid://s82c3e2kmea8" path="res://system/ui/description_segments/turns_segment.gd" id="10_8wjot"]
 [ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="13_igjou"]
+[ext_resource type="Script" uid="uid://dodttldcqs87q" path="res://system/utility_ai/utility_entry.gd" id="14_igjou"]
 
 [sub_resource type="Resource" id="Resource_wq8u2"]
 script = ExtResource("2_48lso")
@@ -121,10 +122,32 @@ target_state = 2
 target_faction = 1
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"
 
+[sub_resource type="Resource" id="Resource_nx3we"]
+script = ExtResource("14_igjou")
+tag = 3
+target_mode = 1
+
+[sub_resource type="Resource" id="Resource_albkv"]
+script = ExtResource("14_igjou")
+tag = 1
+target_mode = 1
+
+[sub_resource type="Resource" id="Resource_ji22f"]
+script = ExtResource("14_igjou")
+tag = 13
+target_faction = 1
+target_mode = 1
+
+[sub_resource type="Resource" id="Resource_65t5u"]
+script = ExtResource("14_igjou")
+tag = 3
+target_faction = 1
+target_mode = 1
+
 [sub_resource type="Resource" id="Resource_aps04"]
 script = ExtResource("13_igjou")
-tags = Array[int]([3, 1, 13])
-considerations = Array[int]([5, 4, 3, 1])
+utility_entries = Array[ExtResource("14_igjou")]([SubResource("Resource_nx3we"), SubResource("Resource_albkv"), SubResource("Resource_ji22f"), SubResource("Resource_65t5u")])
+considerations = Array[int]([15, 16, 19, 20, 7, 5, 6, 1])
 metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
 
 [resource]

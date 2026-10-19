@@ -46,27 +46,75 @@ func cast(source : Entity) -> bool:
 	
 	return true
 
+#func _auto_assign_tags() -> void:
+	#if utility == null:
+		#push_warning("Cannot auto-assign tags: 'utility' subresource is null.")
+		#return
+	#
+	#var tag_dict : Dictionary[Utility.Tag, bool] = {}
+	#
+	#for action_event : ActionEvent in [single_target_action_event] + action_events:
+		#if action_event == null:
+			#continue
+		#
+		#var curr_tags = action_event.get_tags()
+		#for tag in curr_tags:
+			#tag_dict[tag] = true
+	#
+	### Populate the list
+	#var typed_tags: Array[Utility.Tag] = []
+	#typed_tags.assign(tag_dict.keys())
+	#
+	#utility.tags = typed_tags
+	#
+	#utility.notify_property_list_changed()
+	#notify_property_list_changed()
+	#print("Successfully auto-filled %d tags" % utility.tags.size())
+
 func _auto_assign_tags() -> void:
 	if utility == null:
 		push_warning("Cannot auto-assign tags: 'utility' subresource is null.")
 		return
 	
-	var tag_dict : Dictionary[Utility.Tag, bool] = {}
-	
+	var entries : Array[UtilityEntry] = []
+	var seen : Dictionary[Vector3i, bool] = {}
+	var prev_faction := ActionEvent.TargetFaction.ALL
+
 	for action_event : ActionEvent in [single_target_action_event] + action_events:
 		if action_event == null:
 			continue
 		
-		var curr_tags = action_event.get_tags()
-		for tag in curr_tags:
-			tag_dict[tag] = true
+		var faction := action_event.target_faction
+		var mode := action_event.target_mode
+		
+		match action_event.target_mode:
+			ActionEvent.TargetMode.INHERIT:
+				faction = prev_faction
+		
+		prev_faction = faction
+		
+		var count_tag := -1
+		match mode:
+			ActionEvent.TargetMode.ALL_INDEPENDENT_FILTER:
+				count_tag = Utility.Tag.MULTI_TARGET
+			ActionEvent.TargetMode.SINGLE_INDEPENDENT_FILTER, ActionEvent.TargetMode.SELF:
+				count_tag = Utility.Tag.SINGLE_TARGET
+		
+		var tags : Array = action_event.get_tags()
+		if count_tag != -1:
+			tags.append(count_tag)
+		
+		for tag in tags:
+			if tag == Utility.Tag.SINGLE_TARGET or tag == Utility.Tag.MULTI_TARGET:
+				if tag != count_tag:
+					continue
+			var key := Vector3i(tag, faction, mode)
+			if seen.has(key):
+				continue
+			seen[key] = true
+			entries.append(UtilityEntry.new(tag, faction, mode))
 	
-	## Populate the list
-	var typed_tags: Array[Utility.Tag] = []
-	typed_tags.assign(tag_dict.keys())
-	
-	utility.tags = typed_tags
-	
+	utility.utility_entries = entries
 	utility.notify_property_list_changed()
 	notify_property_list_changed()
-	print("Successfully auto-filled %d tags" % utility.tags.size())
+	print("Successfully auto-filled %d entries" % entries.size())

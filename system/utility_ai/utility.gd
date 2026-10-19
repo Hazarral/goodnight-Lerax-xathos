@@ -46,12 +46,19 @@ enum Consideration {
 	PREVENT_AP_OVERCAP = 20		## Additive, [0.0, 1.0] to reward some actions to burn AP, must be dynamic
 }
 
+## Always attached to every action, regardless of tags
+const ALWAYS : Array[Consideration] = [
+	Consideration.COOLDOWN,
+	Consideration.AP_COST,
+	Consideration.EXCESS_AP,
+	Consideration.PREVENT_AP_OVERCAP
+]
+
 ## This table is entirely heuristics and not the end-all-be-all truth
 const TAG_CONSIDERATION : Dictionary[Tag, Array] = {
 	Tag.DAMAGE : [
 		Consideration.MATCHING_SHIELD,
 		Consideration.FROSTBITE_BOUNTY,
-		Consideration.HIGH_HP_TARGET,
 		Consideration.LOW_HP_TARGET
 	],
 	Tag.HEAL : [
@@ -65,34 +72,42 @@ const TAG_CONSIDERATION : Dictionary[Tag, Array] = {
 		Consideration.HIGH_TARGET_COUNT # More targets = higher score, more reasons to use AoE!
 	],
 	Tag.APPLY_BURN : [
+		Consideration.MATCHING_SHIELD,
 		Consideration.EARLY_COMBAT,
 		Consideration.HIGH_HP_TARGET,
 		Consideration.TOTAL_DOT_DEALT
 	],
 	Tag.APPLY_CURRENT : [
+		Consideration.MATCHING_SHIELD,
 		Consideration.DOT_EXIST,
 		Consideration.HIGH_DOT_DAMAGE
 	],
 	Tag.APPLY_WIND_SHEAR : [
+		Consideration.MATCHING_SHIELD,
 		Consideration.DOT_EXIST,
 		Consideration.HIGH_DOT_DAMAGE,
 		Consideration.HIGH_TARGET_COUNT,
 		Consideration.HIGH_WIND_SHEARED_COUNT
 	],
 	Tag.APPLY_POISON : [
+		Consideration.MATCHING_SHIELD,
 		Consideration.LOW_HP_TARGET
 	],
 	Tag.APPLY_SHOCK : [
+		Consideration.MATCHING_SHIELD,
 		Consideration.LOW_HP_TARGET
 	],
 	Tag.APPLY_BLEED : [
+		Consideration.MATCHING_SHIELD,
 		Consideration.LOW_HP_TARGET
 	],
 	Tag.APPLY_CRUMBLE : [
+		Consideration.MATCHING_SHIELD,
 		Consideration.HIGH_MAX_SHIELD_VALUE,
 		Consideration.HIGH_ACTIVE_SHIELD_COUNT
 	],
 	Tag.APPLY_FROSTBITE : [
+		Consideration.MATCHING_SHIELD,
 		Consideration.HIGH_MAX_SHIELD_VALUE,
 		Consideration.FROSTBITE_BOUNTY
 	],
@@ -117,10 +132,11 @@ const TAG_CONSIDERATION : Dictionary[Tag, Array] = {
 	]
 }
 
+
 static func get_tag_name(tag : Tag) -> String:
 	return Tag.keys()[tag]
 
-@export var tags : Array[Tag] = []
+@export var utility_entries : Array[UtilityEntry] = []
 
 @export var considerations : Array[Consideration] = []
 
@@ -130,14 +146,16 @@ var auto_consider_button := _auto_assign_considerations
 
 func _auto_assign_considerations() -> void:
 	## NOTE: Safety check before clearing anything
-	for current_tag in tags:
-		assert(TAG_CONSIDERATION.has(current_tag), "ACTION CONFIG ERROR: Nonexistent tag %s" % current_tag)
+	for entry in utility_entries:
+		var tag := entry.tag
+		assert(TAG_CONSIDERATION.has(tag), "ACTION CONFIG ERROR: Nonexistent tag %s" % tag)
 		
 	var new_considerations: Array[Consideration] = []
+	new_considerations.assign(ALWAYS)
 	
 	# Loop through every tag currently assigned to this action
-	for current_tag in tags:
-		var auto_considerations : Array = TAG_CONSIDERATION[current_tag]
+	for entry in utility_entries:
+		var auto_considerations : Array = TAG_CONSIDERATION[entry.tag]
 		# Add the consideration if it isn't already in the list
 		for cons in auto_considerations:
 			if not cons in new_considerations:

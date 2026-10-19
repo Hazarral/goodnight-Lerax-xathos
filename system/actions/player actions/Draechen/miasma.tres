@@ -12,6 +12,7 @@
 [ext_resource type="Script" uid="uid://c2vel0thkoyid" path="res://system/ui/description_segments/comma_segment.gd" id="9_0cu02"]
 [ext_resource type="Script" uid="uid://boalnkb0mp4cw" path="res://system/ui/description_segments/dot_segment.gd" id="10_dcmy5"]
 [ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="12_4fnkn"]
+[ext_resource type="Script" uid="uid://dodttldcqs87q" path="res://system/utility_ai/utility_entry.gd" id="13_s45oa"]
 
 [sub_resource type="Resource" id="Resource_pyaug"]
 script = ExtResource("2_67d6v")
@@ -81,10 +82,27 @@ script = ExtResource("5_ttvnk")
 text = "to all targets hit."
 metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 
+[sub_resource type="Resource" id="Resource_4fnkn"]
+script = ExtResource("13_s45oa")
+tag = 3
+target_faction = 1
+target_mode = 1
+
+[sub_resource type="Resource" id="Resource_w4g5f"]
+script = ExtResource("13_s45oa")
+target_faction = 1
+target_mode = 1
+
+[sub_resource type="Resource" id="Resource_iaupv"]
+script = ExtResource("13_s45oa")
+tag = 7
+target_faction = 1
+target_mode = 4
+
 [sub_resource type="Resource" id="Resource_uowb4"]
 script = ExtResource("12_4fnkn")
-tags = Array[int]([3, 0, 7])
-considerations = Array[int]([5, 0, 1, 3, 4])
+utility_entries = Array[ExtResource("13_s45oa")]([SubResource("Resource_4fnkn"), SubResource("Resource_w4g5f"), SubResource("Resource_iaupv")])
+considerations = Array[int]([15, 16, 19, 20, 7, 0, 1, 4])
 metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
 
 [resource]
