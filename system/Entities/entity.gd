@@ -48,6 +48,7 @@ const SHIELD_STATE_NAME : Dictionary[ShieldState, String] = {
 }
 
 const EPSILON := 1e-4
+const END_TURN_INDEX := -1
 
 ## Template will be duplicated
 func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> void:
@@ -577,13 +578,20 @@ func learn_action(action : Action) -> void:
 	known_actions.append(KnownAction.new(action, self))
 
 func get_known_actions() -> Array[KnownAction]:
-	return known_actions
+	return known_actions.duplicate(true)
+
+func get_known_actions_size() -> int:
+	return known_actions.size()
 
 func tick_cooldowns() -> void:
 	for known_action in known_actions:
 		known_action.tick_cooldown()
 
 func cast_action(index : int) -> void:
+	if index == END_TURN_INDEX:
+		## Special case for AI later
+		end_turn()
+	
 	var action_wrapper := known_actions[index]
 	
 	if not action_wrapper.is_castable():

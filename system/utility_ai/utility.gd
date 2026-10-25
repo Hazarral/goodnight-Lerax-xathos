@@ -132,7 +132,6 @@ const TAG_CONSIDERATION : Dictionary[Tag, Array] = {
 	]
 }
 
-
 static func get_tag_name(tag : Tag) -> String:
 	return Tag.keys()[tag]
 
