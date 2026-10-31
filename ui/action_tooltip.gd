@@ -58,8 +58,11 @@ func _compile_description(segments : Array[DescriptionSegment], detailed : bool 
 	return result
 
 func _compile_tags(action : Action) -> String:
+	assert(action != null, "COMPILE TAG ERROR: null action!")
+	
 	var str_arr := PackedStringArray()
-	for tag in action.utility.tags:
+	for entry in action.utility.utility_entries:
+		var tag := entry.tag
 		str_arr.append(Utility.get_tag_name(tag))
 	
 	return TAGS_START_TEMPLATE + ", ".join(str_arr)

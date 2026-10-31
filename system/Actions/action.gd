@@ -29,10 +29,10 @@ extends Resource
 @export_tool_button("Auto-populate Tags")
 var auto_tag_button := _auto_assign_tags
 
-func _init() -> void:
-	assert(action_events.all(func(action_event): return action_event != null),
-		"ACTION ERROR: Action contains a null event.")
-	assert(not action_events.is_empty(), "ACTION ERROR: empty action events list, cannot get first targets")
+#func _init() -> void:
+	#assert(action_events.all(func(action_event): return action_event != null),
+		#"ACTION ERROR: Action contains a null event.")
+	#assert(not action_events.is_empty(), "ACTION ERROR: empty action events list, cannot get first targets")
 
 func cast(source : Entity) -> bool:	
 	var last_targets : Array[Entity] = []

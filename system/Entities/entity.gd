@@ -1,6 +1,8 @@
 class_name Entity
 extends RefCounted
 
+@export var ai_profile : AIProfile
+
 var template : EntityTemplate
 var magnification : float
 
@@ -582,6 +584,33 @@ func get_known_actions() -> Array[KnownAction]:
 
 func get_known_actions_size() -> int:
 	return known_actions.size()
+
+func get_ai_profile() -> AIProfile:
+	if ai_profile == null:
+		push_error("AIProfile is null for %s" % get_entity_name_with_suffix())
+		return null
+	
+	return ai_profile
+
+func get_total_bias(action_index : int) -> float:
+	if action_index < END_TURN_INDEX:
+		push_error("Invalid index for get_considerations(action_index : int): %d" % action_index)
+		return 0.0
+	
+	if action_index == END_TURN_INDEX:
+		return 0.0
+	
+	return ai_profile.get_biases(known_actions[action_index].action.utility.utility_entries)
+
+func get_considerations(action_index : int) -> Array[Utility.Consideration]:
+	if action_index < END_TURN_INDEX:
+		push_error("Invalid index for get_considerations(action_index : int): %d" % action_index)
+		return []
+	
+	if action_index == END_TURN_INDEX:
+		return []
+	
+	return known_actions[action_index].get_considerations().duplicate(true)
 
 func tick_cooldowns() -> void:
 	for known_action in known_actions:

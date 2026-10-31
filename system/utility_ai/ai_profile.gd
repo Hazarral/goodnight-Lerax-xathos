@@ -14,6 +14,7 @@ const WEIGHT_STEP := 0.5
 @export_range(MIN_BIAS, MAX_BIAS, BIAS_STEP) var bias_heal_self : float = 0.0
 @export_range(MIN_BIAS, MAX_BIAS, BIAS_STEP) var bias_heal_enemy : float = 0.0
 @export_range(MIN_BIAS, MAX_BIAS, BIAS_STEP) var bias_buff_self : float = 0.0
+@export_range(MIN_BIAS, MAX_BIAS, BIAS_STEP) var bias_buff_enemy : float = 0.0
 @export_range(MIN_BIAS, MAX_BIAS, BIAS_STEP) var bias_debuff_player : float = 0.0
 
 @export_group("Consideration Weights", "weight")
@@ -39,7 +40,7 @@ const WEIGHT_STEP := 0.5
 @export_range(MIN_WEIGHT, MAX_WEIGHT, WEIGHT_STEP) var weight_excess_ap : float = 1.0
 @export_range(MIN_WEIGHT, MAX_WEIGHT, WEIGHT_STEP) var weight_prevent_ap_overcap : float = 1.0
 
-func get_weight(consideration: Utility.Consideration) -> float:
+func get_weight(consideration : Utility.Consideration) -> float:
 	match consideration:
 		Utility.Consideration.MATCHING_SHIELD: return weight_matching_shield
 		Utility.Consideration.FROSTBITE_BOUNTY: return weight_frostbite_bounty
@@ -64,3 +65,44 @@ func get_weight(consideration: Utility.Consideration) -> float:
 		Utility.Consideration.PREVENT_AP_OVERCAP: return weight_prevent_ap_overcap
 	push_warning("No weight defined for consideration: %s" % Utility.Consideration.find_key(consideration))
 	return 0.0
+
+const DAMAGE_TAGS : Array[Utility.Tag] = [
+	Utility.Tag.DAMAGE,
+	Utility.Tag.APPLY_BURN, Utility.Tag.APPLY_CURRENT,
+	Utility.Tag.APPLY_WIND_SHEAR, Utility.Tag.APPLY_POISON,
+	Utility.Tag.APPLY_SHOCK, Utility.Tag.APPLY_BLEED,
+	Utility.Tag.APPLY_CRUMBLE, Utility.Tag.APPLY_FROSTBITE,
+	Utility.Tag.APPLY_VOID, Utility.Tag.APPLY_RANDOM_DOT,
+]
+
+func get_biases(utility_entries : Array[UtilityEntry]) -> float:
+	var damage_player := 0.0
+	var heal_self := 0.0
+	var heal_enemy := 0.0
+	var buff_self := 0.0
+	var buff_enemy := 0.0
+	var debuff_player := 0.0
+	
+	for entry in utility_entries:
+		var is_self := entry.target_mode == ActionEvent.TargetMode.SELF
+		var targets_player := entry.target_faction == ActionEvent.TargetFaction.PLAYER
+		var targets_enemy := entry.target_faction == ActionEvent.TargetFaction.ENEMY
+		
+		if entry.tag in DAMAGE_TAGS:
+			if targets_player:
+				damage_player = bias_damage_player
+		elif entry.tag == Utility.Tag.HEAL:
+			if is_self:
+				heal_self = bias_heal_self
+			elif targets_enemy:
+				heal_enemy = bias_heal_enemy
+		elif entry.tag == Utility.Tag.APPLY_BUFF:
+			if is_self:
+				buff_self = bias_buff_self
+			elif targets_enemy:
+				buff_enemy = bias_buff_enemy
+		elif entry.tag == Utility.Tag.APPLY_DEBUFF:
+			if targets_player:
+				debuff_player = bias_debuff_player
+		
+	return damage_player + heal_self + heal_enemy + buff_self + buff_enemy + debuff_player
