@@ -30,25 +30,4 @@ static func start_turn(actor : Entity, profile : AIProfile) -> void:
 	##3. Pick action, repeat till "End Turn" is chosen
 	## All of these call actor.cast_action(index)
 	
-	while actor.current_state == Entity.State.ALIVE:
-		## 1. One battlefield snapshot per iteration
-		var field := CombatFieldState.new()
-		
-		## 2. Evaluate and score every option
-		var choices : Array[Choice] = get_all_action_index(actor)
-		for choice in choices:
-			choice.score = score_choice(choice, actor, field, profile)
-		
-		## 3. Rank and pick argmax
-		var best : Choice = choices[0]
-		for choice in choices:
-			if choice.score > best.score:
-				best = choice
-		
-		## 4. Cast and repeat
-		await actor.cast_action(best.index)
-		
-		## If end turn was chosen, exit cleanly
-		if best.index == Entity.END_TURN_INDEX:
-			return
-		CombatSystem.process_damage_event_queue()
+	pass

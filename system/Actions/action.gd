@@ -29,6 +29,11 @@ extends Resource
 @export_tool_button("Auto-populate Tags")
 var auto_tag_button := _auto_assign_tags
 
+func _init() -> void:
+	assert(action_events.all(func(action_event): return action_event != null),
+		"ACTION ERROR: Action contains a null event.")
+	assert(not action_events.is_empty(), "ACTION ERROR: empty action events list, cannot get first targets")
+
 func cast(source : Entity) -> bool:	
 	var last_targets : Array[Entity] = []
 	
@@ -45,6 +50,12 @@ func cast(source : Entity) -> bool:
 		last_targets = action_event.get_last_resolved_targets()
 	
 	return true
+
+func get_first_targets(source : Entity) -> Array[Entity]:
+	if single_target_action_event != null:
+		return await single_target_action_event.get_targets(source, [])
+	
+	return await action_events.front().get_targets(source, [])
 
 #func _auto_assign_tags() -> void:
 	#if utility == null:
