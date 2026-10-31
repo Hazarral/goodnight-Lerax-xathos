@@ -123,7 +123,7 @@ func _auto_assign_tags() -> void:
 			if seen.has(key):
 				continue
 			seen[key] = true
-			entries.append(UtilityEntry.new(tag, faction, mode))
+			entries.append(UtilityEntry.create(tag, faction, mode))
 	
 	utility.utility_entries = entries
 	utility.notify_property_list_changed()

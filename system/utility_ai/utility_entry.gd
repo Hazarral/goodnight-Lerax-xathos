@@ -5,11 +5,13 @@ extends Resource
 @export var target_faction : ActionEvent.TargetFaction
 @export var target_mode : ActionEvent.TargetMode
 
-func _init(
-	p_tag : Utility.Tag = Utility.Tag.DAMAGE, 
-	p_target_faction : ActionEvent.TargetFaction = ActionEvent.TargetFaction.ALL, 
-	p_target_mode : ActionEvent.TargetMode = ActionEvent.TargetMode.ALL_INDEPENDENT_FILTER
-) -> void:
-	tag = p_tag
-	target_faction = p_target_faction
-	target_mode = p_target_mode
+static func create(
+	p_tag : Utility.Tag,
+	p_target_faction : ActionEvent.TargetFaction, 
+	p_target_mode : ActionEvent.TargetMode
+) -> UtilityEntry:
+	var entry := UtilityEntry.new()
+	entry.tag = p_tag
+	entry.target_faction = p_target_faction
+	entry.target_mode = p_target_mode
+	return entry
