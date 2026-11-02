@@ -21,7 +21,7 @@ script = ExtResource("3_vnk4y")
 damage_type = 5
 base_damage = 1.0
 stacks = 10
-duration = 3
+duration = 1
 target_state = 2
 target_mode = 4
 metadata/_custom_type_script = "uid://dl0omykhmcmxj"
@@ -74,7 +74,7 @@ script = ExtResource("11_0hreh")
 damage_over_time_type = 5
 stacks = 10
 base_damage = 1.0
-duration = 3
+duration = 1
 metadata/_custom_type_script = "uid://boalnkb0mp4cw"
 
 [sub_resource type="Resource" id="Resource_xibjb"]
