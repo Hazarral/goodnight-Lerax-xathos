@@ -5,22 +5,24 @@ extends RefCounted
 ##TODO: implement the scoring functions here as well
 
 class Choice:
-	var index : int
+	var action_index : int
 	var score : float
+	var target : Entity
 	
-	func _init(p_index : int, p_score : float) -> void:
-		index = p_index
+	func _init(p_action_index : int, p_score : float, p_target : Entity) -> void:
+		action_index = p_action_index
 		score = p_score
+		target = p_target
 
-static func get_all_action_index(actor : Entity) -> Array[Choice]:
-	var count := actor.get_known_actions_size()
-	var choices : Array[Choice] = []
-	choices.resize(count + 1)
-	for i in count:
-		choices[i] = Choice.new(i, 0.0)
-	
-	choices[count] = Choice.new(Entity.END_TURN_INDEX, 0.0)
-	return choices
+#static func get_all_action_index(actor : Entity) -> Array[Choice]:
+	#var count := actor.get_known_actions_size()
+	#var choices : Array[Choice] = []
+	#choices.resize(count + 1)
+	#for i in count:
+		#choices[i] = Choice.new(i, 0.0, null)
+	#
+	#choices[count] = Choice.new(Entity.END_TURN_INDEX, 0.0, null)
+	#return choices
 
 static func start_turn(actor : Entity) -> void:
 	## This is nothing but a big wx + b function
@@ -38,12 +40,10 @@ static func start_turn(actor : Entity) -> void:
 		var choices : Array[Choice] = []
 		choices.resize(known_actions_size + 1)
 		for i in known_actions_size:
-			var biases = actor.get_total_bias(i)
-			choices[i] = Choice.new(i, biases + get_raw_score(i, actor.get_considerations(i)))
+			choices[i] = get_choice(actor, i)
 		
 		## End turn action here
-		var end_turn_raw_score := get_raw_score(Entity.END_TURN_INDEX, actor.get_considerations(Entity.END_TURN_INDEX))
-		choices[known_actions_size] = Choice.new(Entity.END_TURN_INDEX, end_turn_raw_score)
+		choices[known_actions_size] = get_choice(actor, Entity.END_TURN_INDEX)
 		
 		## Find the best one
 		choices.sort_custom(func (a : Choice, b: Choice) -> bool: return a.score > b.score)
@@ -55,6 +55,15 @@ static func start_turn(actor : Entity) -> void:
 			print("[UtilityAI] %s ended their turn" % actor.get_entity_name_with_suffix())
 			return
 	
-static func get_raw_score(action_index : int, considerations : Array[Utility.Consideration]) -> float:
-	return 0.0
+static func get_choice(actor : Entity, action_index : int) -> Choice:
+	# Plan:
+	# Sometimes I forgot ## is for bigger comments, anyway
+	# - Get its targets
+	# - Compute Wx for each target, keep only the argmax
+	# - Compute Wx_max + biases, return that as the score along with the actually chosen target
+	
+	# Stuff
+	var considerations : Array[Utility.Consideration] = actor.get_considerations(action_index)
+	var biases = actor.get_total_bias(action_index)
+	return Choice.new(Entity.END_TURN_INDEX, 0.0, null)
 	
