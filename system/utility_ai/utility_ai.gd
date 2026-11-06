@@ -16,16 +16,6 @@ class Choice:
 		score = p_score
 		target = p_target
 
-#static func get_all_action_index(actor : Entity) -> Array[Choice]:
-	#var count := actor.get_known_actions_size()
-	#var choices : Array[Choice] = []
-	#choices.resize(count + 1)
-	#for i in count:
-		#choices[i] = Choice.new(i, 0.0, null)
-	#
-	#choices[count] = Choice.new(Entity.END_TURN_INDEX, 0.0, null)
-	#return choices
-
 static func start_turn(actor : Entity) -> void:
 	## This is nothing but a big wx + b function
 	## Normal action will use Entity.cast_action(index : int), but end_turn will call with index = -1
@@ -66,6 +56,10 @@ static func get_choice(actor : Entity, action_index : int, combat_field_state : 
 	# - Compute Wx for each target, keep only the argmax
 	# - Compute Wx_max + biases, return that as the score along with the actually chosen target
 	
+	if action_index == Entity.END_TURN_INDEX:
+		## Special logic here to handle end turn scoring
+		return Choice.new(Entity.END_TURN_INDEX, INVALID_SCORE, null)
+	
 	# Stuff
 	var first_targets := await actor.get_action(action_index).get_first_targets(actor)
 	var considerations := actor.get_considerations(action_index)
@@ -79,7 +73,7 @@ static func get_choice(actor : Entity, action_index : int, combat_field_state : 
 	var best_score : float = INVALID_SCORE
 	
 	for target in first_targets:
-		var score := 0.0
+		var score := biases
 		for consideration in considerations:
 			var raw_score := UtilityMath.get_raw_score(actor, target, consideration, combat_field_state)
 			score += actor.ai_profile.get_weight(consideration) * raw_score
@@ -88,5 +82,5 @@ static func get_choice(actor : Entity, action_index : int, combat_field_state : 
 			best_target = target
 			best_score = score
 	
-	return Choice.new(action_index, best_score + biases, best_target)
+	return Choice.new(action_index, best_score, best_target)
 	
