@@ -582,6 +582,10 @@ func learn_action(action : Action) -> void:
 func get_known_actions() -> Array[KnownAction]:
 	return known_actions.duplicate(true)
 
+func get_action(index : int) -> Action:
+	## The caller has to supply a valid index, this method swill not check
+	return known_actions[index].action
+
 func get_known_actions_size() -> int:
 	return known_actions.size()
 

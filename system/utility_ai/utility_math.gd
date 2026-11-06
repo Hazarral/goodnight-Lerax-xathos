@@ -28,19 +28,94 @@ static func _logistics(value : float, is_decreasing : bool = false) -> float:
 	return MIN_VAL + RANGE / (1 + exp(power))
 
 static func _exponential_decay(value : float) -> float:
-	return MIN_VAL + RANGE * exp(-EXPONENTIAL_DECAY_COEFFICIENT * value)
+	return MIN_VAL + RANGE * exp(-EXPONENTIAL_DECAY_COEFFICIENT * maxf(value, 0.0))
 
 static func _logarithmic(value : int) -> float:
 	## Typically used in HighTargetCount
-	return MIN_VAL + RANGE * log(value + 1) / log(LOGARITHMIC_MAX_COUNT + 1)
+	var v := clampi(value, 0, LOGARITHMIC_MAX_COUNT)
+	return MIN_VAL + RANGE * log(v + 1) / log(LOGARITHMIC_MAX_COUNT + 1)
 
 static func _lerp(value : int) -> float:
 	## Typically used with HighShieldCount
-	return MIN_VAL + RANGE * value / LINEAR_EXTRAPOLATION_MAX_COUNT
+	var v := clampi(value, 0, LINEAR_EXTRAPOLATION_MAX_COUNT)
+	return MIN_VAL + RANGE * v / LINEAR_EXTRAPOLATION_MAX_COUNT
 
 static func _frostbite_bounty(current_shield_ratio : float, is_ice_shield : bool) -> float:
-	var base_max := FROSTBITE_BOUNTY_BASE_MAX_ICE if is_ice_shield else FROSTBITE_BOUNTY_BASE_MAX
-	return FROSTBITE_BOUNTY_BASE + base_max * (1 - current_shield_ratio)
+	#var base_max := FROSTBITE_BOUNTY_BASE_MAX_ICE if is_ice_shield else FROSTBITE_BOUNTY_BASE_MAX
+	#return FROSTBITE_BOUNTY_BASE + base_max * (1 - current_shield_ratio)
+	## NOTE: This needs heavy rework, so it is archived
+	return 0.0
 
 static func _boolean(value : bool) -> float:
 	return BOOLEAN_TRUE if value else BOOLEAN_FALSE
+
+static func get_raw_score(
+	actor : Entity, 
+	target : Entity, 
+	consideration : Utility.Consideration, 
+	combat_field_state : CombatFieldState
+) -> float:
+	match consideration:
+		Utility.Consideration.MATCHING_SHIELD, Utility.Consideration.FROSTBITE_BOUNTY:
+			return 0.0
+		Utility.Consideration.EARLY_COMBAT:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.HIGH_HP_TARGET:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.LOW_HP_TARGET:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.LOW_HP_ALLY:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.LOW_HP_SELF:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.HIGH_TARGET_COUNT:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.HIGH_WIND_SHEARED_COUNT:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.HIGH_ACTIVE_SHIELD_COUNT:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.HIGH_MAX_SHIELD_VALUE:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.TOTAL_DOT_DEALT:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.HIGH_DOT_COUNT:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.HIGH_DOT_DAMAGE:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.DOT_EXIST:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.COOLDOWN:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.AP_COST:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.MISSING_SELF_BUFF:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.MISSING_TARGET_DEBUFF:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.EXCESS_AP:
+			## PLACEHOLDER
+			return 0.0
+		Utility.Consideration.PREVENT_AP_OVERCAP:
+			## PLACEHOLDER
+			return 0.0
+	
+	## Guard for any enum value added later without a case
+	push_error("Unhandled consideration: %s" % Utility.Consideration.keys()[consideration])
+	return 0.0
