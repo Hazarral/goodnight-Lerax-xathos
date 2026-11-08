@@ -21,6 +21,9 @@ const FROSTBITE_BOUNTY_BASE_MAX_ICE : float = 1.4
 const BOOLEAN_TRUE := MAX_VAL
 const BOOLEAN_FALSE := MIN_VAL
 
+## Specific considerations
+const EARLY_COMBAT_TURN_COUNTER_WEIGHT := 0.5
+
 static func _logistics(value : float, is_decreasing : bool = false) -> float:
 	## Typically used in HighHPTarget and LowHPTarget
 	var sgn := 1 if is_decreasing else -1
@@ -52,15 +55,21 @@ static func _boolean(value : bool) -> float:
 static func get_raw_score(
 	actor : Entity, 
 	target : Entity, 
+	damage_types : Array[DamageAndDoT.DamageType],
+	dot_types : Array[DamageAndDoT.DoT],
 	consideration : Utility.Consideration, 
 	combat_field_state : CombatFieldState
 ) -> float:
 	match consideration:
-		Utility.Consideration.MATCHING_SHIELD, Utility.Consideration.FROSTBITE_BOUNTY:
+		Utility.Consideration.MATCHING_SHIELD:
+			return _matching_shield_score(damage_types, dot_types, target)
+		Utility.Consideration.FROSTBITE_BOUNTY:
+			## WORK IN PROGRESS, will be updated later
+			## TODO: rework Frostbite bounty scoring
 			return 0.0
 		Utility.Consideration.EARLY_COMBAT:
 			## PLACEHOLDER
-			return 0.0
+			return _early_combat_score(combat_field_state)
 		Utility.Consideration.HIGH_HP_TARGET:
 			## PLACEHOLDER
 			return 0.0
@@ -119,3 +128,39 @@ static func get_raw_score(
 	## Guard for any enum value added later without a case
 	push_error("Unhandled consideration: %s" % Utility.Consideration.keys()[consideration])
 	return 0.0
+
+static func _matching_shield_score(
+	damage_types : Array[DamageAndDoT.DamageType], 
+	dot_types : Array[DamageAndDoT.DoT], 
+	target : Entity
+) -> float:
+	## NOTE: Naive version, scales linearly with matching count, 
+	## damage_types and dot_types are guaranteed to have no duplicate
+	if damage_types.is_empty():
+		return MIN_VAL
+	
+	var result := 0.0
+	for damage_type in damage_types:
+		if not target.has_shield(damage_type):
+			continue
+		
+		result += MAX_VAL
+	
+	for dot_type in dot_types:
+		if not target.has_shield(DamageAndDoT.get_damage_type(dot_type)):
+			continue
+		
+		result += MAX_VAL
+	
+	return result
+
+static func _early_combat_score(combat_field_state : CombatFieldState) -> float:
+	var round_counter := combat_field_state.round_counter
+	var turn_counter := combat_field_state.turn_counter
+	
+	var progression := (
+		round_counter + 
+		EARLY_COMBAT_TURN_COUNTER_WEIGHT * log(turn_counter + 1)
+	) 
+	
+	return _exponential_decay(progression)

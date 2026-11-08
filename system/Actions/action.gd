@@ -57,6 +57,30 @@ func get_first_targets(source : Entity) -> Array[Entity]:
 	
 	return await action_events.front().get_targets(source, [])
 
+func get_damage_types() -> Array[DamageAndDoT.DamageType]:
+	var result : Array[DamageAndDoT.DamageType] = []
+	for action_event in [single_target_action_event] + action_events:
+		if action_event == null:
+			push_error("Uncaught null action event in %s" % action_name)
+			continue
+		
+		if action_event is DamageActionEvent and not result.has(action_event.damage_type):
+			result.append(action_event.damage_type)
+	
+	return result
+
+func get_dot_types() -> Array[DamageAndDoT.DoT]:
+	var result : Array[DamageAndDoT.DoT] = []
+	for action_event in [single_target_action_event] + action_events:
+		if action_event == null:
+			push_error("Uncaught null action event in %s" % action_name)
+			continue
+		
+		if action_event is ApplyDoTActionEvent and not result.has(action_event.damage_type):
+			result.append(action_event.damage_type)
+	
+	return result
+
 func _auto_assign_tags() -> void:
 	if utility == null:
 		push_warning("Cannot auto-assign tags: 'utility' subresource is null.")
