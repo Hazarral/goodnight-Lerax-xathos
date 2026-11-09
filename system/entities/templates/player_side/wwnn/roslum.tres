@@ -1,5 +1,6 @@
 [gd_resource type="Resource" script_class="EntityTemplate" format=3 uid="uid://bt5owsd6ij6gr"]
 
+[ext_resource type="Resource" uid="uid://418bngvy625k" path="res://system/entities/templates/player_side/wwnn/roslum_ai_profile.tres" id="1_0xiwc"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="1_6dllg"]
 [ext_resource type="Script" uid="uid://nf30jicvf3ri" path="res://system/entities/entity_template.gd" id="2_18ehv"]
 [ext_resource type="Resource" uid="uid://k2ra83djv2ai" path="res://system/actions/player actions/Roslum/ashen_flame_demo.tres" id="2_a56jd"]
@@ -9,6 +10,7 @@
 script = ExtResource("2_18ehv")
 entity_name = "Roslum"
 is_player_faction = true
+ai_profile = ExtResource("1_0xiwc")
 potency = 50
 max_hp = 1200
 fire_shield = 2500

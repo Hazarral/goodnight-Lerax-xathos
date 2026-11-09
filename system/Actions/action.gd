@@ -51,11 +51,15 @@ func cast(source : Entity) -> bool:
 	
 	return true
 
-func get_first_targets(source : Entity) -> Array[Entity]:
+func get_first_targets() -> Array[Entity]:
 	if single_target_action_event != null:
-		return await single_target_action_event.get_targets(source, [])
+		return CombatSystem.get_valid_targets(
+			single_target_action_event.target_faction, 
+			single_target_action_event.target_state
+		)
 	
-	return await action_events.front().get_targets(source, [])
+	var front_action_event : ActionEvent = action_events.front()
+	return CombatSystem.get_valid_targets(front_action_event.target_faction, front_action_event.target_state)
 
 func get_damage_types() -> Array[DamageAndDoT.DamageType]:
 	var result : Array[DamageAndDoT.DamageType] = []
@@ -80,6 +84,9 @@ func get_dot_types() -> Array[DamageAndDoT.DoT]:
 			result.append(action_event.damage_type)
 	
 	return result
+
+func get_considerations() -> Array[Utility.Consideration]:
+	return utility.considerations
 
 func _auto_assign_tags() -> void:
 	if utility == null:

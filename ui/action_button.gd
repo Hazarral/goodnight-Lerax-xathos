@@ -3,6 +3,7 @@ extends Button
 
 const ACTION_BASE_TEXT := "%s            %d AP"
 const ACTION_EXTRA_COOLDOWN_TEXT := "   ·    CD %d"
+const SCORE_TEXT := " - Score: %.2f, Target: %s"
 
 var entity : Entity
 var action_index : int

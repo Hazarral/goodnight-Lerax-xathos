@@ -7,6 +7,9 @@ extends Resource
 ## Either on player's side or not
 @export var is_player_faction : bool
 
+## AI Profile goes here
+@export var ai_profile : AIProfile
+
 ## Potency increases how strong damage is
 @export var potency : int
 

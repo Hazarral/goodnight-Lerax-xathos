@@ -1,8 +1,6 @@
 class_name Entity
 extends RefCounted
 
-@export var ai_profile : AIProfile
-
 var template : EntityTemplate
 var magnification : float
 
@@ -54,8 +52,14 @@ const END_TURN_INDEX := -1
 
 ## Template will be duplicated
 func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> void:
+	print("Template: ", base_template)
+	print("Resource path: ", base_template.resource_path)
+	print("AI Profile: ", base_template.ai_profile)
+	
 	template = base_template
 	magnification = p_magnification
+	
+	assert(base_template.ai_profile != null, "AI Profile is null!")
 	
 	current_hp = get_max_hp()
 	current_potency = get_potency()
@@ -559,6 +563,7 @@ func start_action_phase() -> void:
 		return
 	
 	## TODO: AI goes here
+	UtilityAI.start_turn(self)
 
 func end_turn() -> void:
 	recover_action_point()
@@ -586,15 +591,18 @@ func get_action(index : int) -> Action:
 	## The caller has to supply a valid index, this method swill not check
 	return known_actions[index].action
 
+func is_castable(index : int) -> bool:
+	return known_actions[index].is_castable()
+
 func get_known_actions_size() -> int:
 	return known_actions.size()
 
 func get_ai_profile() -> AIProfile:
-	if ai_profile == null:
+	if template.ai_profile == null:
 		push_error("AIProfile is null for %s" % get_entity_name_with_suffix())
 		return null
 	
-	return ai_profile
+	return template.ai_profile
 
 func get_total_bias(action_index : int) -> float:
 	if action_index < END_TURN_INDEX:
@@ -604,7 +612,8 @@ func get_total_bias(action_index : int) -> float:
 	if action_index == END_TURN_INDEX:
 		return 0.0
 	
-	return ai_profile.get_biases(known_actions[action_index].action.utility.utility_entries)
+	assert(template.ai_profile != null, "AI Profile is null!")
+	return template.ai_profile.get_biases(known_actions[action_index].action.utility.utility_entries)
 
 func get_considerations(action_index : int) -> Array[Utility.Consideration]:
 	if action_index < END_TURN_INDEX:
@@ -614,7 +623,7 @@ func get_considerations(action_index : int) -> Array[Utility.Consideration]:
 	if action_index == END_TURN_INDEX:
 		return []
 	
-	return known_actions[action_index].get_considerations().duplicate(true)
+	return known_actions[action_index].action.get_considerations().duplicate(true)
 
 func tick_cooldowns() -> void:
 	for known_action in known_actions:
