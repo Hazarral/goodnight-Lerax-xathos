@@ -17,6 +17,14 @@ const WEIGHT_STEP := 0.5
 @export_range(MIN_BIAS, MAX_BIAS, BIAS_STEP) var bias_buff_enemy : float = 0.0
 @export_range(MIN_BIAS, MAX_BIAS, BIAS_STEP) var bias_debuff_player : float = 0.0
 
+class BiasTerm:
+	var name : String
+	var value : float
+
+	func _init(p_name : String, p_value : float) -> void:
+		name = p_name
+		value = p_value
+
 @export_group("Consideration Weights", "weight")
 @export_range(MIN_WEIGHT, MAX_WEIGHT, WEIGHT_STEP) var weight_matching_shield : float = 1.0
 @export_range(MIN_WEIGHT, MAX_WEIGHT, WEIGHT_STEP) var weight_frostbite_bounty : float = 1.0
@@ -75,7 +83,7 @@ const DAMAGE_TAGS : Array[Utility.Tag] = [
 	Utility.Tag.APPLY_VOID, Utility.Tag.APPLY_RANDOM_DOT,
 ]
 
-func get_biases(utility_entries : Array[UtilityEntry]) -> float:
+func get_bias_breakdown(utility_entries : Array[UtilityEntry]) -> Array[BiasTerm]:
 	var damage_player := 0.0
 	var heal_self := 0.0
 	var heal_enemy := 0.0
@@ -105,4 +113,19 @@ func get_biases(utility_entries : Array[UtilityEntry]) -> float:
 			if targets_player:
 				debuff_player = bias_debuff_player
 		
-	return damage_player + heal_self + heal_enemy + buff_self + buff_enemy + debuff_player
+	return [
+		BiasTerm.new("DAMAGE_PLAYER", damage_player),
+		BiasTerm.new("HEAL_SELF", heal_self),
+		BiasTerm.new("HEAL_ENEMY", heal_enemy),
+		BiasTerm.new("BUFF_SELF", buff_self),
+		BiasTerm.new("BUFF_ENEMY", buff_enemy),
+		BiasTerm.new("DEBUFF_PLAYER", debuff_player)
+	]
+
+func get_biases(utility_entries : Array[UtilityEntry]) -> float:
+	var result := 0.0
+
+	for bias_term in get_bias_breakdown(utility_entries):
+		result += bias_term.value
+
+	return result

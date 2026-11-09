@@ -13,6 +13,8 @@ class Choice:
 	var action_index : int
 	var score : float
 	var target : Entity
+	var consideration_terms : Array[ConsiderationTerm] = []
+	var bias_terms : Array[AIProfile.BiasTerm] = []
 	
 	func _init(p_actor : Entity, p_action_index : int, p_score : float, p_target : Entity) -> void:
 		actor = p_actor
@@ -21,12 +23,67 @@ class Choice:
 		target = p_target
 	
 	func _to_string() -> String:
-		return "\n[Index: %d, Action name: %s, Score: %.2f, Target: %s]" % [
-			action_index, 
+		var output := "\n[Index: %d, Action name: %s, Score: %.2f, Target: %s]" % [
+			action_index,
 			actor.get_action(action_index).action_name if action_index != Entity.END_TURN_INDEX else "End turn",
-			score, 
+			score,
 			target.get_entity_name_with_suffix() if target != null else "null"
 		]
+		
+		output += "\n  Considerations:"
+		
+		for term in consideration_terms:
+			if is_zero_approx(term.contribution):
+				continue
+			
+			output += "\n    %s: %.2f * %.2f = %.2f" % [
+				Utility.Consideration.keys()[term.consideration],
+				term.weight,
+				term.raw_score,
+				term.contribution
+			]
+		
+		output += "\n  Biases:"
+		
+		for term in bias_terms:
+			output += "\n    %s: %.2f" % [
+				term.name,
+				term.value
+			]
+		
+		return output
+	
+	func get_consideration_total() -> float:
+		var total := 0.0
+		
+		for term in consideration_terms:
+			total += term.contribution
+		
+		return total
+	
+	func get_bias_total() -> float:
+		var total := 0.0
+	
+		for term in bias_terms:
+			total += term.value
+	
+		return total
+	
+	class ConsiderationTerm:
+		var consideration : Utility.Consideration
+		var weight : float
+		var raw_score : float
+		var contribution : float
+		
+		func _init(
+			p_consideration : Utility.Consideration,
+			p_weight : float,
+			p_raw_score : float
+		) -> void:
+			consideration = p_consideration
+			weight = p_weight
+			raw_score = p_raw_score
+			contribution = weight * raw_score
 
 static func start_turn(actor : Entity) -> void:
 	## This is nothing but a big wx + b function
@@ -90,7 +147,14 @@ static func get_choice(actor : Entity, action_index : int, combat_field_state : 
 	# Stuff
 	var first_targets := actor.get_action(action_index).get_first_targets()
 	var considerations := actor.get_considerations(action_index)
-	var biases := actor.get_total_bias(action_index)
+	
+	# Bias here
+	var utility_entries := actor.get_action(action_index).utility.utility_entries
+	var biases_breakdown : Array[AIProfile.BiasTerm] = actor.get_ai_profile().get_bias_breakdown(utility_entries)
+	var biases := 0.0
+	for term in biases_breakdown:
+		biases += term.value
+	
 	var damage_types = actor.get_action(action_index).get_damage_types()
 	var dot_types := actor.get_action(action_index).get_dot_types()
 	
@@ -100,16 +164,40 @@ static func get_choice(actor : Entity, action_index : int, combat_field_state : 
 	
 	var best_target : Entity = null
 	var best_score : float = INVALID_SCORE
+	var best_consideration_terms : Array[Choice.ConsiderationTerm] = []
 	
 	for target in first_targets:
 		var score := biases
+		var consideration_terms : Array[Choice.ConsiderationTerm] = []
+		
 		for consideration in considerations:
-			var raw_score := UtilityMath.get_raw_score(actor, target, damage_types, dot_types, consideration, combat_field_state)
-			score += actor.get_ai_profile().get_weight(consideration) * raw_score
+			var weight := actor.get_ai_profile().get_weight(consideration)
+			var raw_score := UtilityMath.get_raw_score(
+				actor,
+				target,
+				damage_types,
+				dot_types,
+				consideration,
+				combat_field_state
+			)
+			
+			var term := Choice.ConsiderationTerm.new(
+				consideration,
+				weight,
+				raw_score
+			)
+			
+			consideration_terms.append(term)
+			score += term.contribution # Already W * raw_score
 		
 		if score > best_score:
 			best_target = target
 			best_score = score
+			best_consideration_terms = consideration_terms
 	
-	return Choice.new(actor, action_index, best_score, best_target)
+	var choice := Choice.new(actor, action_index, best_score, best_target)
+	choice.consideration_terms = best_consideration_terms
+	choice.bias_terms = biases_breakdown
+	
+	return choice
 	
