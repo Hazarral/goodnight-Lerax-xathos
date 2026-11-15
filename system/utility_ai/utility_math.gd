@@ -72,7 +72,7 @@ static func get_raw_score(
 			return _early_combat_score(combat_field_state)
 		Utility.Consideration.HIGH_HP_TARGET:
 			## PLACEHOLDER
-			return 0.0
+			return _high_hp_target_score(target)
 		Utility.Consideration.LOW_HP_TARGET:
 			## PLACEHOLDER
 			return 0.0
@@ -164,3 +164,6 @@ static func _early_combat_score(combat_field_state : CombatFieldState) -> float:
 	) 
 	
 	return _exponential_decay(progression)
+
+static func _high_hp_target_score(target : Entity) -> float:
+	return _logistics(float(target.current_hp) / target.get_max_hp(), false)
