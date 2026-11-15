@@ -8,6 +8,10 @@ const INVALID_SCORE := -INF
 const ABSOLUTE_EPSILON := 1e-8
 const RELATIVE_EPSILON := 1e-6
 
+const AI_DECISION_DELAY := 0.5
+
+static var _tree : SceneTree
+
 class Choice:
 	var actor : Entity
 	var action_index : int
@@ -85,6 +89,15 @@ class Choice:
 			raw_score = p_raw_score
 			contribution = weight * raw_score
 
+static func _get_tree() -> SceneTree:
+	if _tree == null:
+		_tree = Engine.get_main_loop() as SceneTree
+	return _tree
+
+static func _decision_delay() -> void:
+	if AI_DECISION_DELAY > 0.0:
+		await _get_tree().create_timer(AI_DECISION_DELAY).timeout
+
 static func start_turn(actor : Entity) -> void:
 	## This is nothing but a big wx + b function
 	## Normal action will use Entity.cast_action(index : int), but end_turn will call with index = -1
@@ -95,10 +108,13 @@ static func start_turn(actor : Entity) -> void:
 	
 	var known_actions_size := actor.get_known_actions_size()
 	
+	await _decision_delay()
+	
 	while true:
 		# Compute for every action
 		# Pick whatever is highest later, with some randomizing
 		# End turn just quits
+		print("[%s] %s deciding" % [Time.get_ticks_msec(), actor.get_entity_name_with_suffix()])
 		var combat_field_state := CombatFieldState.new()
 		var choices : Array[Choice] = []
 		choices.resize(known_actions_size + 1)
@@ -120,15 +136,15 @@ static func start_turn(actor : Entity) -> void:
 		
 		print("Chosen index: %d" % chosen_choice.action_index)
 		
-		actor.cast_action(chosen_choice.action_index)
-		
-		# Get the target desired
-		EventBus.target_resolved.emit(chosen_choice.target)
+		await actor.cast_action(chosen_choice.action_index, chosen_choice.target)
+		EventBus.force_refresh_turn_ui.emit()
 		
 		## THIS IS NEVER GOING TO BE REACHED
 		if chosen_choice.action_index == Entity.END_TURN_INDEX:
 			print("[UtilityAI] %s ended their turn" % actor.get_entity_name_with_suffix())
 			return
+		
+		await _decision_delay()
 	
 static func get_choice(actor : Entity, action_index : int, combat_field_state : CombatFieldState) -> Choice:
 	# Plan:

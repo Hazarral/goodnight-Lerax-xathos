@@ -34,12 +34,17 @@ var auto_tag_button := _auto_assign_tags
 		#"ACTION ERROR: Action contains a null event.")
 	#assert(not action_events.is_empty(), "ACTION ERROR: empty action events list, cannot get first targets")
 
-func cast(source : Entity) -> bool:	
+func cast(source : Entity, preselected_target : Entity = null) -> bool:	
 	var last_targets : Array[Entity] = []
 	
 	if single_target_action_event != null:
 		var dynamic_event : Variant = single_target_action_event
+		
+		# Try to apply the preselected target, if not, set to null so it does not pollute latter casts
+		single_target_action_event.preselected_target = preselected_target
 		var success : bool = await dynamic_event.resolve(source, last_targets)
+		dynamic_event.preselected_target = null
+		
 		if not success:
 			return false
 		last_targets = single_target_action_event.get_last_resolved_targets()

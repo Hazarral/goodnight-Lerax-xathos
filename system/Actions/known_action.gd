@@ -33,13 +33,13 @@ func tick_cooldown() -> void:
 	if cooldown_remaining > 0:
 		cooldown_remaining -= 1
 
-func cast() -> CastResult:
+func cast(preselected_target : Entity = null) -> CastResult:
 	if not is_castable():
 		return CastResult.new(false, 0)
 	
 	source.current_action_point -= action.action_point_cost
 	
-	var success := await action.cast(source)
+	var success := await action.cast(source, preselected_target)
 	
 	if not success:
 		source.current_action_point += action.action_point_cost

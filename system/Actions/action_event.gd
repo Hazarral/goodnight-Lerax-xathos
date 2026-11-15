@@ -28,6 +28,9 @@ enum TargetMode {
 
 var _last_resolved_targets : Array[Entity] = []
 
+# For AI or special single target case, set by Action
+var preselected_target : Entity = null
+
 func get_last_resolved_targets() -> Array[Entity]:
 	return _last_resolved_targets
 
@@ -43,8 +46,15 @@ func get_targets(caster : Entity, inherited_targets : Array[Entity]) -> Variant:
 		TargetMode.INHERIT_FILTERED:
 			targets = _filter_targets(inherited_targets)
 		TargetMode.SINGLE_INDEPENDENT_FILTER:
-			EventBus.target_requested.emit(self, target_faction, target_state, caster.is_player_faction())
-			var picked : Entity = await EventBus.target_resolved
+			var picked : Entity
+			if preselected_target != null:
+				picked = preselected_target
+				# Reset here, so it's as stateless as possible
+				preselected_target = null
+			else:
+				EventBus.target_requested.emit(self, target_faction, target_state)
+				picked = await EventBus.target_resolved
+			
 			if picked == null:
 				print("Picked null! Cancelling...")
 				return null

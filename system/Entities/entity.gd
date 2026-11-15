@@ -629,10 +629,11 @@ func tick_cooldowns() -> void:
 	for known_action in known_actions:
 		known_action.tick_cooldown()
 
-func cast_action(index : int) -> void:
+func cast_action(index : int, preselected_target : Entity = null) -> void:
 	if index == END_TURN_INDEX:
 		## Special case for AI later
 		end_turn()
+		return
 	
 	var action_wrapper := known_actions[index]
 	
@@ -641,7 +642,7 @@ func cast_action(index : int) -> void:
 		return
 	
 	var pending_slot := CombatLog.reserve_slot()
-	var cast_result := await action_wrapper.cast()
+	var cast_result := await action_wrapper.cast(preselected_target)
 	
 	if not cast_result.success:
 		CombatLog.cancel_reserved_slot(pending_slot)

@@ -45,7 +45,7 @@ func _ready() -> void:
 
 func setup(p_entity : Entity, p_show_ap : bool = true) -> void:
 	entity = p_entity
-	show_ap = p_show_ap
+	show_ap = true #p_show_ap
 	hp_bar.max_value = entity.get_max_hp()
 
 func set_selected(value: bool) -> void:
