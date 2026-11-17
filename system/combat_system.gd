@@ -33,15 +33,20 @@ func reset() -> void:
 	current_turn_index = 0
 	turn_counter = 0
 	
-	_entity_name_counter.clear()
-	
 	is_processing_combat_event_queue = false
+
+func initialize() -> void:
+	## The name counter is needed for any cleanup or display later
+	reset()
+	_entity_name_counter.clear()
 
 func _register_or_increment_entity_name(entity_name : String) -> void:
 	if _entity_name_counter.has(entity_name):
 		_entity_name_counter[entity_name] += 1
 	else:
 		_entity_name_counter[entity_name] = 1
+	
+	print("%s counter = %d" % [entity_name, _entity_name_counter[entity_name]])
 
 func _to_roman_numeral(number : int) -> String:
 	if number <= 0:
@@ -69,7 +74,7 @@ func get_entity_name_suffix(entity : Entity) -> String:
 
 func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side_templates : Array[EntityTemplate]) -> void:
 	## 1. Ensure clean data before anything
-	reset()
+	initialize()
 	
 	## 2. Create the entities in memory. We will ignore magnification for now
 	## NOTE: Implement magnification later
@@ -95,7 +100,7 @@ func initialize_combat(player_side_templates : Array[EntityTemplate], enemy_side
 
 func initialize_encounter(player_party : Array[Entity], enemy_side_templates : Array[EntityTemplate]) -> void:
 	## NOTE: Use this for the actual game, because player party is persistent
-	reset()
+	initialize()
 	var enemy_side : Array[Entity] = []
 	for template in enemy_side_templates:
 		enemy_side.append(Entity.new(template))

@@ -106,15 +106,24 @@ static func start_turn(actor : Entity) -> void:
 	##3. Pick action, repeat till "End Turn" is chosen
 	## All of these call actor.cast_action(index)
 	
+	var entity_name := actor.get_entity_name_with_suffix()
 	var known_actions_size := actor.get_known_actions_size()
 	
 	await _decision_delay()
 	
 	while true:
+		# Wait out anything still draining before reading the board
+		while CombatSystem.is_processing_combat_event_queue:
+			await EventBus.combat_event_queue_processing_finished
+		
+		if actor.current_state == Entity.State.DEAD:
+			print("[UtilityAI] %s died mid AI loop" % entity_name)
+			return
+		
 		# Compute for every action
 		# Pick whatever is highest later, with some randomizing
 		# End turn just quits
-		print("[%s] %s deciding" % [Time.get_ticks_msec(), actor.get_entity_name_with_suffix()])
+		print("[%s] %s deciding" % [Time.get_ticks_msec(), entity_name])
 		var combat_field_state := CombatFieldState.new()
 		var choices : Array[Choice] = []
 		choices.resize(known_actions_size + 1)
@@ -126,7 +135,7 @@ static func start_turn(actor : Entity) -> void:
 		
 		## Find the best one
 		choices.sort_custom(func (a : Choice, b: Choice) -> bool: return a.score > b.score)
-		print("%s's choices: %s" % [actor.get_entity_name_with_suffix(), choices])
+		print("%s's choices: %s" % [entity_name, choices])
 		
 		var chosen_choice : Choice = choices.front()
 		
@@ -139,9 +148,8 @@ static func start_turn(actor : Entity) -> void:
 		await actor.cast_action(chosen_choice.action_index, chosen_choice.target)
 		EventBus.force_refresh_turn_ui.emit()
 		
-		## THIS IS NEVER GOING TO BE REACHED
 		if chosen_choice.action_index == Entity.END_TURN_INDEX:
-			print("[UtilityAI] %s ended their turn" % actor.get_entity_name_with_suffix())
+			print("[UtilityAI] %s ended their turn" % entity_name)
 			return
 		
 		await _decision_delay()
@@ -175,7 +183,7 @@ static func get_choice(actor : Entity, action_index : int, combat_field_state : 
 	var dot_types := actor.get_action(action_index).get_dot_types()
 	
 	if first_targets.is_empty():
-		push_error("No valid target for action index %d of entity %s" % [action_index, actor.get_entity_name_with_suffix()])
+		push_error("No valid target for action index %d of entity %s" % [action_index, actor.get_entity_name_with_suffix() if actor != null else "null"])
 		return Choice.new(actor, action_index, INVALID_SCORE, null)
 	
 	var best_target : Entity = null

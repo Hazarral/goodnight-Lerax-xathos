@@ -566,8 +566,10 @@ func start_action_phase() -> void:
 	UtilityAI.start_turn(self)
 
 func end_turn() -> void:
-	recover_action_point()
-	tick_cooldowns()
+	if current_state == State.ALIVE:
+		recover_action_point()
+		tick_cooldowns()
+	
 	var combat_log_entry := TurnEndCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
