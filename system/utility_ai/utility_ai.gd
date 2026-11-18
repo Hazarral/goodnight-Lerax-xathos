@@ -34,26 +34,28 @@ class Choice:
 			target.get_entity_name_with_suffix() if target != null else "null"
 		]
 		
-		output += "\n  Considerations:"
-		
-		for term in consideration_terms:
-			if is_zero_approx(term.contribution):
-				continue
+		if consideration_terms:
+			output += "\n  Considerations:"
 			
-			output += "\n    %s: %.2f * %.2f = %.2f" % [
-				Utility.Consideration.keys()[term.consideration],
-				term.weight,
-				term.raw_score,
-				term.contribution
-			]
+			for term in consideration_terms:
+				if is_zero_approx(term.contribution):
+					continue
+				
+				output += "\n    %s: %.2f * %.2f = %.2f" % [
+					Utility.Consideration.keys()[term.consideration],
+					term.weight,
+					term.raw_score,
+					term.contribution
+				]
 		
-		output += "\n  Biases:"
-		
-		for term in bias_terms:
-			output += "\n    %s: %.2f" % [
-				term.name,
-				term.value
-			]
+		if bias_terms:
+			output += "\n  Biases:"
+			
+			for term in bias_terms:
+				output += "\n    %s: %.2f" % [
+					term.name,
+					term.value
+				]
 		
 		return output
 	
@@ -180,7 +182,7 @@ static func get_choice(actor : Entity, action_index : int, combat_field_state : 
 		biases += term.value
 	
 	var damage_types = actor.get_action(action_index).get_damage_types()
-	var dot_types := actor.get_action(action_index).get_dot_types()
+	var dot_instances := actor.get_action(action_index).get_dot_instances()
 	
 	if first_targets.is_empty():
 		push_error("No valid target for action index %d of entity %s" % [action_index, actor.get_entity_name_with_suffix() if actor != null else "null"])
@@ -194,16 +196,18 @@ static func get_choice(actor : Entity, action_index : int, combat_field_state : 
 		var score := biases
 		var consideration_terms : Array[Choice.ConsiderationTerm] = []
 		
+		var scoring_context := ScoringContext.new(
+			actor,
+			target,
+			first_targets.size(),
+			damage_types,
+			dot_instances,
+			combat_field_state
+		)
+		
 		for consideration in considerations:
 			var weight := actor.get_ai_profile().get_weight(consideration)
-			var raw_score := UtilityMath.get_raw_score(
-				actor,
-				target,
-				damage_types,
-				dot_types,
-				consideration,
-				combat_field_state
-			)
+			var raw_score := UtilityMath.get_raw_score(scoring_context, consideration)
 			
 			var term := Choice.ConsiderationTerm.new(
 				consideration,

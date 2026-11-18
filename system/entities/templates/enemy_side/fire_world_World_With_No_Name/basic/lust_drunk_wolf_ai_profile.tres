@@ -4,4 +4,6 @@
 
 [resource]
 script = ExtResource("1_i7sa1")
+bias_damage_player = 2.0
+bias_heal_self = 1.0
 metadata/_custom_type_script = "uid://drfr6qp8erlfl"

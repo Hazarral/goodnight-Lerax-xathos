@@ -78,15 +78,32 @@ func get_damage_types() -> Array[DamageAndDoT.DamageType]:
 	
 	return result
 
-func get_dot_types() -> Array[DamageAndDoT.DoT]:
-	var result : Array[DamageAndDoT.DoT] = []
+func get_dot_instances() -> Array[DoTInstance]:
+	var result : Array[DoTInstance] = []
+	
+	var has_damage_type := func(damage_type : DamageAndDoT.DamageType):
+		for dot_instance in result:
+			if dot_instance.damage_type == damage_type:
+				return true
+		
+		return false
+	
 	for action_event in [single_target_action_event] + action_events:
 		if action_event == null:
 			push_error("Uncaught null action event in %s" % action_name)
 			continue
 		
-		if action_event is ApplyDoTActionEvent and not result.has(action_event.damage_type):
-			result.append(action_event.damage_type)
+		if action_event is ApplyDoTActionEvent and not has_damage_type.call(action_event.damage_type):
+			result.append(
+				DoTInstance.new(
+					null, 
+					null, 
+					action_event.damage_type, 
+					action_event.base_damage, 
+					action_event.stacks, 
+					action_event.duration
+				)
+			)
 	
 	return result
 

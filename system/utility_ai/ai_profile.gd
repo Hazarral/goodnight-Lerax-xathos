@@ -93,9 +93,9 @@ func get_bias_breakdown(utility_entries : Array[UtilityEntry]) -> Array[BiasTerm
 	
 	for entry in utility_entries:
 		var is_self := entry.target_mode == ActionEvent.TargetMode.SELF
-		var targets_player := entry.target_faction == ActionEvent.TargetFaction.PLAYER
-		var targets_enemy := entry.target_faction == ActionEvent.TargetFaction.ENEMY
-		
+		var targets_player := entry.target_faction != ActionEvent.TargetFaction.ENEMY
+		var targets_enemy := entry.target_faction != ActionEvent.TargetFaction.PLAYER 
+	
 		if entry.tag in DAMAGE_TAGS:
 			if targets_player:
 				damage_player = bias_damage_player

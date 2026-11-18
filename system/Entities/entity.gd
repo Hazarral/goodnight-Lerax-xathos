@@ -51,11 +51,7 @@ const EPSILON := 1e-4
 const END_TURN_INDEX := -1
 
 ## Template will be duplicated
-func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> void:
-	print("Template: ", base_template)
-	print("Resource path: ", base_template.resource_path)
-	print("AI Profile: ", base_template.ai_profile)
-	
+func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> void:	
 	template = base_template
 	magnification = p_magnification
 	
@@ -173,9 +169,24 @@ func get_active_shield_indices() -> Array[int]:
 	
 	return arr
 
+func get_active_shield_count() -> int:
+	var result := 0
+	for i in range(DamageAndDoT.ELEMENT_COUNT):
+		if max_shields[i] > 0 and current_shields[i] > 0:
+			result += 1
+	
+	return result
+
 func get_total_max_shield() -> int:
 	var result := 0
 	for shield in max_shields:
+		result += shield
+	
+	return result
+
+func get_total_current_shield() -> int:
+	var result := 0
+	for shield in current_shields:
 		result += shield
 	
 	return result
