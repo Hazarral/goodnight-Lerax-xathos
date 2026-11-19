@@ -107,6 +107,9 @@ func get_dot_instances() -> Array[DoTInstance]:
 	
 	return result
 
+func is_single_target() -> bool:
+	return single_target_action_event != null
+
 func get_considerations() -> Array[Utility.Consideration]:
 	return utility.considerations
 

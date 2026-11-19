@@ -3,6 +3,7 @@ extends Object
 
 const MIN_VAL : float = -1.0
 const MAX_VAL : float = 1.0
+const NEUTRAL_VAL : float = 0.0
 const RANGE : float = MAX_VAL - MIN_VAL
 
 const LOGISTICS_EXPONENT_COEFFICIENT : float = 10.0
@@ -29,11 +30,25 @@ const HIGH_TOTAL_DOT_RATIO_CAP := 1.0
 const LOW_HP_TARGET_MIN_VAL := -0.5
 const HIGH_HP_TARGET_MIN_VAL = -0.2
 
+const HIGH_DOT_COUNT_COEFFICIENT := 0.5
+
 static func _logistics(value : float, is_decreasing : bool = false) -> float:
 	## Typically used in HighHPTarget and LowHPTarget
 	var sgn := 1 if is_decreasing else -1
 	var power : float = sgn * LOGISTICS_EXPONENT_COEFFICIENT * (value - LOGISTICS_EXPONENT_MIDPOINT)
-	return MIN_VAL + RANGE / (1 + exp(power))
+	
+	# Applies a linear scaling, vertically stretching it so it meets the actual endpoints
+	var raw := 1.0 / (1.0 + exp(power))
+	
+	var min_power := -LOGISTICS_EXPONENT_COEFFICIENT * LOGISTICS_EXPONENT_MIDPOINT
+	var max_power := LOGISTICS_EXPONENT_COEFFICIENT * (1.0 - LOGISTICS_EXPONENT_MIDPOINT)
+	
+	var min_raw := 1.0 / (1.0 + exp(-min_power))
+	var max_raw := 1.0 / (1.0 + exp(-max_power))
+	
+	var normalized := (raw - min_raw) / (max_raw - min_raw)
+	
+	return MIN_VAL + RANGE * normalized
 
 static func _exponential_decay(value : float) -> float:
 	return MIN_VAL + RANGE * exp(-EXPONENTIAL_DECAY_COEFFICIENT * maxf(value, 0.0))
@@ -65,7 +80,8 @@ static func _boolean(value : bool) -> float:
 static func get_raw_score(scoring_context : ScoringContext, consideration : Utility.Consideration) -> float:
 	var actor := scoring_context.actor
 	var target := scoring_context.target
-	var target_count := scoring_context.target_count
+	var valid_target_count := scoring_context.valid_target_count
+	var is_single_target := scoring_context.is_single_target
 	var damage_types := scoring_context.damage_types
 	var dot_instances := scoring_context.dot_instances
 	var combat_field_state := scoring_context.combat_field_state
@@ -92,9 +108,9 @@ static func get_raw_score(scoring_context : ScoringContext, consideration : Util
 		Utility.Consideration.LOW_HP_SELF:
 			return _low_hp_target_score(actor)
 		Utility.Consideration.HIGH_TARGET_COUNT:
-			return _high_target_count_score(target_count)
+			return _high_target_count_score(valid_target_count, is_single_target)
 		Utility.Consideration.HIGH_WIND_SHEARED_COUNT:
-			return _high_wind_sheared_count_score(actor)
+			return _high_wind_sheared_count_score(target)
 		Utility.Consideration.HIGH_ACTIVE_SHIELD_COUNT:
 			return _high_active_shield_count_score(target)
 		Utility.Consideration.HIGH_MAX_SHIELD_VALUE:
@@ -103,7 +119,7 @@ static func get_raw_score(scoring_context : ScoringContext, consideration : Util
 			return _total_dot_dealt_score(actor, target, dot_instances)
 		Utility.Consideration.HIGH_DOT_COUNT:
 			## PLACEHOLDER
-			return 0.0
+			return _high_dot_count(target)
 		Utility.Consideration.HIGH_DOT_DAMAGE:
 			## PLACEHOLDER
 			return 0.0
@@ -138,7 +154,6 @@ static func _matching_shield_score(
 	dot_instances : Array[DoTInstance], 
 	target : Entity
 ) -> float:
-	## NOTE: Naive version, scales linearly with matching count, 
 	## damage_types and dot_types are guaranteed to have no duplicate
 	var total := damage_types.size() + dot_instances.size()
 	if total == 0:
@@ -173,13 +188,14 @@ static func _high_hp_target_score(target : Entity) -> float:
 static func _low_hp_target_score(target : Entity) -> float:
 	return clampf(_logistics(float(target.current_hp) / target.get_max_hp(), true), LOW_HP_TARGET_MIN_VAL, MAX_VAL)
 
-static func _high_target_count_score(target_count : int) -> float:
-	return _logarithmic(target_count)
+static func _high_target_count_score(valid_target_count : int, is_single_target : bool) -> float:
+	if is_single_target:
+		return NEUTRAL_VAL
+	
+	return _logarithmic(valid_target_count)
 
-static func _high_wind_sheared_count_score(actor : Entity) -> float:
-	# Opposite faction
-	var faction := ActionEvent.TargetFaction.ENEMY if actor.is_player_faction() else ActionEvent.TargetFaction.PLAYER
-	var target_count := DamageAndDoT.get_wind_shear_special_effect_targets(null, faction).size()
+static func _high_wind_sheared_count_score(target : Entity) -> float:
+	var target_count := DamageAndDoT.get_wind_shear_special_effect_targets(null, target.is_player_faction()).size()
 	return _logarithmic(target_count)
 
 static func _high_active_shield_count_score(target : Entity) -> float:
@@ -198,20 +214,40 @@ static func calculate_total_dot_damage(dot_instance : DoTInstance, potency : int
 		push_error("Void has special damage! Please use VoidInstance.get_void_damage(...)")
 		return 0.0
 	
+	var coefs : PackedFloat32Array = DamageAndDoT.DOT_COEFFICIENTS.get(dot_type)
+	var potency_coef : float = coefs[DamageAndDoT.Coefficient.DAMAGE_POTENCY]
+	var mastery_coef : float = coefs[DamageAndDoT.Coefficient.DAMAGE_MASTERY]
+
+	var constant_base := dot_instance.base_damage + potency_coef * potency + mastery_coef * mastery
 	var total := 0.0
-	for i in range(maxi(duration, 0)):
-		var remaining := duration - i  # D, D-1, ..., 1
-		var tick := DamageAndDoT.calculate_dot_damage(
-			dot_type, 
-			dot_instance.base_damage, 
-			potency, 
-			mastery, 
-			dot_instance.stacks, 
-			remaining
+
+	if dot_instance is BurnInstance:
+		# Burn has instance-specific per-tick multipliers.
+		# Retain the original simulation for this case.
+		# The summation below is O(1), done by splitting the ramping sum from the constant max ramp sum
+		var max_ramp_duration := DamageAndDoT.MAX_BURN_TIERS - 1
+		var ramp_duration := mini(duration, max_ramp_duration)
+		var ramp_float := float(ramp_duration)
+		var base_tick := constant_base + duration
+		
+		var sum_indices := ramp_float * (ramp_float - 1.0) / 2.0
+		var sum_squared_indices := ramp_float * (ramp_float - 1.0) * (2.0 * ramp_float - 1.0) / 6.0
+		
+		total = dot_instance.stacks * (
+			ramp_float * base_tick
+			- sum_indices
+			+ 0.5 * (base_tick * sum_indices - sum_squared_indices)
 		)
-		if dot_instance is BurnInstance:
-			tick *= dot_instance.get_burn_multiplier(i)
-		total += tick
+		
+		if duration > max_ramp_duration:
+			var remaining_duration := float(duration - max_ramp_duration)
+			var remaining_damage := remaining_duration * base_tick - (float(duration - 1) * duration / 2.0 - 6.0)
+			total += dot_instance.stacks * 3.0 * remaining_damage
+	else:
+		total = dot_instance.stacks * (
+			duration * constant_base + duration * (duration + 1) / 2.0
+		)
+
 	return total
 
 static func _get_effective_pool(target : Entity, damage_type : DamageAndDoT.DamageType) -> int:
@@ -231,3 +267,15 @@ static func _total_dot_dealt_score(actor : Entity, target : Entity, dot_instance
 		ratio += damage / maxi(_get_effective_pool(target, dot_instance.damage_type), 1)
 	
 	return MIN_VAL + RANGE * clampf(ratio / HIGH_TOTAL_DOT_RATIO_CAP, 0.0, 1.0)
+
+static func _high_dot_count(target : Entity) -> float:
+	var target_dot_count := target.get_total_dot_instance_count()
+	if target_dot_count == 0:
+		return MIN_VAL
+	
+	var score := 0.0
+
+	for i in target_dot_count:
+		score += 1.0 / (i + 1)
+
+	return minf(MIN_VAL + HIGH_DOT_COUNT_COEFFICIENT * score, MAX_VAL)

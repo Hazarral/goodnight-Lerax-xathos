@@ -171,35 +171,41 @@ static func get_choice(actor : Entity, action_index : int, combat_field_state : 
 		return Choice.new(actor, Entity.END_TURN_INDEX, INVALID_SCORE, null)
 	
 	# Stuff
-	var first_targets := actor.get_action(action_index).get_first_targets()
+	var action := actor.get_action(action_index)
+	var first_valid_targets := action.get_first_targets()
+	var is_single_target := action.is_single_target()
 	var considerations := actor.get_considerations(action_index)
 	
 	# Bias here
-	var utility_entries := actor.get_action(action_index).utility.utility_entries
+	var utility_entries := action.utility.utility_entries
 	var biases_breakdown : Array[AIProfile.BiasTerm] = actor.get_ai_profile().get_bias_breakdown(utility_entries)
 	var biases := 0.0
 	for term in biases_breakdown:
 		biases += term.value
 	
-	var damage_types = actor.get_action(action_index).get_damage_types()
-	var dot_instances := actor.get_action(action_index).get_dot_instances()
+	var damage_types := action.get_damage_types()
+	var dot_instances := action.get_dot_instances()
 	
-	if first_targets.is_empty():
+	if first_valid_targets.is_empty():
 		push_error("No valid target for action index %d of entity %s" % [action_index, actor.get_entity_name_with_suffix() if actor != null else "null"])
 		return Choice.new(actor, action_index, INVALID_SCORE, null)
 	
-	var best_target : Entity = null
-	var best_score : float = INVALID_SCORE
-	var best_consideration_terms : Array[Choice.ConsiderationTerm] = []
+	#var best_target : Entity = null
+	#var best_score : float = INVALID_SCORE
+	#var best_consideration_terms : Array[Choice.ConsiderationTerm] = []
 	
-	for target in first_targets:
-		var score := biases
+	var target_scores : Array[float] = []
+	var target_consideration_terms : Array[Array] = []
+	
+	for target in first_valid_targets:
+		var score := 0.0
 		var consideration_terms : Array[Choice.ConsiderationTerm] = []
 		
 		var scoring_context := ScoringContext.new(
 			actor,
 			target,
-			first_targets.size(),
+			first_valid_targets.size(),
+			is_single_target,
 			damage_types,
 			dot_instances,
 			combat_field_state
@@ -218,10 +224,42 @@ static func get_choice(actor : Entity, action_index : int, combat_field_state : 
 			consideration_terms.append(term)
 			score += term.contribution # Already W * raw_score
 		
-		if score > best_score:
-			best_target = target
-			best_score = score
-			best_consideration_terms = consideration_terms
+		target_scores.append(score)
+		target_consideration_terms.append(consideration_terms)
+	
+	var best_target : Entity = null
+	var best_score := INVALID_SCORE
+	var best_consideration_terms : Array[Choice.ConsiderationTerm] = []
+	
+	if is_single_target:
+		var best_index := 0
+		
+		for i in range(target_scores.size()):
+			if target_scores[i] > best_score:
+				best_score = target_scores[i]
+				best_index = i
+		
+		best_target = first_valid_targets[best_index]
+		best_consideration_terms = target_consideration_terms[best_index]
+		best_score += biases # Add bias exactly once here
+		
+	else:
+		var sorted_indices := range(target_scores.size())
+		sorted_indices.sort_custom(
+			func(a : int, b : int) -> bool:
+				return target_scores[a] > target_scores[b]
+		)
+		
+		var total := 0.0
+		for i in range(sorted_indices.size()):
+			total += target_scores[sorted_indices[i]] / (i + 1)
+		
+		best_score = total + biases # Add bias exactly once here
+		
+		# Representative target and breakdown: highest-scoring target
+		var best_index : int = sorted_indices[0]
+		best_target = first_valid_targets[best_index]
+		best_consideration_terms = target_consideration_terms[best_index]
 	
 	var choice := Choice.new(actor, action_index, best_score, best_target)
 	choice.consideration_terms = best_consideration_terms

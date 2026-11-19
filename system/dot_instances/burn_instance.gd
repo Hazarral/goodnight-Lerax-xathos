@@ -29,6 +29,9 @@ func tick_down() -> void:
 func get_burn_multiplier() -> float:
 	return minf(DamageAndDoT.MAX_FIRE_MULTIPLIER, 1.0 + DamageAndDoT.FIRE_MULTIPLIER_STEP * turns_elapsed)
 
+func get_burn_theoretical_multiplier(theoretical_turns_elapsed : int) -> float:
+	return minf(DamageAndDoT.MAX_FIRE_MULTIPLIER, 1.0 + DamageAndDoT.FIRE_MULTIPLIER_STEP * theoretical_turns_elapsed)
+
 func calculate_damage() -> float:
 	return DamageAndDoT.calculate_dot_damage(
 		DamageAndDoT.get_dot(damage_type),

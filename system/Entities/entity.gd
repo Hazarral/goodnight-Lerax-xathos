@@ -228,6 +228,13 @@ func get_total_attrition() -> int:
 	
 	return ceili(result - EPSILON)
 
+func get_total_dot_instance_count() -> int:
+	var result := 0
+	for dot_instance_array in active_dots:
+		result += dot_instance_array.get_instance_count()
+	
+	return result
+
 func is_player_faction() -> bool:
 	return template.is_player_faction
 
