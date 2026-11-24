@@ -66,6 +66,19 @@ func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> voi
 	setup_innate_actions()
 	
 	current_state = State.ALIVE
+	
+	_check_innate_action_cost()
+
+func _check_innate_action_cost() -> void:
+	for action in template.innate_actions:
+		assert(
+			action.action_point_cost <= template.max_action_point, 
+			"Action %s has higher cost than the template of %s's maximum AP of %d" % [
+				action.action_name,
+				template.entity_name,
+				template.max_action_point
+			]
+		)
 
 func _get_base_max_hp() -> float:
 	return template.max_hp * magnification
@@ -111,6 +124,9 @@ func setup_innate_actions() -> void:
 
 func get_entity_name_with_suffix() -> String:
 	return template.entity_name + CombatSystem.get_entity_name_suffix(self)
+
+func get_current_action_point() -> int:
+	return current_action_point
 
 func get_max_action_point() -> int:
 	return template.max_action_point
@@ -628,6 +644,12 @@ func get_known_actions() -> Array[KnownAction]:
 func get_action(index : int) -> Action:
 	## The caller has to supply a valid index, this method swill not check
 	return known_actions[index].action
+
+func get_action_ap_cost(index : int) -> int:
+	return known_actions[index].get_ap_cost()
+
+func get_action_cooldown_remaining(index : int) -> int:
+	return known_actions[index].get_cooldown_remaining()
 
 func is_castable(index : int) -> bool:
 	return known_actions[index].is_castable()
