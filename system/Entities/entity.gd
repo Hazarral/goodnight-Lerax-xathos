@@ -194,6 +194,13 @@ func get_total_current_shield() -> int:
 func has_dot(dot_type : DamageAndDoT.DoT) -> bool:
 	return active_dots[dot_type].has_dot()
 
+func has_any_dot() -> bool:
+	for dot_instance_array in active_dots:
+		if dot_instance_array.has_dot():
+			return true
+	
+	return false
+
 func get_active_dots() -> Array[DoTInstanceArray]:
 	return active_dots.duplicate(true)
 
@@ -217,6 +224,17 @@ func get_current_void_damage() -> int:
 		return 0
 	
 	return void_instance.get_current_damage(CombatSystem.get_the_draechen())
+
+func get_total_dot_tick_damage() -> int:
+	## The total DoT tick next turn from all the instances
+	var result := 0.0
+	for dot_instance_array in active_dots:
+		if not dot_instance_array.has_dot():
+			continue
+		
+		result += dot_instance_array.calculate_total_damage()
+	
+	return ceili(result - EPSILON)
 
 func get_total_attrition() -> int:
 	var result := 0.0
@@ -771,7 +789,7 @@ func _resolve_wind_shear_spread_effect() -> void:
 		if dot_instance_array.get_dot_type() == DamageAndDoT.DoT.WIND_SHEAR:
 			continue
 		
-		damage_types.append(dot_instance_array.get_dot_type())
+		damage_types.append(DamageAndDoT.get_damage_type(dot_instance_array.get_dot_type()))
 		for instance in dot_instance_array.data:
 			for target in valid_targets:
 				var damage_event := DamageEvent.new(

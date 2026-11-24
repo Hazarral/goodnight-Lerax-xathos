@@ -25,12 +25,16 @@ const BOOLEAN_FALSE := MIN_VAL
 ## Specific considerations
 const EARLY_COMBAT_TURN_COUNTER_WEIGHT := 0.5
 const HIGH_MAX_SHIELD_RATIO_CAP := 0.5
-const HIGH_TOTAL_DOT_RATIO_CAP := 1.0
 
 const LOW_HP_TARGET_MIN_VAL := -0.5
 const HIGH_HP_TARGET_MIN_VAL = -0.2
 
 const HIGH_DOT_COUNT_COEFFICIENT := 0.5
+
+const HIGH_TOTAL_DOT_RATIO_CAP := 0.6
+const HIGH_TOTAL_DOT_DISCOUNT_COEFFICIENT := 0.1 # Lower means more preference for sustained damage
+
+const HIGH_DOT_DAMAGE_RATIO_CAP := 0.5
 
 static func _logistics(value : float, is_decreasing : bool = false) -> float:
 	## Typically used in HighHPTarget and LowHPTarget
@@ -86,7 +90,7 @@ static func get_raw_score(scoring_context : ScoringContext, consideration : Util
 	var dot_instances := scoring_context.dot_instances
 	var combat_field_state := scoring_context.combat_field_state
 	
-	##TODO: Replace target count with valid_target_count and add an is_single boolean
+	##TODO: complete this list
 	
 	match consideration:
 		Utility.Consideration.MATCHING_SHIELD:
@@ -118,14 +122,11 @@ static func get_raw_score(scoring_context : ScoringContext, consideration : Util
 		Utility.Consideration.TOTAL_DOT_DEALT:
 			return _total_dot_dealt_score(actor, target, dot_instances)
 		Utility.Consideration.HIGH_DOT_COUNT:
-			## PLACEHOLDER
-			return _high_dot_count(target)
+			return _high_dot_count_score(target)
 		Utility.Consideration.HIGH_DOT_DAMAGE:
-			## PLACEHOLDER
-			return 0.0
+			return _high_dot_damage_score(target)
 		Utility.Consideration.DOT_EXIST:
-			## PLACEHOLDER
-			return 0.0
+			return _has_dot_score(target)
 		Utility.Consideration.COOLDOWN:
 			## PLACEHOLDER
 			return 0.0
@@ -205,48 +206,79 @@ static func _high_max_shield_value_score(target : Entity) -> float:
 	var ratio := target.get_total_max_shield() / maxf(target.max_hp, 1.0)
 	return _lerp_float(ratio, HIGH_MAX_SHIELD_RATIO_CAP)
 
-## Helper
-static func calculate_total_dot_damage(dot_instance : DoTInstance, potency : int, mastery : int) -> float:
-	var dot_type : DamageAndDoT.DoT = DamageAndDoT.get_dot(dot_instance.damage_type)
-	var duration : int = dot_instance.duration  # use your actual field name
+## This is archived as it computes the entire lifetime damage without discount, which is the same as setting HIGH_TOTAL_DOT_DISCOUNT_COEFFICIENT = 0
+#static func _calculate_total_dot_damage(dot_instance : DoTInstance, potency : int, mastery : int) -> float:
+	#var dot_type : DamageAndDoT.DoT = DamageAndDoT.get_dot(dot_instance.damage_type)
+	#var duration : int = dot_instance.duration  # use your actual field name
+	#
+	#if dot_type == DamageAndDoT.DoT.VOID:
+		#push_error("Void has special damage! Please use VoidInstance.get_void_damage(...)")
+		#return 0.0
+	#
+	#var coefs : PackedFloat32Array = DamageAndDoT.DOT_COEFFICIENTS.get(dot_type)
+	#var potency_coef : float = coefs[DamageAndDoT.Coefficient.DAMAGE_POTENCY]
+	#var mastery_coef : float = coefs[DamageAndDoT.Coefficient.DAMAGE_MASTERY]
+#
+	#var constant_base := dot_instance.base_damage + potency_coef * potency + mastery_coef * mastery
+	#var total := 0.0
+#
+	#if dot_instance is BurnInstance:
+		## Burn has instance-specific per-tick multipliers.
+		## Retain the original simulation for this case.
+		## The summation below is O(1), done by splitting the ramping sum from the constant max ramp sum
+		#var max_ramp_duration := DamageAndDoT.MAX_BURN_TIERS - 1
+		#var ramp_duration := mini(duration, max_ramp_duration)
+		#var ramp_float := float(ramp_duration)
+		#var base_tick := constant_base + duration
+		#
+		#var sum_indices := ramp_float * (ramp_float - 1.0) / 2.0
+		#var sum_squared_indices := ramp_float * (ramp_float - 1.0) * (2.0 * ramp_float - 1.0) / 6.0
+		#
+		#total = dot_instance.stacks * (
+			#ramp_float * base_tick
+			#- sum_indices
+			#+ 0.5 * (base_tick * sum_indices - sum_squared_indices)
+		#)
+		#
+		#if duration > max_ramp_duration:
+			#var remaining_duration := float(duration - max_ramp_duration)
+			#var remaining_damage := remaining_duration * base_tick - (float(duration - 1) * duration / 2.0 - 6.0)
+			#total += dot_instance.stacks * 3.0 * remaining_damage
+	#else:
+		#total = dot_instance.stacks * (
+			#duration * constant_base + duration * (duration + 1) / 2.0
+		#)
+#
+	#return total
+
+static func _calculate_discounted_dot_damage(dot_instance : DoTInstance, potency : int, mastery : int) -> float:
+	var dot_type := DamageAndDoT.get_dot(dot_instance.damage_type)
 	
 	if dot_type == DamageAndDoT.DoT.VOID:
-		push_error("Void has special damage! Please use VoidInstance.get_void_damage(...)")
+		push_error("Void requires special damage calculation!")
 		return 0.0
 	
-	var coefs : PackedFloat32Array = DamageAndDoT.DOT_COEFFICIENTS.get(dot_type)
-	var potency_coef : float = coefs[DamageAndDoT.Coefficient.DAMAGE_POTENCY]
-	var mastery_coef : float = coefs[DamageAndDoT.Coefficient.DAMAGE_MASTERY]
-
-	var constant_base := dot_instance.base_damage + potency_coef * potency + mastery_coef * mastery
 	var total := 0.0
-
-	if dot_instance is BurnInstance:
-		# Burn has instance-specific per-tick multipliers.
-		# Retain the original simulation for this case.
-		# The summation below is O(1), done by splitting the ramping sum from the constant max ramp sum
-		var max_ramp_duration := DamageAndDoT.MAX_BURN_TIERS - 1
-		var ramp_duration := mini(duration, max_ramp_duration)
-		var ramp_float := float(ramp_duration)
-		var base_tick := constant_base + duration
+	
+	for i in range(dot_instance.duration):
+		var remaining_duration := dot_instance.duration - i
 		
-		var sum_indices := ramp_float * (ramp_float - 1.0) / 2.0
-		var sum_squared_indices := ramp_float * (ramp_float - 1.0) * (2.0 * ramp_float - 1.0) / 6.0
-		
-		total = dot_instance.stacks * (
-			ramp_float * base_tick
-			- sum_indices
-			+ 0.5 * (base_tick * sum_indices - sum_squared_indices)
+		var damage := DamageAndDoT.calculate_dot_damage(
+			dot_type,
+			dot_instance.base_damage,
+			potency,
+			mastery,
+			dot_instance.stacks,
+			remaining_duration
 		)
 		
-		if duration > max_ramp_duration:
-			var remaining_duration := float(duration - max_ramp_duration)
-			var remaining_damage := remaining_duration * base_tick - (float(duration - 1) * duration / 2.0 - 6.0)
-			total += dot_instance.stacks * 3.0 * remaining_damage
-	else:
-		total = dot_instance.stacks * (
-			duration * constant_base + duration * (duration + 1) / 2.0
-		)
+		if dot_instance is BurnInstance:
+			damage *= BurnInstance.get_burn_theoretical_multiplier(i)
+		
+		## Harmonic in the form 1 / (1 + k * turns_elapsed)
+		var discount := 1.0 / (1.0 + HIGH_TOTAL_DOT_DISCOUNT_COEFFICIENT * i)
+		
+		total += damage * discount
 
 	return total
 
@@ -263,12 +295,12 @@ static func _total_dot_dealt_score(actor : Entity, target : Entity, dot_instance
 	var mastery := actor.get_mastery()
 	var ratio := 0.0
 	for dot_instance in dot_instances:
-		var damage := calculate_total_dot_damage(dot_instance, potency, mastery)
+		var damage := _calculate_discounted_dot_damage(dot_instance, potency, mastery)
 		ratio += damage / maxi(_get_effective_pool(target, dot_instance.damage_type), 1)
 	
 	return MIN_VAL + RANGE * clampf(ratio / HIGH_TOTAL_DOT_RATIO_CAP, 0.0, 1.0)
 
-static func _high_dot_count(target : Entity) -> float:
+static func _high_dot_count_score(target : Entity) -> float:
 	var target_dot_count := target.get_total_dot_instance_count()
 	if target_dot_count == 0:
 		return MIN_VAL
@@ -279,3 +311,26 @@ static func _high_dot_count(target : Entity) -> float:
 		score += 1.0 / (i + 1)
 
 	return minf(MIN_VAL + HIGH_DOT_COUNT_COEFFICIENT * score, MAX_VAL)
+
+static func _high_dot_damage_score(target : Entity) -> float:
+	## High if the tick damage of next turn is high, unlike TotalDoTDealt
+	## Mostly useful for Current which echoes a % of other DoT ticks 
+	
+	var active_dots := target.get_active_dots()
+	if active_dots.is_empty():
+		return MIN_VAL
+	
+	var ratio := 0.0
+	## Relative to their effective health
+	for dot_instance_array in active_dots:
+		var damage := dot_instance_array.calculate_total_damage()
+		var effective_hp := _get_effective_pool(
+			target, 
+			DamageAndDoT.get_damage_type(dot_instance_array.get_dot_type())
+		)
+		ratio += damage / maxi(effective_hp, 1)
+	
+	return MIN_VAL + RANGE * clampf(ratio / HIGH_DOT_DAMAGE_RATIO_CAP, 0.0, 1.0)
+
+static func _has_dot_score(target : Entity) -> float:
+	return _boolean(target.has_any_dot())

@@ -34,9 +34,9 @@ enum Consideration {
 	HIGH_WIND_SHEARED_COUNT = 8,
 	HIGH_ACTIVE_SHIELD_COUNT = 9,
 	HIGH_MAX_SHIELD_VALUE = 10,
-	TOTAL_DOT_DEALT = 11,		## Damage but DoT version, the potential
+	TOTAL_DOT_DEALT = 11,		## Damage but DoT version, the potential of this action
 	HIGH_DOT_COUNT = 12,		## Target has a lot of DoT instances
-	HIGH_DOT_DAMAGE = 13,		## Target has high total DoT damage received
+	HIGH_DOT_DAMAGE = 13,		## Target has high total DoT damage received, this is target-centric
 	DOT_EXIST = 14,				## Boolean
 	COOLDOWN = 15,
 	AP_COST = 16,

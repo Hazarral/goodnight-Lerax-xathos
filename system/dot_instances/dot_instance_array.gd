@@ -13,7 +13,8 @@ func has_dot() -> bool:
 
 func get_dot_type() -> DamageAndDoT.DoT:
 	## NOTE: Will crash if used on empty data
-	return data.front().damage_type
+	assert(not data.is_empty(), "Empty data in DoTInstanceArray!")
+	return DamageAndDoT.get_dot(data.front().damage_type)
 
 func get_instance_count() -> int:
 	return data.size()
@@ -23,7 +24,7 @@ func add_dot_instance(dot_instance : DoTInstance) -> void:
 		push_error("Void is not a valid DoTInstance, use VoidInstance instead")
 		return
 	
-	if not data.is_empty() and get_dot_type() != dot_instance.damage_type:
+	if not data.is_empty() and get_dot_type() != DamageAndDoT.get_dot(dot_instance.damage_type):
 		push_error("Cannot add DoTInstance of a different type to this DoTInstanceArray")
 		return
 		
