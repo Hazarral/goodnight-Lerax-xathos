@@ -158,6 +158,9 @@ func has_shield(damage_type : DamageAndDoT.DamageType) -> bool:
 	
 	return max_shields[damage_type] > 0
 
+func get_current_shield(index : int) -> int:
+	return current_shields[index]
+
 func is_any_shield_breached() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		if max_shields[i] > 0 and current_shields[i] <= 0:
@@ -651,6 +654,9 @@ func get_action_ap_cost(index : int) -> int:
 func get_action_cooldown_remaining(index : int) -> int:
 	return known_actions[index].get_cooldown_remaining()
 
+func get_action_base_cooldown(index : int) -> int:
+	return known_actions[index].get_cooldown()
+
 func is_castable(index : int) -> bool:
 	return known_actions[index].is_castable()
 
@@ -1097,6 +1103,9 @@ func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 
 func get_all_buff_and_debuffs() -> Array[BuffAndDebuff]:
 	return buff_and_debuff_manager.get_all_buff_and_debuffs().duplicate(true)
+
+func has_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> bool:
+	return buff_and_debuff_manager.has_buff_and_debuff(buff_and_debuff)
 
 func get_buff_and_debuff_summary() -> BuffAndDebuffSummary:
 	return buff_and_debuff_manager.get_summary()

@@ -23,27 +23,27 @@ enum Tag {
 }
 
 enum Consideration {
-	MATCHING_SHIELD = 0,		## Boolean
-	FROSTBITE_BOUNTY = 1,		## Additive
+	MATCHING_SHIELD = 0,			## Boolean
+	FROSTBITE_BOUNTY = 1,			## Additive
 	EARLY_COMBAT = 2,
-	HIGH_HP_TARGET = 3,			## Current HP
-	LOW_HP_TARGET = 4,			## Current HP
+	HIGH_HP_TARGET = 3,				## Current HP / Max HP
+	LOW_HP_TARGET = 4,				## Current HP / Max HP, asymmetric with HighHPTarget
 	LOW_HP_ALLY = 5,
 	LOW_HP_SELF = 6,
 	HIGH_TARGET_COUNT = 7,
 	HIGH_WIND_SHEARED_COUNT = 8,
 	HIGH_ACTIVE_SHIELD_COUNT = 9,
-	HIGH_MAX_SHIELD_VALUE = 10,
-	TOTAL_DOT_DEALT = 11,		## Damage but DoT version, the potential of this action
-	HIGH_DOT_COUNT = 12,		## Target has a lot of DoT instances
-	HIGH_DOT_DAMAGE = 13,		## Target has high total DoT damage received, this is target-centric
-	DOT_EXIST = 14,				## Boolean
-	COOLDOWN = 15,
-	AP_COST = 16,
-	MISSING_SELF_BUFF = 17,		## Boolean: Returns 1.0 if the caster DOES NOT have the buff, 0.0 if they already do.
-	MISSING_TARGET_DEBUFF = 18,	## Boolean: Returns 1.0 if the target DOES NOT have the debuff.
-	EXCESS_AP = 19,				## Additive/Curve: Scores higher the closer the caster is to their Max AP.
-	PREVENT_AP_OVERCAP = 20		## Additive, [0.0, 1.0] to reward some actions to burn AP, must be dynamic
+	HIGH_MAX_SHIELD_VALUE = 10,		## High total maximum shield compared to their max HP
+	TOTAL_DOT_DEALT = 11,			## Damage but DoT version, the potential of this action
+	HIGH_DOT_COUNT = 12,			## Target has a lot of DoT instances
+	HIGH_DOT_DAMAGE = 13,			## Target has high total DoT damage received, this is target-centric
+	DOT_EXIST = 14,					## Boolean
+	COOLDOWN = 15,					## This encourages the usage of higher base CD actions
+	AP_COST = 16,					## This prefers cheaper actions, as they leave more resources 
+	MISSING_SELF_BUFF = 17,			## Boolean: Returns 1.0 if the caster DOES NOT have the buff, 0.0 if they already do.
+	MISSING_TARGET_DEBUFF = 18,		## Boolean: Returns 1.0 if the target DOES NOT have the debuff.
+	EXCESS_AP = 19,					## Scores higher the closer the caster is to their Max AP.
+	PREVENT_AP_OVERCAP = 20			## Increases from -1.0 until AP spent = overflow, capped at 1.0 from there
 }
 
 ## Always attached to every action, regardless of tags

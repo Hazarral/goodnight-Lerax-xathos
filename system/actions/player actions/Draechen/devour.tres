@@ -15,7 +15,7 @@
 
 [sub_resource type="Resource" id="Resource_hiyvb"]
 script = ExtResource("3_fmiak")
-buff_and_debuff_name = "Demo Buff and Debuff"
+buff_and_debuff_name = &"DevourTest"
 duration = 2
 health_additive = 100.0
 health_additive_multiplicative = 0.5

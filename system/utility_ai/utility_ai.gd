@@ -395,6 +395,7 @@ static func _evaluate_action(actor : Entity, action_index : int, combat_field_st
 	
 	var damage_types := action.get_damage_types()
 	var dot_instances := action.get_dot_instances()
+	var buff_and_debuffs := action.get_buff_and_debuffs()
 	
 	if first_valid_targets.is_empty():
 		push_error("No valid target for action index %d of entity %s" % [action_index, actor.get_entity_name_with_suffix() if actor != null else "null"])
@@ -414,10 +415,13 @@ static func _evaluate_action(actor : Entity, action_index : int, combat_field_st
 		var scoring_context := ScoringContext.new(
 			actor,
 			target,
+			actor.get_action_ap_cost(action_index),
+			actor.get_action_base_cooldown(),
 			first_valid_targets.size(),
 			is_single_target,
 			damage_types,
 			dot_instances,
+			buff_and_debuffs,
 			combat_field_state
 		)
 		

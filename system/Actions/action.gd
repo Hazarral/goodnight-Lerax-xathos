@@ -70,7 +70,7 @@ func get_damage_types() -> Array[DamageAndDoT.DamageType]:
 	var result : Array[DamageAndDoT.DamageType] = []
 	for action_event in [single_target_action_event] + action_events:
 		if action_event == null:
-			push_error("Uncaught null action event in %s" % action_name)
+			push_error("get_damage_types(): Uncaught null action event in %s" % action_name)
 			continue
 		
 		if action_event is DamageActionEvent and not result.has(action_event.damage_type):
@@ -90,7 +90,7 @@ func get_dot_instances() -> Array[DoTInstance]:
 	
 	for action_event in [single_target_action_event] + action_events:
 		if action_event == null:
-			push_error("Uncaught null action event in %s" % action_name)
+			push_error("get_dot_instances(): Uncaught null action event in %s" % action_name)
 			continue
 		
 		if action_event is ApplyDoTActionEvent and not has_damage_type.call(action_event.damage_type):
@@ -104,6 +104,19 @@ func get_dot_instances() -> Array[DoTInstance]:
 					action_event.duration
 				)
 			)
+	
+	return result
+
+func get_buff_and_debuffs() -> Array[BuffAndDebuff]:
+	var result : Array[BuffAndDebuff] = []
+	
+	for action_event in [single_target_action_event] + action_events:
+		if action_event == null:
+			push_error("get_buff_and_debuffs(): Uncaught null action event in %s" % action_name)
+			continue
+		
+		if action_event is ApplyBuffAndDebuffActionEvent and not result.has(action_event.buff_and_debuff):
+			result.append(action_event.buff_and_debuff.duplicate_deep(Resource.DEEP_DUPLICATE_ALL))
 	
 	return result
 
