@@ -416,7 +416,7 @@ static func _evaluate_action(actor : Entity, action_index : int, combat_field_st
 			actor,
 			target,
 			actor.get_action_ap_cost(action_index),
-			actor.get_action_base_cooldown(),
+			actor.get_action_base_cooldown(action_index),
 			first_valid_targets.size(),
 			is_single_target,
 			damage_types,
