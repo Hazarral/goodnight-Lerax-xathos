@@ -134,65 +134,18 @@ static func _decision_delay() -> void:
 		await _get_tree().create_timer(AI_DECISION_DELAY).timeout
 
 static func _score_cmp(a : Choice, b : Choice) -> bool:
-	return a.score > b.score 
-
-## Archived
-#static func start_turn(actor : Entity) -> void:
-	### This is nothing but a big wx + b function
-	### Normal action will use Entity.cast_action(index : int), but end_turn will call with index = -1
-	###1. Evaluate the actions
-	###2. Score them, rank them
-	###3. Pick action, repeat till "End Turn" is chosen
-	### All of these call actor.cast_action(index)
-	#
-	#var entity_name := actor.get_entity_name_with_suffix()
-	#var known_actions_size := actor.get_known_actions_size()
-	#
-	#await _decision_delay()
-	#
-	#while true:
-		## Wait out anything still draining before reading the board
-		#while CombatSystem.is_processing_combat_event_queue:
-			#await EventBus.combat_event_queue_processing_finished
-		#
-		#if actor.current_state == Entity.State.DEAD:
-			#print("[UtilityAI] %s died mid AI loop" % entity_name)
-			#return
-		#
-		## Compute for every action
-		## Pick whatever is highest later, with some randomizing
-		## End turn just quits
-		#print("[%s] %s deciding" % [Time.get_ticks_msec(), entity_name])
-		#var combat_field_state := CombatFieldState.new()
-		#var choices : Array[Choice] = []
-		#choices.resize(known_actions_size + 1)
-		#for i in known_actions_size:
-			#choices[i] = get_choice(actor, i, combat_field_state)
-		#
-		### End turn action here
-		#choices[known_actions_size] = get_choice(actor, Entity.END_TURN_INDEX, combat_field_state)
-		#
-		### Find the best one
-		#choices.sort_custom(_score_cmp)
-		#print("%s's choices: %s" % [entity_name, choices])
-		#
-		#var chosen_choice : Choice = choices.front()
-		#
-		#if not is_finite(chosen_choice.score):
-			### Inject to force it
-			#chosen_choice.action_index = Entity.END_TURN_INDEX
-		#
-		#print("Chosen index: %d" % chosen_choice.action_index)
-		#
-		#await actor.cast_action(chosen_choice.action_index, chosen_choice.target)
-		#EventBus.force_refresh_turn_ui.emit()
-		#
-		#if chosen_choice.action_index == Entity.END_TURN_INDEX:
-			#print("[UtilityAI] %s ended their turn" % entity_name)
-			#return
-		#
-		#await _decision_delay()
+	## Higher score wins, if equal then lower action index wins
+	if a.score != b.score:
+		return a.score > b.score
 	
+	# Ensure end turn always loses
+	if a.action_index == Entity.END_TURN_INDEX:
+		return false
+	if b.action_index == Entity.END_TURN_INDEX:
+		return true
+	
+	return a.action_index < b.action_index 
+
 static func start_turn(actor : Entity) -> void:
 	var entity_name := actor.get_entity_name_with_suffix()
 		
@@ -251,118 +204,6 @@ static func start_turn(actor : Entity) -> void:
 		
 		await _decision_delay()
 
-## Archived
-#static func get_choice(actor : Entity, action_index : int, combat_field_state : CombatFieldState) -> Choice:
-	## Plan:
-	## Sometimes I forgot ## is for bigger comments, anyway
-	## - Get its targets
-	## - Compute Wx for each target, keep only the argmax
-	## - Compute Wx_max + biases, return that as the score along with the actually chosen target
-	#
-	#if not actor.is_castable(action_index):
-		#return Choice.new(actor, action_index, INVALID_SCORE, null)
-	#
-	#if action_index == Entity.END_TURN_INDEX:
-		### Special logic here to handle end turn scoring
-		#return Choice.new(actor, Entity.END_TURN_INDEX, INVALID_SCORE, null)
-	#
-	## Stuff
-	#var action := actor.get_action(action_index)
-	#var first_valid_targets := action.get_first_targets()
-	#var is_single_target := action.is_single_target()
-	#var considerations := actor.get_considerations(action_index)
-	#
-	## Bias here
-	#var utility_entries := action.utility.utility_entries
-	#var biases_breakdown : Array[AIProfile.BiasTerm] = actor.get_ai_profile().get_bias_breakdown(utility_entries)
-	#var biases := 0.0
-	#for term in biases_breakdown:
-		#biases += term.value
-	#
-	#var damage_types := action.get_damage_types()
-	#var dot_instances := action.get_dot_instances()
-	#
-	#if first_valid_targets.is_empty():
-		#push_error("No valid target for action index %d of entity %s" % [action_index, actor.get_entity_name_with_suffix() if actor != null else "null"])
-		#return Choice.new(actor, action_index, INVALID_SCORE, null)
-	#
-	##var best_target : Entity = null
-	##var best_score : float = INVALID_SCORE
-	##var best_consideration_terms : Array[Choice.ConsiderationTerm] = []
-	#
-	#var target_scores : Array[float] = []
-	#var target_consideration_terms : Array[Array] = []
-	#
-	#for target in first_valid_targets:
-		#var score := 0.0
-		#var consideration_terms : Array[Choice.ConsiderationTerm] = []
-		#
-		#var scoring_context := ScoringContext.new(
-			#actor,
-			#target,
-			#first_valid_targets.size(),
-			#is_single_target,
-			#damage_types,
-			#dot_instances,
-			#combat_field_state
-		#)
-		#
-		#for consideration in considerations:
-			#var weight := actor.get_ai_profile().get_weight(consideration)
-			#var raw_score := UtilityMath.get_raw_score(scoring_context, consideration)
-			#
-			#var term := Choice.ConsiderationTerm.new(
-				#consideration,
-				#weight,
-				#raw_score
-			#)
-			#
-			#consideration_terms.append(term)
-			#score += term.contribution # Already W * raw_score
-		#
-		#target_scores.append(score)
-		#target_consideration_terms.append(consideration_terms)
-	#
-	#var best_target : Entity = null
-	#var best_score := INVALID_SCORE
-	#var best_consideration_terms : Array[Choice.ConsiderationTerm] = []
-	#
-	#if is_single_target:
-		#var best_index := 0
-		#
-		#for i in range(target_scores.size()):
-			#if target_scores[i] > best_score:
-				#best_score = target_scores[i]
-				#best_index = i
-		#
-		#best_target = first_valid_targets[best_index]
-		#best_consideration_terms = target_consideration_terms[best_index]
-		#best_score += biases # Add bias exactly once here
-		#
-	#else:
-		#var sorted_indices := range(target_scores.size())
-		#sorted_indices.sort_custom(
-			#func(a : int, b : int) -> bool:
-				#return target_scores[a] > target_scores[b]
-		#)
-		#
-		#var total := 0.0
-		#for i in range(sorted_indices.size()):
-			#total += target_scores[sorted_indices[i]] / (i + 1)
-		#
-		#best_score = total + biases # Add bias exactly once here
-		#
-		## Representative target and breakdown: highest-scoring target
-		#var best_index : int = sorted_indices[0]
-		#best_target = first_valid_targets[best_index]
-		#best_consideration_terms = target_consideration_terms[best_index]
-	#
-	#var choice := Choice.new(actor, action_index, best_score, best_target)
-	#choice.consideration_terms = best_consideration_terms
-	#choice.bias_terms = biases_breakdown
-	#
-	#return choice
-	
 static func get_choice(actor : Entity, action_index : int, combat_field_state : CombatFieldState) -> Choice:
 	if not actor.is_castable(action_index):
 		return Choice.new(
