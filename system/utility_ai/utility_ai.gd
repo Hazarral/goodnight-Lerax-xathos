@@ -10,7 +10,7 @@ const RELATIVE_EPSILON := 1e-6
 
 const AI_DECISION_DELAY := 0.5
 
-const END_TURN_DISCOUNT : float = 0.8
+const END_TURN_DISCOUNT : float = 0.6
 
 static var _tree : SceneTree
 
@@ -41,8 +41,8 @@ class Choice:
 			output += "\n  Considerations:"
 			
 			for term in consideration_terms:
-				if is_zero_approx(term.contribution):
-					continue
+				#if is_zero_approx(term.contribution):
+					#continue
 				
 				output += "\n    %s: %.2f * %.2f = %.2f" % [
 					Utility.Consideration.keys()[term.consideration],

@@ -19,6 +19,6 @@ wind_shield = 400
 ice_shield = 600
 max_action_point = 4
 starting_action_point = 2
-action_point_regen_per_turn = 4
+action_point_regen_per_turn = 2
 innate_actions = Array[ExtResource("1_ixtw0")]([ExtResource("2_otu32"), ExtResource("3_otu32"), ExtResource("4_n28hk"), ExtResource("5_8fxwe")])
 metadata/_custom_type_script = "uid://nf30jicvf3ri"
