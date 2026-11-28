@@ -1,4 +1,5 @@
-extends Node
+class_name World
+extends Object
 
 enum Origin {
 	THE_PRIMORDIAL_VOID,		## Draechen actions
@@ -24,7 +25,7 @@ const GRIERFARD_NAME := "Grierfard"
 const ERANIAN_LEVOTICUS_NAME := "Eranian Levoticus"
 const FOLASSO_NAME := "Folasso"
 
-func get_origin_name(origin : Origin) -> String:
+static func get_origin_name(origin : Origin) -> String:
 	match origin:
 		Origin.THE_PRIMORDIAL_VOID:
 			return THE_PRIMORDIAL_VOID_NAME

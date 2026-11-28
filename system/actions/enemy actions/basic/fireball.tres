@@ -1,7 +1,6 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://g0gfyafsh524"]
 
 [ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_annsb"]
-[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_qr8yx"]
 [ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/actions/apply_dot_action_event.gd" id="3_upj74"]
 [ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="4_ea6cg"]
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="5_fu0l8"]
@@ -11,6 +10,9 @@
 [ext_resource type="Script" uid="uid://c2vel0thkoyid" path="res://system/ui/description_segments/comma_segment.gd" id="9_0m4g2"]
 [ext_resource type="Script" uid="uid://boalnkb0mp4cw" path="res://system/ui/description_segments/dot_segment.gd" id="10_oeuru"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="11_75vsp"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="11_apo2y"]
+[ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="12_w0syi"]
+[ext_resource type="Script" uid="uid://dodttldcqs87q" path="res://system/utility_ai/utility_entry.gd" id="13_w0syi"]
 
 [sub_resource type="Resource" id="Resource_unris"]
 script = ExtResource("3_upj74")
@@ -66,14 +68,35 @@ script = ExtResource("5_fu0l8")
 text = "to the target hit."
 metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 
-[sub_resource type="Resource" id="Resource_577f5"]
-script = ExtResource("2_qr8yx")
+[sub_resource type="Resource" id="Resource_igpus"]
+script = ExtResource("11_apo2y")
 amount = 50
 potency_scaling = 2.0
 mastery_scaling = 1.0
 target_faction = 2
 target_mode = 0
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
+
+[sub_resource type="Resource" id="Resource_w0syi"]
+script = ExtResource("13_w0syi")
+tag = 2
+target_faction = 2
+
+[sub_resource type="Resource" id="Resource_vxc3i"]
+script = ExtResource("13_w0syi")
+target_faction = 2
+
+[sub_resource type="Resource" id="Resource_to5f3"]
+script = ExtResource("13_w0syi")
+tag = 4
+target_faction = 2
+target_mode = 4
+
+[sub_resource type="Resource" id="Resource_g3733"]
+script = ExtResource("12_w0syi")
+utility_entries = Array[ExtResource("13_w0syi")]([SubResource("Resource_w0syi"), SubResource("Resource_vxc3i"), SubResource("Resource_to5f3")])
+considerations = Array[int]([15, 16, 19, 20, 7, 0, 1, 4, 2, 3, 11])
+metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
 
 [resource]
 script = ExtResource("11_75vsp")
@@ -82,6 +105,7 @@ action_name = "Fireball"
 action_point_cost = 2
 cooldown = 3
 description_segments = Array[ExtResource("4_ea6cg")]([SubResource("Resource_upj3k"), SubResource("Resource_tkost"), SubResource("Resource_ebnqq"), SubResource("Resource_krjl2"), SubResource("Resource_r80vl"), SubResource("Resource_nqmr1"), SubResource("Resource_wjrv1"), SubResource("Resource_vgkxf"), SubResource("Resource_lmjs1")])
-single_target_action_event = SubResource("Resource_577f5")
+single_target_action_event = SubResource("Resource_igpus")
 action_events = Array[ExtResource("1_annsb")]([SubResource("Resource_unris")])
+utility = SubResource("Resource_g3733")
 metadata/_custom_type_script = "uid://doysxg78oub0w"

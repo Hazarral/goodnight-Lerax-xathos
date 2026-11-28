@@ -1,0 +1,175 @@
+@tool
+class_name Action
+extends Resource
+
+## What world this came from
+@export var origin : World.Origin
+
+## Name of this action, e.g. "Fire Breath"
+@export var action_name : String
+
+## Cost to cast this action, in AP
+@export var action_point_cost : int
+
+## Cooldown, in turns
+@export var cooldown : int
+
+## Description: what it does
+@export var description_segments : Array[DescriptionSegment]
+
+## First action event which is single target manually picked. This is optional
+@export var single_target_action_event : ActionEvent
+
+## List of modular action this will perform in order, all ActionEvent have the same targeting specification as this Action
+@export var action_events : Array[ActionEvent]
+
+## Tags and considerations, used for AI mostly
+@export var utility : Utility
+
+@export_tool_button("Auto-populate Tags")
+var auto_tag_button := _auto_assign_tags
+
+#func _init() -> void:
+	#assert(action_events.all(func(action_event): return action_event != null),
+		#"ACTION ERROR: Action contains a null event.")
+	#assert(not action_events.is_empty(), "ACTION ERROR: empty action events list, cannot get first targets")
+
+func cast(source : Entity, preselected_target : Entity = null) -> bool:	
+	var last_targets : Array[Entity] = []
+	
+	if single_target_action_event != null:
+		var dynamic_event : Variant = single_target_action_event
+		
+		# Try to apply the preselected target, if not, set to null so it does not pollute latter casts
+		single_target_action_event.preselected_target = preselected_target
+		var success : bool = await dynamic_event.resolve(source, last_targets)
+		dynamic_event.preselected_target = null
+		
+		if not success:
+			return false
+		last_targets = single_target_action_event.get_last_resolved_targets()
+	
+	for action_event in action_events:
+		var dynamic_event : Variant = action_event
+		await dynamic_event.resolve(source, last_targets)
+		last_targets = action_event.get_last_resolved_targets()
+	
+	return true
+
+func get_first_targets() -> Array[Entity]:
+	if single_target_action_event != null:
+		return CombatSystem.get_valid_targets(
+			single_target_action_event.target_faction, 
+			single_target_action_event.target_state
+		)
+	
+	var front_action_event : ActionEvent = action_events.front()
+	return CombatSystem.get_valid_targets(front_action_event.target_faction, front_action_event.target_state)
+
+func get_damage_types() -> Array[DamageAndDoT.DamageType]:
+	var result : Array[DamageAndDoT.DamageType] = []
+	for action_event in [single_target_action_event] + action_events:
+		if action_event == null:
+			push_error("get_damage_types(): Uncaught null action event in %s" % action_name)
+			continue
+		
+		if action_event is DamageActionEvent and not result.has(action_event.damage_type):
+			result.append(action_event.damage_type)
+	
+	return result
+
+func get_dot_instances() -> Array[DoTInstance]:
+	var result : Array[DoTInstance] = []
+	
+	var has_damage_type := func(damage_type : DamageAndDoT.DamageType):
+		for dot_instance in result:
+			if dot_instance.damage_type == damage_type:
+				return true
+		
+		return false
+	
+	for action_event in [single_target_action_event] + action_events:
+		if action_event == null:
+			push_error("get_dot_instances(): Uncaught null action event in %s" % action_name)
+			continue
+		
+		if action_event is ApplyDoTActionEvent and not has_damage_type.call(action_event.damage_type):
+			result.append(
+				DoTInstance.new(
+					null, 
+					null, 
+					action_event.damage_type, 
+					action_event.base_damage, 
+					action_event.stacks, 
+					action_event.duration
+				)
+			)
+	
+	return result
+
+func get_buff_and_debuffs() -> Array[BuffAndDebuff]:
+	var result : Array[BuffAndDebuff] = []
+	
+	for action_event in [single_target_action_event] + action_events:
+		if action_event == null:
+			push_error("get_buff_and_debuffs(): Uncaught null action event in %s" % action_name)
+			continue
+		
+		if action_event is ApplyBuffAndDebuffActionEvent and not result.has(action_event.buff_and_debuff):
+			result.append(action_event.buff_and_debuff.duplicate_deep(Resource.DEEP_DUPLICATE_ALL))
+	
+	return result
+
+func is_single_target() -> bool:
+	return single_target_action_event != null
+
+func get_considerations() -> Array[Utility.Consideration]:
+	return utility.considerations
+
+func _auto_assign_tags() -> void:
+	if utility == null:
+		push_warning("Cannot auto-assign tags: 'utility' subresource is null.")
+		return
+	
+	var entries : Array[UtilityEntry] = []
+	var seen : Dictionary[Vector3i, bool] = {}
+	var prev_faction := ActionEvent.TargetFaction.ALL
+
+	for action_event : ActionEvent in [single_target_action_event] + action_events:
+		if action_event == null:
+			continue
+		
+		var faction := action_event.target_faction
+		var mode := action_event.target_mode
+		
+		match action_event.target_mode:
+			ActionEvent.TargetMode.INHERIT:
+				faction = prev_faction
+		
+		prev_faction = faction
+		
+		var count_tag := -1
+		match mode:
+			ActionEvent.TargetMode.ALL_INDEPENDENT_FILTER:
+				count_tag = Utility.Tag.MULTI_TARGET
+			ActionEvent.TargetMode.SINGLE_INDEPENDENT_FILTER, ActionEvent.TargetMode.SELF:
+				count_tag = Utility.Tag.SINGLE_TARGET
+		
+		var tags : Array = action_event.get_tags()
+		if count_tag != -1:
+			tags.append(count_tag)
+		
+		for tag in tags:
+			if tag == Utility.Tag.SINGLE_TARGET or tag == Utility.Tag.MULTI_TARGET:
+				if tag != count_tag:
+					continue
+			var key := Vector3i(tag, faction, mode)
+			if seen.has(key):
+				continue
+			seen[key] = true
+			entries.append(UtilityEntry.create(tag, faction, mode))
+	
+	utility.utility_entries = entries
+	utility.notify_property_list_changed()
+	notify_property_list_changed()
+	print("Successfully auto-filled %d entries" % entries.size())

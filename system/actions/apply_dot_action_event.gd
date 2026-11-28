@@ -1,3 +1,4 @@
+@tool
 class_name ApplyDoTActionEvent
 extends ActionEvent
 
@@ -27,3 +28,25 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 		entity.apply_dot(dot_instance)
 	
 	return true
+
+func get_tags() -> Array[Utility.Tag]:
+	var tag := Utility.Tag.APPLY_BURN
+	match damage_type:
+		DamageAndDoT.DamageType.FIRE:
+			tag = Utility.Tag.APPLY_BURN
+		DamageAndDoT.DamageType.WATER:
+			tag = Utility.Tag.APPLY_CURRENT
+		DamageAndDoT.DamageType.WIND:
+			tag = Utility.Tag.APPLY_WIND_SHEAR
+		DamageAndDoT.DamageType.POISON:
+			tag = Utility.Tag.APPLY_POISON
+		DamageAndDoT.DamageType.LIGHTNING:
+			tag = Utility.Tag.APPLY_SHOCK
+		DamageAndDoT.DamageType.PHYSICAL:
+			tag = Utility.Tag.APPLY_BLEED
+		DamageAndDoT.DamageType.EARTH:
+			tag = Utility.Tag.APPLY_CRUMBLE
+		DamageAndDoT.DamageType.ICE:
+			tag = Utility.Tag.APPLY_FROSTBITE
+		
+	return super() + [tag]

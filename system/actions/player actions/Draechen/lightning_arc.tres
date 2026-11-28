@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://d2s8bfik1dkqt"]
 
 [ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_xayqt"]
-[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_frtsv"]
-[ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/actions/apply_dot_action_event.gd" id="3_asglu"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_cu8xn"]
+[ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/actions/apply_dot_action_event.gd" id="3_6u6eg"]
 [ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="4_5ppg8"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="4_jtpdm"]
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="5_hlgls"]
@@ -11,9 +11,11 @@
 [ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="8_1ntcd"]
 [ext_resource type="Script" uid="uid://c2vel0thkoyid" path="res://system/ui/description_segments/comma_segment.gd" id="9_0v3f2"]
 [ext_resource type="Script" uid="uid://boalnkb0mp4cw" path="res://system/ui/description_segments/dot_segment.gd" id="10_rsvlh"]
+[ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="12_14o8c"]
+[ext_resource type="Script" uid="uid://dodttldcqs87q" path="res://system/utility_ai/utility_entry.gd" id="13_6u6eg"]
 
-[sub_resource type="Resource" id="Resource_t76v7"]
-script = ExtResource("2_frtsv")
+[sub_resource type="Resource" id="Resource_vipot"]
+script = ExtResource("2_cu8xn")
 damage_type = 4
 amount = 32
 potency_scaling = 0.8
@@ -21,8 +23,8 @@ mastery_scaling = 0.4
 target_faction = 1
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 
-[sub_resource type="Resource" id="Resource_he07f"]
-script = ExtResource("3_asglu")
+[sub_resource type="Resource" id="Resource_mn08h"]
+script = ExtResource("3_6u6eg")
 damage_type = 4
 base_damage = 14.0
 stacks = 3
@@ -80,11 +82,35 @@ script = ExtResource("5_hlgls")
 text = "to all targets hit."
 metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 
+[sub_resource type="Resource" id="Resource_14o8c"]
+script = ExtResource("13_6u6eg")
+tag = 3
+target_faction = 1
+target_mode = 1
+
+[sub_resource type="Resource" id="Resource_pyaug"]
+script = ExtResource("13_6u6eg")
+target_faction = 1
+target_mode = 1
+
+[sub_resource type="Resource" id="Resource_4y1eh"]
+script = ExtResource("13_6u6eg")
+tag = 8
+target_faction = 1
+target_mode = 4
+
+[sub_resource type="Resource" id="Resource_e5y7d"]
+script = ExtResource("12_14o8c")
+utility_entries = Array[ExtResource("13_6u6eg")]([SubResource("Resource_14o8c"), SubResource("Resource_pyaug"), SubResource("Resource_4y1eh")])
+considerations = Array[int]([15, 16, 19, 20, 7, 0, 1, 4])
+metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
+
 [resource]
 script = ExtResource("4_jtpdm")
 action_name = "Lightning Arc"
 action_point_cost = 3
 cooldown = 2
 description_segments = Array[ExtResource("4_5ppg8")]([SubResource("Resource_qbsgc"), SubResource("Resource_eb04t"), SubResource("Resource_q7t3h"), SubResource("Resource_sl2ex"), SubResource("Resource_j4emv"), SubResource("Resource_tijl1"), SubResource("Resource_ikttm"), SubResource("Resource_cfjnu"), SubResource("Resource_x2le7")])
-action_events = Array[ExtResource("1_xayqt")]([SubResource("Resource_t76v7"), SubResource("Resource_he07f")])
+action_events = Array[ExtResource("1_xayqt")]([SubResource("Resource_vipot"), SubResource("Resource_mn08h")])
+utility = SubResource("Resource_e5y7d")
 metadata/_custom_type_script = "uid://doysxg78oub0w"

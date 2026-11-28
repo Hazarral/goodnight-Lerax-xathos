@@ -1,8 +1,8 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://blnmhbujyq2dn"]
 
 [ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_cflqy"]
-[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_0mgk2"]
-[ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/actions/apply_dot_action_event.gd" id="3_xvhb5"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_5wxuc"]
+[ext_resource type="Script" uid="uid://dl0omykhmcmxj" path="res://system/actions/apply_dot_action_event.gd" id="3_2euj0"]
 [ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="4_fcdlh"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="4_ohlxy"]
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="5_4bwaw"]
@@ -11,9 +11,11 @@
 [ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="7_dcutq"]
 [ext_resource type="Script" uid="uid://c2vel0thkoyid" path="res://system/ui/description_segments/comma_segment.gd" id="8_nn27x"]
 [ext_resource type="Script" uid="uid://boalnkb0mp4cw" path="res://system/ui/description_segments/dot_segment.gd" id="9_qe0t2"]
+[ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="12_2euj0"]
+[ext_resource type="Script" uid="uid://dodttldcqs87q" path="res://system/utility_ai/utility_entry.gd" id="13_jtw52"]
 
-[sub_resource type="Resource" id="Resource_nn27x"]
-script = ExtResource("2_0mgk2")
+[sub_resource type="Resource" id="Resource_gxutt"]
+script = ExtResource("2_5wxuc")
 damage_type = 7
 amount = 26
 potency_scaling = 0.6
@@ -21,8 +23,8 @@ mastery_scaling = 0.6
 target_faction = 1
 metadata/_custom_type_script = "uid://bynvgjn3rbg0e"
 
-[sub_resource type="Resource" id="Resource_dcutq"]
-script = ExtResource("3_xvhb5")
+[sub_resource type="Resource" id="Resource_eke2l"]
+script = ExtResource("3_2euj0")
 damage_type = 7
 base_damage = 12.0
 stacks = 4
@@ -80,11 +82,35 @@ script = ExtResource("5_4bwaw")
 text = "to all targets hit"
 metadata/_custom_type_script = "uid://dyb2pec6aaxji"
 
+[sub_resource type="Resource" id="Resource_jtw52"]
+script = ExtResource("13_jtw52")
+tag = 3
+target_faction = 1
+target_mode = 1
+
+[sub_resource type="Resource" id="Resource_t3n85"]
+script = ExtResource("13_jtw52")
+target_faction = 1
+target_mode = 1
+
+[sub_resource type="Resource" id="Resource_n8x5o"]
+script = ExtResource("13_jtw52")
+tag = 11
+target_faction = 1
+target_mode = 4
+
+[sub_resource type="Resource" id="Resource_apo2y"]
+script = ExtResource("12_2euj0")
+utility_entries = Array[ExtResource("13_jtw52")]([SubResource("Resource_jtw52"), SubResource("Resource_t3n85"), SubResource("Resource_n8x5o")])
+considerations = Array[int]([15, 16, 19, 20, 7, 0, 1, 4, 10])
+metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
+
 [resource]
 script = ExtResource("4_ohlxy")
 action_name = "Blizzard"
 action_point_cost = 3
 cooldown = 2
 description_segments = Array[ExtResource("4_fcdlh")]([SubResource("Resource_w284u"), SubResource("Resource_q6v30"), SubResource("Resource_0jytx"), SubResource("Resource_qe0t2"), SubResource("Resource_c84j4"), SubResource("Resource_e3b01"), SubResource("Resource_p3ngf"), SubResource("Resource_jja7e"), SubResource("Resource_pugqy")])
-action_events = Array[ExtResource("1_cflqy")]([SubResource("Resource_nn27x"), SubResource("Resource_dcutq")])
+action_events = Array[ExtResource("1_cflqy")]([SubResource("Resource_gxutt"), SubResource("Resource_eke2l")])
+utility = SubResource("Resource_apo2y")
 metadata/_custom_type_script = "uid://doysxg78oub0w"

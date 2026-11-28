@@ -1,7 +1,7 @@
 class_name BuffAndDebuff
 extends Resource
 
-@export var buff_and_debuff_name : String = ""
+@export var buff_and_debuff_name : StringName = ""
 
 @export_group("Duration and permanence")
 @export var duration : int = 0
@@ -167,3 +167,6 @@ func has_final_damage_dealt_modifications() -> bool:
 
 func has_final_damage_received_modifications() -> bool:
 	return final_damage_received_true_multiplicative != 0.0
+
+func is_same_buff_and_debuff(other : BuffAndDebuff) -> bool:
+	return buff_and_debuff_name == other.buff_and_debuff_name

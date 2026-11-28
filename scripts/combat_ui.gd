@@ -280,6 +280,7 @@ func _on_action_pressed(entity : Entity, index : int) -> void:
 func _on_target_requested(_event : ActionEvent, target_faction : ActionEvent.TargetFaction, target_state : ActionEvent.TargetState) -> void:
 	is_awaiting_target = true
 	valid_target_pool = CombatSystem.get_valid_targets(target_faction, target_state)
+	
 	_highlight_targetable_cards(valid_target_pool)
 	targeting_phase_layer.fade_gray(true)
 	targeting_phase_bar.slide(true)

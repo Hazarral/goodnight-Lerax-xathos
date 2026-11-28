@@ -1,4 +1,5 @@
-extends Node
+class_name DamageAndDoT
+extends Object
 
 enum DamageType {
 	FIRE = 0,
@@ -116,13 +117,13 @@ const CRUMBLE_SPLASH_POTENCY_COEFFICIENT := 0.35
 const FROSTBITE_NON_ICE_SHIELD_BREAK_COEFFICIENT := 0.5
 const FROSTBITE_ICE_SHIELD_BREAK_COEFFICIENT := 1.0
 
-func get_dot(damage_type : DamageType) -> DoT:
+static func get_dot(damage_type : DamageType) -> DoT:
 	return damage_type as DoT
 
-func get_damage_type(damage_over_time_type : DoT) -> DamageType:
+static func get_damage_type(damage_over_time_type : DoT) -> DamageType:
 	return damage_over_time_type as DamageType
 
-func get_damage_type_name(damage_type : DamageType) -> String:
+static func get_damage_type_name(damage_type : DamageType) -> String:
 	match damage_type:
 		DamageType.FIRE: return FIRE
 		DamageType.WATER: return WATER
@@ -135,7 +136,7 @@ func get_damage_type_name(damage_type : DamageType) -> String:
 		DamageType.VOID: return VOID
 	return ""
 
-func get_damage_over_time_name(damage_over_time : DoT) -> String:
+static func get_damage_over_time_name(damage_over_time : DoT) -> String:
 	match damage_over_time:
 		DoT.BURN: return BURN
 		DoT.CURRENT: return CURRENT
@@ -148,7 +149,7 @@ func get_damage_over_time_name(damage_over_time : DoT) -> String:
 		DoT.VOID: return VOID
 	return ""
 
-func get_damage_color_hex(damage_type : DamageType) -> String:
+static func get_damage_color_hex(damage_type : DamageType) -> String:
 	match damage_type:
 		DamageType.FIRE: return FIRE_COLOR_HEX
 		DamageType.WATER: return WATER_COLOR_HEX
@@ -162,7 +163,7 @@ func get_damage_color_hex(damage_type : DamageType) -> String:
 	return ""
 
 ## CALCULATE DAMAGE
-func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, mastery : int, stacks : int, duration : int) -> float:
+static func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, mastery : int, stacks : int, duration : int) -> float:
 	if dot_type == DoT.VOID:
 		push_error("Void has special damage! Please use VoidInstance.get_void_damage(...)")
 		return 0.0
@@ -176,7 +177,7 @@ func calculate_dot_damage(dot_type : DoT, base_damage : float, potency : int, ma
 	return raw_damage
 
 ## CALCULATE ATTRITION
-func calculate_dot_attrition(dot_type : DoT, base_damage : float, potency : int, mastery : int, stacks : int, duration : int) -> float:
+static func calculate_dot_attrition(dot_type : DoT, base_damage : float, potency : int, mastery : int, stacks : int, duration : int) -> float:
 	if dot_type == DoT.VOID:
 		push_error("Void has no Attrition!")
 		return 0.0
@@ -190,49 +191,49 @@ func calculate_dot_attrition(dot_type : DoT, base_damage : float, potency : int,
 	return raw_attrition
 
 ## CURRENT
-func get_current_echo_effectiveness(mastery : int, use_percent : bool = false) -> float:
+static func get_current_echo_effectiveness(mastery : int, use_percent : bool = false) -> float:
 	var value := (CURRENT_BASE_ECHO_EFFECTIVENESS + CURRENT_ECHO_MASTERY_COEFFICIENT * mastery)
 	if use_percent:
 		return value
 	
 	return value / 100.0	
 
-func get_current_echo_damage(total_damage : float, mastery : int) -> float:
+static func get_current_echo_damage(total_damage : float, mastery : int) -> float:
 	return total_damage * get_current_echo_effectiveness(mastery)
 
 ## WIND SHEAR
-func get_wind_shear_spread_target_condition(source : Entity, target : Entity) -> bool:
+static func get_wind_shear_spread_target_condition(source : Entity, target : Entity) -> bool:
 	return target.has_dot(DoT.WIND_SHEAR) and target != source
 
-func get_wind_shear_special_effect_targets(source : Entity, is_player_faction : bool) -> Array[Entity]:
+static func get_wind_shear_special_effect_targets(source : Entity, is_player_faction : bool) -> Array[Entity]:
 	var faction := ActionEvent.TargetFaction.PLAYER if is_player_faction else ActionEvent.TargetFaction.ENEMY
 	var valid_targets = CombatSystem.get_valid_targets(faction, ActionEvent.TargetState.ALL).filter(
 		func (entity : Entity) -> bool: return DamageAndDoT.get_wind_shear_spread_target_condition(source, entity)
 	)
 	return valid_targets
 
-func get_wind_shear_spread_effectiveess(mastery : int, use_percent : bool = false) -> float:
+static func get_wind_shear_spread_effectiveess(mastery : int, use_percent : bool = false) -> float:
 	var value := (WIND_SHEAR_BASE_SPREAD_EFFECTIVENESS + WIND_SHEAR_SPREAD_MASTERY_COEFFICIENT * mastery)
 	if use_percent:
 		return value
 		
 	return value / 100.0
 
-func get_wind_shear_spread_damage(total_damage : float, mastery : int) -> float:
+static func get_wind_shear_spread_damage(total_damage : float, mastery : int) -> float:
 	return total_damage * get_wind_shear_spread_effectiveess(mastery)
 
-func get_wind_shear_blast_effectiveness(potency : int, afflicted_count : int, use_percent : bool = false) -> float:
+static func get_wind_shear_blast_effectiveness(potency : int, afflicted_count : int, use_percent : bool = false) -> float:
 	var value := WIND_SHEAR_BASE_BLAST_EFFECTIVENESS + (WIND_SHEAR_BLAST_BASE_ADDITIONAL_TARGET_EFFECTIVENESS + WIND_SHEAR_BLAST_ADDITIONAL_TARGET_POTENCY_COEFFICIENT * potency) * (afflicted_count)
 	if use_percent:
 		return value
 	
 	return value / 100.0
 
-func get_wind_shear_blast_damage(total_wind_shear_damage : float, potency : int, afflicted_count : int) -> float:
+static func get_wind_shear_blast_damage(total_wind_shear_damage : float, potency : int, afflicted_count : int) -> float:
 	return total_wind_shear_damage * get_wind_shear_blast_effectiveness(potency, afflicted_count)
 
 ## SHOCK
-func get_shock_damage_on_action_effectiveness(potency : int, use_percent : bool = false) -> float:
+static func get_shock_damage_on_action_effectiveness(potency : int, use_percent : bool = false) -> float:
 	var value := SHOCK_BASE_DAMAGE_ON_ACTION_EFFECTIVENESS + SHOCK_DAMAGE_ON_ACTION_POTENCY_COEFFICIENT * potency
 	print("Shock Convulsion effectiveness = %.2f" % value)
 	if use_percent:
@@ -240,29 +241,29 @@ func get_shock_damage_on_action_effectiveness(potency : int, use_percent : bool 
 	
 	return value / 100.0
 
-func get_shock_damage_on_action(total_shock_damage : float, potency : int, action_point_spent : int) -> float:
+static func get_shock_damage_on_action(total_shock_damage : float, potency : int, action_point_spent : int) -> float:
 	var multiplier := minf(SHOCK_MAX_AP_SCALING, action_point_spent)
 	return total_shock_damage * get_shock_damage_on_action_effectiveness(potency) * multiplier
 
 ## POISON
-func get_poison_attrition_explosion_effectiveness(mastery : int, use_percent : bool = false) -> float:
+static func get_poison_attrition_explosion_effectiveness(mastery : int, use_percent : bool = false) -> float:
 	var value := POISON_BASE_ATTRITION_EXPLOSION_EFFECTIVENESS + POISON_ATTRITION_EXPLOSION_MASTERY_COEFFICIENT * mastery
 	if use_percent:
 		return value
 	
 	return value / 100.0 
 
-func get_poison_attrition_explosion_damage(total_attrition : int, mastery : int) -> float:
+static func get_poison_attrition_explosion_damage(total_attrition : int, mastery : int) -> float:
 	return total_attrition * get_poison_attrition_explosion_effectiveness(mastery)
 
-func get_poison_special_effect_targets(source : Entity, is_player_faction : bool) -> Array[Entity]:
+static func get_poison_special_effect_targets(source : Entity, is_player_faction : bool) -> Array[Entity]:
 	var faction := ActionEvent.TargetFaction.PLAYER if is_player_faction else ActionEvent.TargetFaction.ENEMY
 	var valid_targets = CombatSystem.get_valid_targets(faction, ActionEvent.TargetState.ALL).filter(
 		func (entity : Entity) -> bool: return entity != source
 	)
 	return valid_targets
 
-func transfer_poison_damage_over_time(source : Entity, target : Entity) -> void:
+static func transfer_poison_damage_over_time(source : Entity, target : Entity) -> void:
 	## NOTE: This must only be called after checking that the source has poison
 	for poison_instance : DoTInstance in source.active_dots[DamageAndDoT.DoT.POISON].data:
 		target.apply_dot(poison_instance)
@@ -270,31 +271,31 @@ func transfer_poison_damage_over_time(source : Entity, target : Entity) -> void:
 	source.active_dots[DamageAndDoT.DoT.POISON].clear_all_instances()
 
 ## BLEED
-func get_bleed_healing_reduction(mastery : int, use_percent : bool = false) -> float:
+static func get_bleed_healing_reduction(mastery : int, use_percent : bool = false) -> float:
 	var value := (BLEED_HEALING_REDUCTION_MASTERY_COEFFICIENT * mastery)
 	if use_percent:
 		return value
 	
 	return value / 100.0
 
-func get_bleed_anti_heal_flat_damage_bonus(potency : int, stacks : int) -> float:
+static func get_bleed_anti_heal_flat_damage_bonus(potency : int, stacks : int) -> float:
 	return BLEED_BONUS_FLAT_DAMAGE_POTENCY_COEFFICIENT * potency + BLEED_BONUS_FLAT_DAMAGE_STACKS_COEFFICIENT * stacks
 
-func get_bleed_anti_heal_damage(total_bleed_damage : float, total_healing : float, mastery : int, potency : int, stacks : int) -> float:
+static func get_bleed_anti_heal_damage(total_bleed_damage : float, total_healing : float, mastery : int, potency : int, stacks : int) -> float:
 	return minf(
 		BLEED_RUPTURE_DAMAGE_CAP_COEFFICIENT * total_bleed_damage, 
 		total_healing * get_bleed_healing_reduction(mastery) + get_bleed_anti_heal_flat_damage_bonus(potency, stacks)
 	)
 
 ## CRUMBLE
-func get_crumble_splash_effectiveness(potency : int, use_percent : bool = false) -> float:
+static func get_crumble_splash_effectiveness(potency : int, use_percent : bool = false) -> float:
 	var value := (CRUMBLE_BASE_SPLASH + CRUMBLE_SPLASH_POTENCY_COEFFICIENT * potency)
 	if use_percent:
 		return value
 	
 	return value / 100.0
 
-func get_crumble_splash_damage(total_damage : float, potency : int) -> float:
+static func get_crumble_splash_damage(total_damage : float, potency : int) -> float:
 	return total_damage * get_crumble_splash_effectiveness(potency)
 
 ## VOID
@@ -313,10 +314,10 @@ const ENEMY_BASE_DAMAGE := 10
 const ENEMY_POTENCY_COEFFICIENT_SCALING := 10.0
 const ENEMY_MASTERY_COEFFICIENT_SCALING := 10.0
 
-func get_void_escalation(turns_elapsed : int) -> float:
+static func get_void_escalation(turns_elapsed : int) -> float:
 	return pow(ESCALATION_MULTIPLIER_BASE, turns_elapsed)
 
-func get_void_damage_to_enemy(dragon_max_hp : int, dragon_total_max_shield : int, potency : int, mastery: int, total_target_attrition : int, stacks : int, turns_elapsed : int) -> int:	
+static func get_void_damage_to_enemy(dragon_max_hp : int, dragon_total_max_shield : int, potency : int, mastery: int, total_target_attrition : int, stacks : int, turns_elapsed : int) -> int:	
 	return ceili(
 		(
 			MAX_HP_SCALING * dragon_max_hp + 
@@ -327,7 +328,7 @@ func get_void_damage_to_enemy(dragon_max_hp : int, dragon_total_max_shield : int
 		) * stacks * get_void_escalation(turns_elapsed)
 	)
 
-func get_void_damage_to_player(highest_enemy_potency : int, highest_enemy_mastery : int, total_target_attrition : int, stacks : int, turns_elapsed : int) -> int:
+static func get_void_damage_to_player(highest_enemy_potency : int, highest_enemy_mastery : int, total_target_attrition : int, stacks : int, turns_elapsed : int) -> int:
 	return ceili(
 		(
 			ENEMY_BASE_DAMAGE +

@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="AIPersonality" format=3 uid="uid://bg34dinktgbvu"]
+
+[ext_resource type="Script" uid="uid://drfr6qp8erlfl" path="res://system/utility_ai/ai_profile.gd" id="1_q7gc0"]
+
+[resource]
+script = ExtResource("1_q7gc0")
+metadata/_custom_type_script = "uid://drfr6qp8erlfl"

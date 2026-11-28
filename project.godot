@@ -17,16 +17,12 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-DamageAndDoT="*uid://deqp7rc5oau0"
 CombatSystem="*uid://d0rwm4hwxrgxw"
 EventBus="*uid://cdtotopjaj48a"
 ActionTooltip="*uid://ug4xllp6tnm6"
 InputManager="*uid://dbjcvh3p6w342"
-World="*uid://bub4rv24oh3v4"
 CombatLog="*uid://qu3tsj1nbs1w"
-StatusEffectPriorityList="*uid://d3ewotmc2bces"
 GlobalSettings="*uid://b7gfv4pgs8kti"
-DisplayUtility="*uid://bitwrwhi2cer1"
 ActionValidator="*uid://0qqf8r8dfbd8"
 
 [display]

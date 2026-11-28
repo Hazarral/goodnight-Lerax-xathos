@@ -1,3 +1,4 @@
+@tool
 class_name DamageActionEvent
 extends ActionEvent
 
@@ -23,3 +24,6 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 	CombatSystem.register_multi_combat_event(multi_damage_event)
 	CombatSystem.process_combat_event_queue()
 	return true
+
+func get_tags() -> Array[Utility.Tag]:
+	return super() + [Utility.Tag.DAMAGE]

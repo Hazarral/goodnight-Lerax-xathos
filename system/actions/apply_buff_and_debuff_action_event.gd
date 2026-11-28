@@ -1,3 +1,4 @@
+@tool
 class_name ApplyBuffAndDebuffActionEvent
 extends ActionEvent
 
@@ -13,3 +14,6 @@ func resolve(source : Entity, inherited_targets : Array[Entity]) -> bool:
 		entity.apply_buff_and_debuff(buff_and_debuff.duplicate_deep(Resource.DEEP_DUPLICATE_ALL))
 	
 	return true
+
+func get_tags() -> Array[Utility.Tag]:
+	return super() + [Utility.Tag.APPLY_BUFF, Utility.Tag.APPLY_DEBUFF]

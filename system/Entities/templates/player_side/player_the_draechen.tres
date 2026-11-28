@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="DraechenTemplate" format=3 uid="uid://rnqvtjaoiwov"]
 
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="1_hadhy"]
+[ext_resource type="Resource" uid="uid://deyor7nkdulcq" path="res://system/entities/templates/player_side/the_draechen_ai_profile.tres" id="1_jysen"]
 [ext_resource type="Resource" uid="uid://7q5a667sefg0" path="res://system/actions/player actions/Draechen/bite.tres" id="2_pm54n"]
 [ext_resource type="Resource" uid="uid://dnjqnigrx558j" path="res://system/actions/player actions/Draechen/claw.tres" id="3_ro7e5"]
 [ext_resource type="Resource" uid="uid://bryq065munqlv" path="res://system/actions/player actions/Draechen/invoke_flame.tres" id="4_s4enl"]
@@ -22,6 +23,7 @@
 script = ExtResource("16_hadhy")
 entity_name = "The Draechen"
 is_player_faction = true
+ai_profile = ExtResource("1_jysen")
 potency = 20
 mastery = 20
 max_hp = 2000

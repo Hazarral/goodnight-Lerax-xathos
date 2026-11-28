@@ -3,7 +3,7 @@ extends RefCounted
 
 var action : Action
 var source : Entity
-var cooldown_remaining  : int = 0
+var cooldown_remaining : int = 0
 
 func _init(p_action : Action, p_source : Entity) -> void:
 	action = p_action.duplicate_deep(Resource.DEEP_DUPLICATE_ALL)
@@ -23,6 +23,12 @@ func get_action_point_cost() -> int:
 func get_cooldown() -> int:
 	return action.cooldown
 
+func get_cooldown_remaining() -> int:
+	return cooldown_remaining
+
+func get_ap_cost() -> int:
+	return action.action_point_cost
+
 func _is_ready() -> bool:
 	return cooldown_remaining <= 0
 
@@ -33,13 +39,13 @@ func tick_cooldown() -> void:
 	if cooldown_remaining > 0:
 		cooldown_remaining -= 1
 
-func cast() -> CastResult:
+func cast(preselected_target : Entity = null) -> CastResult:
 	if not is_castable():
 		return CastResult.new(false, 0)
 	
 	source.current_action_point -= action.action_point_cost
 	
-	var success := await action.cast(source)
+	var success := await action.cast(source, preselected_target)
 	
 	if not success:
 		source.current_action_point += action.action_point_cost

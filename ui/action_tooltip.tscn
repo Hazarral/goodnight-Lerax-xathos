@@ -70,3 +70,9 @@ size_flags_vertical = 8
 theme_override_colors/font_color = Color(0.9098039, 0.8862745, 0.83137256, 1)
 text = "Press Shift for details."
 horizontal_alignment = 2
+
+[node name="Tags" type="Label" parent="ActionTooltip/VBoxContainer" unique_id=2097473506]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_colors/font_color = Color(0.9098039, 0.8862745, 0.83137256, 1)
+text = "Tags:"

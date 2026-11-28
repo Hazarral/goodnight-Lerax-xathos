@@ -48,11 +48,14 @@ const SHIELD_STATE_NAME : Dictionary[ShieldState, String] = {
 }
 
 const EPSILON := 1e-4
+const END_TURN_INDEX := -1
 
 ## Template will be duplicated
-func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> void:
+func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> void:	
 	template = base_template
 	magnification = p_magnification
+	
+	assert(base_template.ai_profile != null, "AI Profile is null!")
 	
 	current_hp = get_max_hp()
 	current_potency = get_potency()
@@ -63,6 +66,19 @@ func _init(base_template : EntityTemplate, p_magnification : float = 1.0) -> voi
 	setup_innate_actions()
 	
 	current_state = State.ALIVE
+	
+	_check_innate_action_cost()
+
+func _check_innate_action_cost() -> void:
+	for action in template.innate_actions:
+		assert(
+			action.action_point_cost <= template.max_action_point, 
+			"Action %s has higher cost than the template of %s's maximum AP of %d" % [
+				action.action_name,
+				template.entity_name,
+				template.max_action_point
+			]
+		)
 
 func _get_base_max_hp() -> float:
 	return template.max_hp * magnification
@@ -109,6 +125,9 @@ func setup_innate_actions() -> void:
 func get_entity_name_with_suffix() -> String:
 	return template.entity_name + CombatSystem.get_entity_name_suffix(self)
 
+func get_current_action_point() -> int:
+	return current_action_point
+
 func get_max_action_point() -> int:
 	return template.max_action_point
 
@@ -139,6 +158,9 @@ func has_shield(damage_type : DamageAndDoT.DamageType) -> bool:
 	
 	return max_shields[damage_type] > 0
 
+func get_current_shield(index : int) -> int:
+	return current_shields[index]
+
 func is_any_shield_breached() -> bool:
 	for i in range(DamageAndDoT.ELEMENT_COUNT):
 		if max_shields[i] > 0 and current_shields[i] <= 0:
@@ -166,6 +188,14 @@ func get_active_shield_indices() -> Array[int]:
 	
 	return arr
 
+func get_active_shield_count() -> int:
+	var result := 0
+	for i in range(DamageAndDoT.ELEMENT_COUNT):
+		if max_shields[i] > 0 and current_shields[i] > 0:
+			result += 1
+	
+	return result
+
 func get_total_max_shield() -> int:
 	var result := 0
 	for shield in max_shields:
@@ -173,8 +203,25 @@ func get_total_max_shield() -> int:
 	
 	return result
 
+func get_total_current_shield() -> int:
+	var result := 0
+	for shield in current_shields:
+		result += shield
+	
+	return result
+
 func has_dot(dot_type : DamageAndDoT.DoT) -> bool:
 	return active_dots[dot_type].has_dot()
+
+func has_any_dot() -> bool:
+	for dot_instance_array in active_dots:
+		if dot_instance_array.has_dot():
+			return true
+	
+	return false
+
+func get_active_dots() -> Array[DoTInstanceArray]:
+	return active_dots.duplicate(true)
 
 func has_void() -> bool:
 	return void_instance != null
@@ -197,6 +244,17 @@ func get_current_void_damage() -> int:
 	
 	return void_instance.get_current_damage(CombatSystem.get_the_draechen())
 
+func get_total_dot_tick_damage() -> int:
+	## The total DoT tick next turn from all the instances
+	var result := 0.0
+	for dot_instance_array in active_dots:
+		if not dot_instance_array.has_dot():
+			continue
+		
+		result += dot_instance_array.calculate_total_damage()
+	
+	return ceili(result - EPSILON)
+
 func get_total_attrition() -> int:
 	var result := 0.0
 	for dot_instance_array in active_dots:
@@ -206,6 +264,13 @@ func get_total_attrition() -> int:
 		result += dot_instance_array.calculate_total_attrition()
 	
 	return ceili(result - EPSILON)
+
+func get_total_dot_instance_count() -> int:
+	var result := 0
+	for dot_instance_array in active_dots:
+		result += dot_instance_array.get_instance_count()
+	
+	return result
 
 func is_player_faction() -> bool:
 	return template.is_player_faction
@@ -553,10 +618,13 @@ func start_action_phase() -> void:
 		return
 	
 	## TODO: AI goes here
+	UtilityAI.start_turn(self)
 
 func end_turn() -> void:
-	recover_action_point()
-	tick_cooldowns()
+	if current_state == State.ALIVE:
+		recover_action_point()
+		tick_cooldowns()
+	
 	var combat_log_entry := TurnEndCombatLogEntry.new(
 		CombatSystem.get_turn_counter(),
 		self,
@@ -574,13 +642,65 @@ func learn_action(action : Action) -> void:
 	known_actions.append(KnownAction.new(action, self))
 
 func get_known_actions() -> Array[KnownAction]:
-	return known_actions
+	return known_actions.duplicate(true)
+
+func get_action(index : int) -> Action:
+	## The caller has to supply a valid index, this method swill not check
+	return known_actions[index].action
+
+func get_action_ap_cost(index : int) -> int:
+	return known_actions[index].get_ap_cost()
+
+func get_action_cooldown_remaining(index : int) -> int:
+	return known_actions[index].get_cooldown_remaining()
+
+func get_action_base_cooldown(index : int) -> int:
+	return known_actions[index].get_cooldown()
+
+func is_castable(index : int) -> bool:
+	return known_actions[index].is_castable()
+
+func get_known_actions_size() -> int:
+	return known_actions.size()
+
+func get_ai_profile() -> AIProfile:
+	if template.ai_profile == null:
+		push_error("AIProfile is null for %s" % get_entity_name_with_suffix())
+		return null
+	
+	return template.ai_profile
+
+func get_total_bias(action_index : int) -> float:
+	if action_index < END_TURN_INDEX:
+		push_error("Invalid index for get_considerations(action_index : int): %d" % action_index)
+		return 0.0
+	
+	if action_index == END_TURN_INDEX:
+		return 0.0
+	
+	assert(template.ai_profile != null, "AI Profile is null!")
+	return template.ai_profile.get_biases(known_actions[action_index].action.utility.utility_entries)
+
+func get_considerations(action_index : int) -> Array[Utility.Consideration]:
+	if action_index < END_TURN_INDEX:
+		push_error("Invalid index for get_considerations(action_index : int): %d" % action_index)
+		return []
+	
+	if action_index == END_TURN_INDEX:
+		return []
+	
+	return known_actions[action_index].action.get_considerations().duplicate(true)
 
 func tick_cooldowns() -> void:
 	for known_action in known_actions:
 		known_action.tick_cooldown()
 
-func cast_action(index : int) -> void:
+func cast_action(index : int, preselected_target : Entity = null) -> void:
+	if index == END_TURN_INDEX:
+		## Special case for AI later
+		end_turn()
+		return
+	
 	var action_wrapper := known_actions[index]
 	
 	if not action_wrapper.is_castable():
@@ -588,7 +708,7 @@ func cast_action(index : int) -> void:
 		return
 	
 	var pending_slot := CombatLog.reserve_slot()
-	var cast_result := await action_wrapper.cast()
+	var cast_result := await action_wrapper.cast(preselected_target)
 	
 	if not cast_result.success:
 		CombatLog.cancel_reserved_slot(pending_slot)
@@ -697,7 +817,7 @@ func _resolve_wind_shear_spread_effect() -> void:
 		if dot_instance_array.get_dot_type() == DamageAndDoT.DoT.WIND_SHEAR:
 			continue
 		
-		damage_types.append(dot_instance_array.get_dot_type())
+		damage_types.append(DamageAndDoT.get_damage_type(dot_instance_array.get_dot_type()))
 		for instance in dot_instance_array.data:
 			for target in valid_targets:
 				var damage_event := DamageEvent.new(
@@ -983,6 +1103,9 @@ func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 
 func get_all_buff_and_debuffs() -> Array[BuffAndDebuff]:
 	return buff_and_debuff_manager.get_all_buff_and_debuffs().duplicate(true)
+
+func has_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> bool:
+	return buff_and_debuff_manager.has_buff_and_debuff(buff_and_debuff)
 
 func get_buff_and_debuff_summary() -> BuffAndDebuffSummary:
 	return buff_and_debuff_manager.get_summary()

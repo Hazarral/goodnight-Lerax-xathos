@@ -1,16 +1,18 @@
 [gd_resource type="Resource" script_class="Action" format=3 uid="uid://dnjqnigrx558j"]
 
 [ext_resource type="Script" uid="uid://bph88anu45uoo" path="res://system/actions/action_event.gd" id="1_mguh3"]
-[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_4mp8l"]
 [ext_resource type="Script" uid="uid://doysxg78oub0w" path="res://system/actions/action.gd" id="2_gqg50"]
+[ext_resource type="Script" uid="uid://bynvgjn3rbg0e" path="res://system/actions/damage_action_event.gd" id="2_jbj0n"]
 [ext_resource type="Script" uid="uid://djb5adhnvhmsn" path="res://system/ui/description_segments/description_segment.gd" id="3_wkplx"]
 [ext_resource type="Script" uid="uid://dyb2pec6aaxji" path="res://system/ui/description_segments/text_segment.gd" id="4_05338"]
 [ext_resource type="Script" uid="uid://d0c4l5ycbx5ue" path="res://system/ui/description_segments/line_break_segment.gd" id="5_yedow"]
 [ext_resource type="Script" uid="uid://b5tvpmksfnn2p" path="res://system/ui/description_segments/damage_segment.gd" id="6_132d4"]
 [ext_resource type="Script" uid="uid://cfp2mohxm1c47" path="res://system/ui/description_segments/target_segment.gd" id="7_eunbx"]
+[ext_resource type="Script" uid="uid://c2il1bbi1ss1b" path="res://system/utility_ai/utility.gd" id="9_uibqq"]
+[ext_resource type="Script" uid="uid://dodttldcqs87q" path="res://system/utility_ai/utility_entry.gd" id="10_uibqq"]
 
-[sub_resource type="Resource" id="Resource_4mp8l"]
-script = ExtResource("2_4mp8l")
+[sub_resource type="Resource" id="Resource_jtw52"]
+script = ExtResource("2_jbj0n")
 damage_type = 8
 amount = 20
 potency_scaling = 0.6
@@ -45,10 +47,28 @@ script = ExtResource("7_eunbx")
 target_faction = 1
 metadata/_custom_type_script = "uid://cfp2mohxm1c47"
 
+[sub_resource type="Resource" id="Resource_k3wgu"]
+script = ExtResource("10_uibqq")
+tag = 3
+target_faction = 1
+target_mode = 1
+
+[sub_resource type="Resource" id="Resource_vrl1l"]
+script = ExtResource("10_uibqq")
+target_faction = 1
+target_mode = 1
+
+[sub_resource type="Resource" id="Resource_t3n85"]
+script = ExtResource("9_uibqq")
+utility_entries = Array[ExtResource("10_uibqq")]([SubResource("Resource_k3wgu"), SubResource("Resource_vrl1l")])
+considerations = Array[int]([15, 16, 19, 20, 7, 0, 1, 4])
+metadata/_custom_type_script = "uid://c2il1bbi1ss1b"
+
 [resource]
 script = ExtResource("2_gqg50")
 action_name = "Claw"
 action_point_cost = 3
 description_segments = Array[ExtResource("3_wkplx")]([SubResource("Resource_q6v30"), SubResource("Resource_w284u"), SubResource("Resource_rultl"), SubResource("Resource_f476e"), SubResource("Resource_46ch2")])
-action_events = Array[ExtResource("1_mguh3")]([SubResource("Resource_4mp8l")])
+action_events = Array[ExtResource("1_mguh3")]([SubResource("Resource_jtw52")])
+utility = SubResource("Resource_t3n85")
 metadata/_custom_type_script = "uid://doysxg78oub0w"

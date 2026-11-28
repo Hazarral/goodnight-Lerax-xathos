@@ -4,7 +4,7 @@
 
 [resource]
 script = ExtResource("1_snqrd")
-buff_and_debuff_name = "Heated"
+buff_and_debuff_name = &"Heated"
 duration = 3
 potency_additive = 20.0
 potency_true_multiplicative = 0.5

@@ -20,6 +20,13 @@ func remove_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> void:
 	)
 	CombatLog.register(combat_log_entry)
 
+func has_buff_and_debuff(buff_and_debuff : BuffAndDebuff) -> bool:
+	for instance in all_buffs_and_debuffs:
+		if instance.is_same_buff_and_debuff(buff_and_debuff):
+			return true
+	
+	return false
+
 func tick_down() -> void:
 	var all_buffs_and_debuffs_snapshot := all_buffs_and_debuffs.duplicate(false)
 	for buff_and_debuff in all_buffs_and_debuffs_snapshot:

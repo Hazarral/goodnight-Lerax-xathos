@@ -5,7 +5,7 @@ extends Node
 signal target_requested(
 	action_event : ActionEvent, 
 	target_faction : ActionEvent.TargetFaction, 
-	target_state : ActionEvent.TargetState
+	target_state : ActionEvent.TargetState,
 )
 
 ## If the entity is null, it is the same as cancelling, or there is no target and this cannot be casted
