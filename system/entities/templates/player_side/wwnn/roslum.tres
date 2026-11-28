@@ -12,6 +12,7 @@ entity_name = "Roslum"
 is_player_faction = true
 ai_profile = ExtResource("1_0xiwc")
 potency = 50
+mastery = 5
 max_hp = 1200
 fire_shield = 2500
 physical_shield = 500
